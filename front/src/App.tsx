@@ -7,7 +7,6 @@ import NotFound from './pages/notFound'
 function App() {
   return (
     <>
-      <ScrollToTop />
       <Header />
       <Routes>
         <Route path='/' element={<Home/>}/>

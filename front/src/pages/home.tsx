@@ -4,7 +4,11 @@ import '../styles/pages/home.scss'
 
 const Home = () => {
 
-  return 
+  return (
+    <main>
+        <h1>Home</h1>
+    </main> 
+  )
 }
 
 export default Home
