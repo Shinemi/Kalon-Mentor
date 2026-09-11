@@ -1,0 +1,31 @@
+// ==========================================
+// 1. COLORS (Charte Warm Neo-brutalist)
+// ==========================================
+
+// Background colors and structure
+$color-bg-main: #FFFDF9;        // Cream (main background)
+$color-bg-surface: #FFFFFF;     // Pure white (cards, pop ups)
+$color-text: #3D312E;           // Dark Charcoal (main text content, borders)
+$color-text-muted: #6B5E5B;     // Secondary text content
+
+// Colors
+$color-primary: #E05A47;        // Terracotta (Actions principales, CTA)
+$color-secondary: #D98A2B;      // Ocre (Accents, badges)
+$color-accent: #F2C94C;         // Jaune doux (Mises en avant)
+
+// States and tiers badges
+$color-tier-free: #7A869A;      // Badge Tier Gratuit
+$color-tier-premium: #D98A2B;   // Badge Tier Premium
+$color-success: #27AE60;        // Succès
+$color-danger: #EB5757;         // Erreur / Quota dépassé
+
+
+// ==========================================
+// 2. TYPOGRAPHIE
+// ==========================================
+
+// Font Families
+$font-family-heading: 'Fraunces', serif;                  // Titles
+$font-family-body: 'Plus Jakarta Sans', sans-serif;       // Main text, UI
+$font-family-handwritten: 'Architects Daughter', cursive; // AI mentor notes, 
+

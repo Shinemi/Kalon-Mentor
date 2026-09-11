@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-import '../styles/components/navbar.scss'
+import '../styles/components/header.scss'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -10,7 +10,7 @@ const Navbar = () => {
     <header>
         <div className="header-content">
             <Link to="/" className="logo" onClick={() => setIsOpen(false)}>
-            Lucas<span className="gradient-text">.dev</span>
+                <img src="/front/public/ChatGPT Image 7 août 2026, 11_26_16.png" alt="Logo Kalon Mentor" />
             </Link>
 
             <nav>

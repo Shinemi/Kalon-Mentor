@@ -1,0 +1,52 @@
+@import "../variables";
+
+
+// .logo{
+// }
+
+header{
+    display: flex;
+    max-width: 1440px;
+    justify-content: space-between;
+    margin: auto;
+    align-items: center;
+    padding: 10px 5px;
+    nav{
+        display: flex;
+        position: relative;
+
+        .burger-menu{
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+
+            @media (max-width: 768px) {
+                display: block;
+            }
+        }
+
+        .navbar-links{
+            display:flex;
+            gap: 40px;
+
+            li{
+                width: 75px;
+            }
+
+            &{ @media (max-width: 768px) {
+                display: none;
+                position: absolute;
+                top: 45px;
+                right: -5px;
+                flex-direction: column;
+                // background: $hover-grey-color;
+                padding: 50px;
+
+                &.open {
+                display: flex;
+                }
+            }}
+        }
+    }
+}
