@@ -1,49 +1,29 @@
 const jwt = require('jsonwebtoken')
-const db = require('../config/db')
+const db = require('../db/db')
 
-const JWT_SECRET = process.env.JWT_SECRET
+async function authMiddleware(req, res, next) {
+    const authHeader = req.headers.authorization
 
-const authMiddleware = async (req, res, next) => {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Authentication required' })
+    }
+
+    const token = authHeader.split(' ')[1]
+
     try {
-        let token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-        if (req.headers.authorization?.startsWith('Bearer')) {
-            token = req.headers.authorization.split(' ')[1]
-        }
-
-        if (!token) {
-            return res.status(401).json({
-                message: 'Not authorized, token missing'
-            })
-        }
-
-        // Vérifier le token
-        const decoded = jwt.verify(token, JWT_SECRET)
-
-        // Récupérer l'utilisateur depuis PostgreSQL
-        const result = await db.query(
-            'SELECT * FROM users WHERE id = $1',
-            [decoded.id]
-        )
-
+        const result = await db.query('SELECT id, username, email FROM users WHERE id = $1', [decoded.id])
         const user = result.rows[0]
 
         if (!user) {
-            return res.status(401).json({
-                message: 'User no longer exists'
-            })
+            return res.status(401).json({ message: 'User not found' })
         }
 
-        // Ajouter l'utilisateur à la requête
         req.user = user
-
         next()
-
     } catch (error) {
-        return res.status(401).json({
-            message: 'Not authorized, invalid token',
-            error: error.message
-        })
+        return res.status(401).json({ message: 'Invalid or expired token' })
     }
 }
 
