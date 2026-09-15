@@ -87,4 +87,76 @@ async function login(req, res) {
     }
 }
 
-module.exports = { register, login }
+
+// GET /auth/profile (route protégée par authMiddleware)
+// authMiddleware a déjà récupéré l'utilisateur et l'a mis dans req.user
+async function getProfile(req, res) {
+    res.json({ user: req.user })
+}
+ 
+// PUT /auth/profile (route protégée par authMiddleware)
+// Met à jour les champs fournis dans le body : username, email, password
+// (au moins un des trois, tous optionnels)
+async function updateProfile(req, res) {
+    const { username, email, password } = req.body
+ 
+    if (!username && !email && !password) {
+        return res.status(400).json({ message: 'Provide at least one field to update' })
+    }
+ 
+    if (email && !validator.isEmail(email)) {
+        return res.status(400).json({ message: 'Invalid email' })
+    }
+ 
+    if (
+        password &&
+        !validator.isStrongPassword(password, {
+            minLength: 8,
+            minLowercase: 0,
+            minUppercase: 0,
+            minNumbers: 1,
+            minSymbols: 1,
+        })
+    ) {
+        return res.status(400).json({
+            message: 'Password must be at least 8 characters long and contain at least one number and one special character',
+        })
+    }
+ 
+    try {
+        // On construit la requête petit à petit, selon les champs fournis
+        const fieldsToUpdate = []
+        const values = []
+ 
+        if (username) {
+            values.push(username)
+            fieldsToUpdate.push(`username = $${values.length}`)
+        }
+ 
+        if (email) {
+            values.push(email)
+            fieldsToUpdate.push(`email = $${values.length}`)
+        }
+ 
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10)
+            values.push(hashedPassword)
+            fieldsToUpdate.push(`password = $${values.length}`)
+        }
+ 
+        values.push(req.user.id)
+ 
+        const result = await db.query(
+            `UPDATE users SET ${fieldsToUpdate.join(', ')} WHERE id = $${values.length}
+             RETURNING id, username, email`,
+            values
+        )
+ 
+        res.json({ user: result.rows[0] })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Error while updating the profile' })
+    }
+}
+ 
+module.exports = { register, login, getProfile, updateProfile }

@@ -46,6 +46,12 @@ app.get('/', (req, res) => {
     res.send('bienvenue sur mon API RESTful !')
 })
 
-app.listen(port, () => {
-    console.log(`Serveur lancé sur http://localhost:${port}`)
-})
+// On ne démarre le serveur que si ce fichier est lancé directement
+// (node app.js / nodemon app.js), pas quand il est require() par les tests.
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Serveur lancé sur http://localhost:${port}`)
+    })
+}
+
+module.exports = app
