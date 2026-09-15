@@ -15,16 +15,17 @@ async function register(req, res) {
         return res.status(400).json({ message: 'Invalid email' })
     }
 
-    if (password.length < 8) {
-        return res.status(400).json({ message: 'Password must be at least 8 characters long' })
-    }
-
-    const hasNumber = /\d/.test(password)
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password)
-
-    if (!hasNumber || !hasSpecialChar) {
+    if (
+        !validator.isStrongPassword(password, {
+            minLength: 8,
+            minLowercase: 0,
+            minUppercase: 0,
+            minNumbers: 1,
+            minSymbols: 1,
+        })
+    ) {
         return res.status(400).json({
-            message: 'Password must contain at least one number and one special character',
+            message: 'Password must be at least 8 characters long and contain at least one number and one special character',
         })
     }
 
