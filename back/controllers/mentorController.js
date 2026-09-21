@@ -3,7 +3,7 @@ const fs = require('fs/promises')
 const path = require('path')
 const crypto = require('crypto')
 const correctionModel = require('../models/correctionModel')
-const resourceModel = require('../models/resourceModel')
+const resourceModel = require('../models/resourcesModel')
 const { analyseDrawing } = require('../services/aiService')
 
 // Nombre de corrections sauvegardées max sur le plan gratuit
