@@ -46,7 +46,7 @@ async function analyseCorrection(req, res) {
     }
 }
 
-// POST /mentor/corrections  (US-09)
+// POST /mentor/correctionSave  (US-09)
 // L'utilisateur a vu son feedback et choisit de le garder.
 async function saveCorrection(req, res) {
     const { image, feedbackText, category } = req.body
@@ -90,7 +90,7 @@ async function saveCorrection(req, res) {
     }
 }
 
-// GET /mentor/corrections  (US-10)
+// GET /mentor/correctionGallery  (US-10)
 async function getCorrections(req, res) {
     try {
         const corrections = await correctionModel.findCorrectionsByUser(req.user.id)

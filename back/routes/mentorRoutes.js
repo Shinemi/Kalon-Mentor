@@ -12,7 +12,7 @@ const uploadImage = require('../middlewares/multerMiddleware')
 // Toutes les routes du mentor nécessitent d'être connecté
 router.post('/correction', authMiddleware, uploadImage, analyseCorrection)
 router.post('/correctionSave', authMiddleware, saveCorrection)
-router.get('/correctionHistory', authMiddleware, getCorrections)
+router.get('/correctionGallery', authMiddleware, getCorrections)
 router.delete('/correctionDelete/:id', authMiddleware, deleteCorrection)
 
 module.exports = router
