@@ -1,7 +1,21 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const validator = require('validator')
-const db = require('../db/db')
+const userModel = require('../models/userModel')
+
+const PASSWORD_RULES = {
+    minLength: 8,
+    minLowercase: 0,
+    minUppercase: 0,
+    minNumbers: 1,
+    minSymbols: 1,
+}
+
+const PASSWORD_ERROR = 'Password must be at least 8 characters long and contain at least one number and one special character'
+
+function generateToken(userId) {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
+}
 
 // POST /auth/register
 async function register(req, res) {
@@ -15,39 +29,20 @@ async function register(req, res) {
         return res.status(400).json({ message: 'Invalid email' })
     }
 
-    if (
-        !validator.isStrongPassword(password, {
-            minLength: 8,
-            minLowercase: 0,
-            minUppercase: 0,
-            minNumbers: 1,
-            minSymbols: 1,
-        })
-    ) {
-        return res.status(400).json({
-            message: 'Password must be at least 8 characters long and contain at least one number and one special character',
-        })
+    if (!validator.isStrongPassword(password, PASSWORD_RULES)) {
+        return res.status(400).json({ message: PASSWORD_ERROR })
     }
 
     try {
-        const existing = await db.query('SELECT id FROM users WHERE email = $1', [email])
-        if (existing.rows.length > 0) {
+        const existingUser = await userModel.findUserByEmail(email)
+        if (existingUser) {
             return res.status(409).json({ message: 'An account already exists with this email' })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await userModel.createUser(username, email, hashedPassword)
 
-        const result = await db.query(
-            `INSERT INTO users (username, email, password)
-             VALUES ($1, $2, $3)
-             RETURNING id, username, email`,
-            [username, email, hashedPassword]
-        )
-
-        const user = result.rows[0]
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' })
-
-        res.status(201).json({ user, token })
+        res.status(201).json({ user, token: generateToken(user.id) })
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: 'Error while creating the account' })
@@ -63,8 +58,7 @@ async function login(req, res) {
     }
 
     try {
-        const result = await db.query('SELECT id, username, email, password FROM users WHERE email = $1', [email])
-        const user = result.rows[0]
+        const user = await userModel.findUserByEmail(email)
 
         if (!user) {
             return res.status(401).json({ message: 'Incorrect email or password' })
@@ -75,11 +69,9 @@ async function login(req, res) {
             return res.status(401).json({ message: 'Incorrect email or password' })
         }
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' })
-
         res.json({
             user: { id: user.id, username: user.username, email: user.email },
-            token,
+            token: generateToken(user.id),
         })
     } catch (error) {
         console.error(error)
@@ -87,76 +79,43 @@ async function login(req, res) {
     }
 }
 
-
-// GET /auth/profile (route protégée par authMiddleware)
+// GET /auth/profile (route protégée)
 // authMiddleware a déjà récupéré l'utilisateur et l'a mis dans req.user
 async function getProfile(req, res) {
     res.json({ user: req.user })
 }
- 
-// PUT /auth/profile (route protégée par authMiddleware)
-// Met à jour les champs fournis dans le body : username, email, password
-// (au moins un des trois, tous optionnels)
+
+// PUT /auth/profileUpdate (route protégée)
+// Met à jour les champs fournis : username, email, password (tous optionnels)
 async function updateProfile(req, res) {
     const { username, email, password } = req.body
- 
+
     if (!username && !email && !password) {
         return res.status(400).json({ message: 'Provide at least one field to update' })
     }
- 
+
     if (email && !validator.isEmail(email)) {
         return res.status(400).json({ message: 'Invalid email' })
     }
- 
-    if (
-        password &&
-        !validator.isStrongPassword(password, {
-            minLength: 8,
-            minLowercase: 0,
-            minUppercase: 0,
-            minNumbers: 1,
-            minSymbols: 1,
-        })
-    ) {
-        return res.status(400).json({
-            message: 'Password must be at least 8 characters long and contain at least one number and one special character',
-        })
+
+    if (password && !validator.isStrongPassword(password, PASSWORD_RULES)) {
+        return res.status(400).json({ message: PASSWORD_ERROR })
     }
- 
+
     try {
-        // On construit la requête petit à petit, selon les champs fournis
-        const fieldsToUpdate = []
-        const values = []
- 
-        if (username) {
-            values.push(username)
-            fieldsToUpdate.push(`username = $${values.length}`)
-        }
- 
-        if (email) {
-            values.push(email)
-            fieldsToUpdate.push(`email = $${values.length}`)
-        }
- 
+        const fields = { username, email }
+
         if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10)
-            values.push(hashedPassword)
-            fieldsToUpdate.push(`password = $${values.length}`)
+            fields.password = await bcrypt.hash(password, 10)
         }
- 
-        values.push(req.user.id)
- 
-        const result = await db.query(
-            `UPDATE users SET ${fieldsToUpdate.join(', ')} WHERE id = $${values.length}
-             RETURNING id, username, email`,
-            values
-        )
- 
-        res.json({ user: result.rows[0] })
+
+        const user = await userModel.updateUser(req.user.id, fields)
+
+        res.json({ user })
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: 'Error while updating the profile' })
     }
 }
- 
+
 module.exports = { register, login, getProfile, updateProfile }
