@@ -47,24 +47,29 @@ async function analyseCorrection(req, res) {
     }
 }
 
-// À partir du feedback complet de l'IA, retrouve la ressource de priorité 1
-// (s'il y en a une) et vérifie qu'elle existe vraiment en base avant de
-// la lier à la correction.
-async function resolvePrimaryResourceId(feedback) {
+// À partir du feedback complet de l'IA, trie les ressources recommandées
+// par priorité, vérifie que chaque ID existe vraiment en base (défense
+// contre une hallucination malgré la consigne du prompt), et garde les
+// 3 premières — une ligne par ressource dans corrections_resources.
+async function resolveResourceIds(feedback) {
     const recommendations = feedback?.ressources_recommandees
     if (!Array.isArray(recommendations) || recommendations.length === 0) {
-        return null
+        return []
     }
 
-    const topPick =
-        recommendations.find((resource) => resource.priorite === 1) ?? recommendations[0]
+    const sorted = [...recommendations].sort(
+        (a, b) => (a.priorite ?? 99) - (b.priorite ?? 99)
+    )
 
-    if (!topPick?.ressource_id) {
-        return null
+    const validIds = []
+    for (const resource of sorted) {
+        if (!resource?.ressource_id) continue
+        const exists = await resourceModel.resourceExists(resource.ressource_id)
+        if (exists) validIds.push(resource.ressource_id)
+        if (validIds.length === 3) break
     }
 
-    const exists = await resourceModel.resourceExists(topPick.ressource_id)
-    return exists ? topPick.ressource_id : null
+    return validIds
 }
 
 // POST /mentor/corrections  (US-09)
@@ -90,16 +95,15 @@ async function saveCorrection(req, res) {
         const filename = `${crypto.randomUUID()}.jpg`
         await fs.writeFile(path.join(UPLOADS_DIR, filename), Buffer.from(image, 'base64'))
 
-        // On ne garde qu'un lien en base (schéma actuel = 1 seule ressource
-        // par correction) ; le détail complet des recommandations reste
-        // dans feedback_text pour l'affichage.
-        const resourceId = await resolvePrimaryResourceId(feedback)
+        // Jusqu'à 3 ressources liées en base (table corrections_resources) ;
+        // le détail complet des recommandations reste aussi dans feedback_text.
+        const resourceIds = await resolveResourceIds(feedback)
 
         const correction = await correctionModel.createCorrection(
             req.user.id,
             `/uploads/${filename}`,
             JSON.stringify(feedback),
-            resourceId
+            resourceIds
         )
 
         res.status(201).json({ correction })

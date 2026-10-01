@@ -44,7 +44,7 @@ const authRoutes = require('./routes/authRoutes')
 const mentorRoutes = require('./routes/mentorRoutes')
 
 app.use('/api/v1/auth', authRoutes)
-// app.use('/api/v1/mentor', mentorRoutes)
+app.use('/api/v1/mentor', mentorRoutes)
 
 // images de la galerie accessibles via http://localhost:3000/uploads/xxx.jpg
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))

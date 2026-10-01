@@ -61,7 +61,7 @@ test('refuse un fichier qui n\'est pas une image', async () => {
 
 test('la galerie est vide au départ', async () => {
     const response = await request(app)
-        .get('/api/v1/mentor/correctionSave')
+        .get('/api/v1/mentor/correctionGallery')
         .set('Authorization', `Bearer ${token}`)
 
     expect(response.status).toBe(200)
@@ -91,7 +91,7 @@ test('sauvegarde une correction puis la retrouve dans la galerie', async () => {
     expect(saveResponse.body.correction.image_url).toBeDefined()
 
     const galleryResponse = await request(app)
-        .get('/api/v1/mentor/correctionSave')
+        .get('/api/v1/mentor/correctionGallery')
         .set('Authorization', `Bearer ${token}`)
 
     expect(galleryResponse.body.corrections).toHaveLength(1)
@@ -119,19 +119,19 @@ test('refuse la sauvegarde sans image', async () => {
 
 test('supprime une correction de la galerie', async () => {
     const galleryResponse = await request(app)
-        .get('/api/v1/mentor/correctionSave')
+        .get('/api/v1/mentor/correctionGallery')
         .set('Authorization', `Bearer ${token}`)
 
     const correctionId = galleryResponse.body.corrections[0].id
 
     const deleteResponse = await request(app)
-        .delete(`/api/v1/mentor/correctionSave/${correctionId}`)
+        .delete(`/api/v1/mentor/correctionDelete/${correctionId}`)
         .set('Authorization', `Bearer ${token}`)
 
     expect(deleteResponse.status).toBe(200)
 
     const afterResponse = await request(app)
-        .get('/api/v1/mentor/correctionSave')
+        .get('/api/v1/mentor/correctionGallery')
         .set('Authorization', `Bearer ${token}`)
 
     expect(afterResponse.body.corrections).toHaveLength(0)
