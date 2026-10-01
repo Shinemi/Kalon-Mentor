@@ -23,7 +23,7 @@ app.use(
 
 // CORS : autorise les requêtes venant du frontend
 const corsoptions = {
-    origin: ['http://localhost:3000']
+    origin: ['http://localhost:3000', 'http://localhost:5173']
 }
 app.use(cors(corsoptions))
 
