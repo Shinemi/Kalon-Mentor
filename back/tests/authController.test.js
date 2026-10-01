@@ -81,7 +81,7 @@ test('modifie le username du profil', async () => {
     const token = loginResponse.body.token
 
     const response = await request(app)
-        .put('/api/v1/auth/profile')
+        .put('/api/v1/auth/profileUpdate')
         .set('Authorization', `Bearer ${token}`)
         .send({ username: 'jest-tester-modifie' })
 
