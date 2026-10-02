@@ -85,7 +85,7 @@ IMPORTANT :
 * Par exemple, si le problème concerne les raccourcis anatomiques, choisis une ressource sur les raccourcis anatomiques et non simplement un cours général sur l'anatomie.
 * Si le problème concerne les lignes de fuite, choisis une ressource sur les lignes de fuite et non simplement un cours général sur la perspective.
 * Privilégie les ressources adaptées au niveau estimé de l'artiste.
-* Évite de recommander plusieurs ressources qui enseignent exactement la même chose.
+* Utilise le champ "level" fourni avec chaque ressource pour adapter la difficulté recommandée.* Évite de recommander plusieurs ressources qui enseignent exactement la même chose.
 * Si aucune ressource pertinente n'existe dans la liste fournie, retourne une liste vide.
 * Ne fabrique JAMAIS de ressource, de titre, d'identifiant ou de lien. N'utilise que les ressources listées ci-dessous, avec leur "id" exact.
 
@@ -153,7 +153,7 @@ Utilise cette structure :
 { "priorite": 1, "categorie": "anatomie", "competence": "Compétence précise à travailler", "raison": "Pourquoi cette compétence est prioritaire." }
 ],
 "ressources_recommandees": [
-{ "ressource_id": "ID_EXACT_DE_LA_LISTE", "titre": "Titre exact de la liste", "type": "video", "categorie": "anatomie", "competence": "Compétence travaillée", "priorite": 1, "raison": "Pourquoi cette ressource correspond précisément à la lacune observée." }
+{ "ressource_id": "ID_EXACT_DE_LA_LISTE", "titre": "Titre exact de la liste", "type": "course", "categorie": "anatomie", "competence": "Compétence travaillée", "priorite": 1, "raison": "Pourquoi cette ressource correspond précisément à la lacune observée." }
 ]
 }
 

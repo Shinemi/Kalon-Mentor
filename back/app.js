@@ -42,9 +42,11 @@ app.use(express.json({ limit: '5mb' }))
 // Routes
 const authRoutes = require('./routes/authRoutes')
 const mentorRoutes = require('./routes/mentorRoutes')
+const resourceRoutes = require('./routes/resourceRoutes')
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/mentor', mentorRoutes)
+app.use('/api/v1/resources', resourceRoutes)
 
 // images de la galerie accessibles via http://localhost:3000/uploads/xxx.jpg
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
