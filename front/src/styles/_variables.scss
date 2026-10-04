@@ -9,9 +9,9 @@ $color-text: #3D312E;           // Dark Charcoal (main text content, borders)
 $color-text-muted: #6B5E5B;     // Secondary text content
 
 // Colors
-$color-primary: #E05A47;        // Terracotta (Actions principales, CTA)
-$color-secondary: #D98A2B;      // Ocre (Accents, badges)
-$color-accent: #F2C94C;         // Jaune doux (Mises en avant)
+$color-primary: #FF7A59;        // Terracotta (Actions principales, CTA)
+$color-secondary: #F4A261;      // Ocre (Accents, badges)
+$color-accent: #FFD275;         // Jaune doux (Mises en avant)
 
 // States and tiers badges
 $color-tier-free: #7A869A;      // Badge Tier Gratuit
@@ -25,7 +25,8 @@ $color-danger: #EB5757;         // Erreur / Quota dépassé
 // ==========================================
 
 // Font Families
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
 $font-family-heading: 'Fraunces', serif;                  // Titles
 $font-family-body: 'Plus Jakarta Sans', sans-serif;       // Main text, UI
 $font-family-handwritten: 'Architects Daughter', cursive; // AI mentor notes, 
-

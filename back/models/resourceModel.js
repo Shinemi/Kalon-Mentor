@@ -23,7 +23,11 @@ exports.findCourses = async (category) => {
 
     if (category) {
         values.push(category)
-        query += ` AND category = $1`
+        // category::text évite que Postgres essaie de caster la valeur
+        // reçue vers l'enum ressource_category : une catégorie inconnue
+        // (ex: faute de frappe côté front) renvoie 0 résultat plutôt que
+        // de faire planter la requête avec une erreur de cast.
+        query += ` AND category::text = $1`
     }
 
     query += ` ORDER BY category, order_index`

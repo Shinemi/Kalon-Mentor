@@ -1,0 +1,31 @@
+@use "./_variables.scss" as *;
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: $font-family-body;
+}
+
+ul{
+    list-style: none;
+    padding: 0;
+}
+
+li{
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+    color: $color-text;
+    transition: all 0.2s ease-in-out;
+
+
+    &:hover{
+        color: $color-text-muted;
+        transition: all 0.2s ease-in-out;
+    }
+}
+
