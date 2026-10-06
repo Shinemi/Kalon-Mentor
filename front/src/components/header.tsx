@@ -30,17 +30,17 @@ const Navbar = () => {
                     <li><Link to="/mentorship" onClick={() => setIsOpen(false)}>Mentorship</Link></li>
                     <li><Link to="/courses" onClick={() => setIsOpen(false)}>Courses</Link></li>
                     <li><Link to="/gallery" onClick={() => setIsOpen(false)}>Gallery</Link></li>
-                    <li className="account-link">
-                        {isConnected ? (
-                            <Link to="/profile" className="profile-link" aria-label="Mon profil" onClick={() => setIsOpen(false)}>
-                                <UserRound aria-hidden="true" />
-                            </Link>
-                        ) : (
-                            <Link to="/login" className="button-primary" onClick={() => setIsOpen(false)}>Connexion</Link>
-                        )}
-                    </li>
                 </ul>
             </nav>
+            <div className="account-link">
+                {isConnected ? (
+                    <Link to="/profile" className="profile-link" aria-label="Mon profil" onClick={() => setIsOpen(false)}>
+                        <UserRound aria-hidden="true" />
+                    </Link>
+                ) : (
+                    <Link to="/login" className="button-primary" onClick={() => setIsOpen(false)}> Connexion </Link>
+                )}
+            </div>
       </div>
     </header>
   )
