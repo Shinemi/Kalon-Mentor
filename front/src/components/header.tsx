@@ -10,7 +10,7 @@ const Navbar = () => {
     <header>
         <div className="header-content">
             <Link to="/" className="logo" onClick={() => setIsOpen(false)}>
-                <img src="/front/public/ChatGPT Image 7 août 2026, 11_26_16.png" alt="Logo Kalon Mentor" />
+                <img src="/Logo Kalon Mentor au trait noir.png" alt="Logo Kalon Mentor" />
             </Link>
 
             <nav>
@@ -27,6 +27,8 @@ const Navbar = () => {
                     <li><Link to="/mentorship" onClick={() => setIsOpen(false)}>Mentorship</Link></li>
                     <li><Link to="/courses" onClick={() => setIsOpen(false)}>Courses</Link></li>
                     <li><Link to="/gallery" onClick={() => setIsOpen(false)}>Gallery</Link></li>
+                    <li><Link to="/login" onClick={() => setIsOpen(false)}>Connexion</Link></li>
+                    <li><Link to="/register" onClick={() => setIsOpen(false)}>Inscription</Link></li>
                 </ul>
             </nav>
       </div>

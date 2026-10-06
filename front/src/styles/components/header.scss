@@ -1,8 +1,7 @@
 @use "../_variables.scss" as *;
 
 
-// .logo{
-// }
+
 
 header{
     background-color: $color-secondary;
@@ -14,6 +13,10 @@ header{
         margin: auto;
         align-items: center;
         padding: 10px 5px;
+
+        .logo img{
+            width: 70px;
+        }
 
         nav{
             display: flex;
