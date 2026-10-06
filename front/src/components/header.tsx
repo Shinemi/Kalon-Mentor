@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { Menu, X, UserRound } from 'lucide-react'
 import '../styles/components/header.scss'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  // Relit le token quand on change de page, notamment après la connexion.
+  useLocation()
+  const isConnected = Boolean(sessionStorage.getItem('kalon-token'))
 
   return (
     <header>
@@ -27,8 +30,15 @@ const Navbar = () => {
                     <li><Link to="/mentorship" onClick={() => setIsOpen(false)}>Mentorship</Link></li>
                     <li><Link to="/courses" onClick={() => setIsOpen(false)}>Courses</Link></li>
                     <li><Link to="/gallery" onClick={() => setIsOpen(false)}>Gallery</Link></li>
-                    <li><Link to="/login" onClick={() => setIsOpen(false)}>Connexion</Link></li>
-                    <li><Link to="/register" onClick={() => setIsOpen(false)}>Inscription</Link></li>
+                    <li className="account-link">
+                        {isConnected ? (
+                            <Link to="/profile" className="profile-link" aria-label="Mon profil" onClick={() => setIsOpen(false)}>
+                                <UserRound aria-hidden="true" />
+                            </Link>
+                        ) : (
+                            <Link to="/login" className="button-primary" onClick={() => setIsOpen(false)}>Connexion</Link>
+                        )}
+                    </li>
                 </ul>
             </nav>
       </div>
@@ -37,3 +47,4 @@ const Navbar = () => {
 }
 
 export default Navbar
+
