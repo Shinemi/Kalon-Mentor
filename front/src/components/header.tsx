@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, UserRound } from 'lucide-react'
+import { Link, useLocation, NavLink } from 'react-router-dom'
+import { Menu, X, CircleUser } from 'lucide-react'
 import '../styles/components/header.scss'
 
 const Navbar = () => {
@@ -26,16 +26,32 @@ const Navbar = () => {
                 </button>
 
                 <ul className={isOpen ? 'navbar-links open' : 'navbar-links'}>
-                    <li><Link to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
-                    <li><Link to="/mentorship" onClick={() => setIsOpen(false)}>Mentorship</Link></li>
-                    <li><Link to="/courses" onClick={() => setIsOpen(false)}>Courses</Link></li>
-                    <li><Link to="/gallery" onClick={() => setIsOpen(false)}>Gallery</Link></li>
+                    <li>
+                        <NavLink to="/" end onClick={() => setIsOpen(false)}>
+                            Home
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/mentorship" onClick={() => setIsOpen(false)}>
+                            Mentorship
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/courses" onClick={() => setIsOpen(false)}>
+                            Courses
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/gallery" onClick={() => setIsOpen(false)}>
+                            Gallery
+                        </NavLink>
+                    </li>
                 </ul>
             </nav>
             <div className="account-link">
                 {isConnected ? (
                     <Link to="/profile" className="profile-link" aria-label="Mon profil" onClick={() => setIsOpen(false)}>
-                        <UserRound aria-hidden="true" />
+                        <CircleUser aria-hidden="true" /> 
                     </Link>
                 ) : (
                     <Link to="/login" className="button-primary" onClick={() => setIsOpen(false)}> Connexion </Link>

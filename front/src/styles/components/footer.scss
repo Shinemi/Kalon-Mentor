@@ -4,7 +4,7 @@ footer{
     
     background-color: $color-text;
     color: $color-bg-main;
-    height: 15vh;
+    height: 150px;
     align-items: center;
     display: flex;
     
@@ -29,25 +29,27 @@ footer{
             }
         }
 
-        ul{
+        nav {
             display: flex;
-            gap: 40px;
+            
+            ul {
+                display: flex;
+                gap: 40px;
+                align-items: center;
 
-            li{
-                border-bottom: 1px solid $color-text;
-                transition: all 0.1s ease-in-out ;
-                a{
-                    display: flex;
-    
-                    &:hover{
-                        border-bottom: 1px solid $color-secondary;
-                        transition: all 0.1s ease-in-out ;
+                li {
+                    border-bottom: 1px solid transparent;
+                    transition: all 0.1s ease-in-out;
+
+                    &:hover {
+                        border-bottom-color: $color-secondary;
                         padding-bottom: 8px;
                     }
 
-            }
-                
-                
+                    a {
+                        display: flex;
+                    }
+                }
             }
         }
     }

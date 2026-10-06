@@ -7,14 +7,16 @@ const Footer = () => (
 
             <h2>Kalon Mentor</h2>
 
-            <ul>
-                <li><Link to="/privacy">Privacy policy</Link></li>
-                <li><Link to="/termsArt">Terms of art</Link></li>
-                <li><Link to="/artists">Artist Guild</Link></li>
-                <li><Link to="/support">Support</Link></li>
-            </ul>
+            <nav>
+                <ul>
+                    <li><Link to="/privacy">Privacy policy</Link></li>
+                    <li><Link to="/termsArt">Terms of art</Link></li>
+                    <li><Link to="/artists">Artist Guild</Link></li>
+                    <li><Link to="/support">Support</Link></li>
+                </ul>
+            </nav>
 
-            <p className="copyright">© 2026 Kalon Mentor Handcrafted for the digital soul</p>
+            <p className="copyright">© 2026 Kalon Mentor - Handcrafted for the digital soul</p>
 
         </div>
     </footer>
