@@ -37,7 +37,21 @@ header{
                 display:flex;
                 gap: 40px;
                 align-items: center;
+                height: 100%;
                 
+                li{
+                    border-bottom: 1px solid $color-secondary;
+                    transition: all 0.1s ease-in-out ;
+
+                    &:hover{
+                        border-bottom: 1px solid $color-text-muted;
+                        transition: all 0.1s ease-in-out ;
+                        padding-bottom: 8px;
+                    }
+                    a{
+                        display: flex;
+                    }
+                }
     
                 &{ @media (max-width: 768px) {
                     display: none;

@@ -1,10 +1,9 @@
-// @use "./_variables.scss" as *;
-
+@use "../_variables.scss" as *;
 
 footer{
     
-    background-color: black;
-    color: white;
+    background-color: $color-text;
+    color: $color-bg-main;
     height: 15vh;
     align-items: center;
     display: flex;
@@ -24,15 +23,32 @@ footer{
         }
 
         a{
-            color: white;
+            color: $color-bg-main;
             &:hover{
-                color: red;
+                color: $color-secondary;
             }
         }
 
         ul{
             display: flex;
             gap: 40px;
+
+            li{
+                border-bottom: 1px solid $color-text;
+                transition: all 0.1s ease-in-out ;
+                a{
+                    display: flex;
+    
+                    &:hover{
+                        border-bottom: 1px solid $color-secondary;
+                        transition: all 0.1s ease-in-out ;
+                        padding-bottom: 8px;
+                    }
+
+            }
+                
+                
+            }
         }
     }
 }
