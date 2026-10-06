@@ -1,0 +1,38 @@
+// @use "./_variables.scss" as *;
+
+
+footer{
+    
+    background-color: black;
+    color: white;
+    height: 15vh;
+    align-items: center;
+    display: flex;
+    
+
+    .footer-content{
+        display: flex;
+        justify-content: space-between;
+        max-width: 1440px;
+        margin: auto;
+        align-items: center;
+        width: 100%;
+
+        h2{
+            font-family: 'Architects Daughter', cursive;
+            font-weight: 400;
+        }
+
+        a{
+            color: white;
+            &:hover{
+                color: red;
+            }
+        }
+
+        ul{
+            display: flex;
+            gap: 40px;
+        }
+    }
+}
