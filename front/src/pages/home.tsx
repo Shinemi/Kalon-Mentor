@@ -59,8 +59,8 @@ const Home = () => {
 
                 <div className="features-content">
                     <article className="courses-card">
-                        <BookOpen aria-hidden="true" />
-                        <h2>Les fondamentaux</h2>
+                        
+                        <h2><BookOpen aria-hidden="true" />Les fondamentaux</h2>
                         <ul>
                             <li>Perspective</li>
                             <li>Lumière et ombres</li>
@@ -68,8 +68,8 @@ const Home = () => {
                         <p>Des cours pour comprendre les bases et mettre les conseils en pratique.</p>
                     </article>
                     <article className="exercise-card">
-                        <p><Flame aria-hidden="true" /> Une idée pour pratiquer</p>
-                        <h2>Dessinez un souvenir</h2>
+                        <p> Une idée pour pratiquer</p>
+                        <h2><Flame aria-hidden="true" />Dessinez un souvenir</h2>
                         <p>Un croquis rapide de 5 minutes.</p>
                     </article>
                 </div>

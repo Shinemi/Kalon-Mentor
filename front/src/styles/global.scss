@@ -50,6 +50,8 @@ main{
     &:hover {
         background-color: $color-bg-main;
         color: $color-text;
+        box-shadow: 6px 6px 0px #231914;
+
     }
 }
 
@@ -83,4 +85,10 @@ h1{
 h2{
     font-size: 32px;
     font-weight: 400;
+    display: inline-flex;
+    gap: 20px;
+
+    svg{
+        align-self: center;
+    }
 }

@@ -117,7 +117,7 @@
 
 .features-section{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 60% 30%;
     align-items: center;
     max-width: 1440px;
     margin: auto;
@@ -130,11 +130,41 @@
         gap: 20px;
         flex-direction: column;
         border: solid 2px $color-text;
-        box-shadow: 6px 6px 0px $color-text;
+        box-shadow: 8px 8px 0px $color-text;
 
         p{
             padding-bottom: 100px;
             max-width: 400px;
+        }
+    }
+
+    .features-content{
+        gap: 20px; display: flex;
+        flex-direction: column;
+
+        p{
+            max-width: 300px;
+        }
+        .courses-card{
+            background-color: white;
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+            border: solid 2px $color-text;
+            box-shadow: 8px 8px 0px $color-text;
+    
+            
+        }
+    
+        .exercise-card{
+            background-color: $color-secondary;
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+            border: solid 2px $color-text;
+            box-shadow: 8px 8px 0px #BB5808;
         }
     }
 }
