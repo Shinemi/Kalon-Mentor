@@ -28,22 +28,22 @@ const Navbar = () => {
                 <ul className={isOpen ? 'navbar-links open' : 'navbar-links'}>
                     <li>
                         <NavLink to="/" end onClick={() => setIsOpen(false)}>
-                            Home
+                            Accueil
                         </NavLink>
                     </li>
                     <li>
                         <NavLink to="/mentorship" onClick={() => setIsOpen(false)}>
-                            Mentorship
+                            Mentorat
                         </NavLink>
                     </li>
                     <li>
                         <NavLink to="/courses" onClick={() => setIsOpen(false)}>
-                            Courses
+                            Cours
                         </NavLink>
                     </li>
                     <li>
                         <NavLink to="/gallery" onClick={() => setIsOpen(false)}>
-                            Gallery
+                            Historique
                         </NavLink>
                     </li>
                 </ul>

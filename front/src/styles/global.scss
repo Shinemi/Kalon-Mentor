@@ -33,3 +33,21 @@ main{
     background-color: $color-bg-main;
 }
 
+
+.button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background-color: $color-primary;
+    padding: 10px 20px;
+    border: solid 2px black;
+    box-shadow: 6px 6px 0px #BB5808;
+    color: white;
+
+    &:hover {
+        background-color: $color-bg-main;
+        color: $color-text;
+    }
+}

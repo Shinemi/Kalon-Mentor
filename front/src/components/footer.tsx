@@ -9,14 +9,14 @@ const Footer = () => (
 
             <nav>
                 <ul>
-                    <li><Link to="/privacy">Privacy policy</Link></li>
-                    <li><Link to="/termsArt">Terms of art</Link></li>
-                    <li><Link to="/artists">Artist Guild</Link></li>
-                    <li><Link to="/support">Support</Link></li>
+                    <li><Link to="/privacy">Politique de confidentialité</Link></li>
+                    <li><Link to="/termsArt">Conditions d’utilisation</Link></li>
+                    <li><Link to="/artists">Communauté d’artistes</Link></li>
+                    <li><Link to="/support">Assistance</Link></li>
                 </ul>
             </nav>
 
-            <p className="copyright">© 2026 Kalon Mentor - Handcrafted for the digital soul</p>
+            <p className="copyright">© 2026 Kalon Mentor - Fait main pour l'âme digitale</p>
 
         </div>
     </footer>
