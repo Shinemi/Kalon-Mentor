@@ -52,6 +52,25 @@
         gap: 15px;
         text-align: center;
         transition: all ease-in-out 0.1s;
+        width: 100%;
+        font-size: 14px;
+        cursor: pointer;
+
+        .upload-title {
+            font-family: $font-family-heading;
+            font-size: 28px;
+        }
+
+        > span:not(.upload-title):not(.button-accent) {
+            max-width: 450px;
+            line-height: 22px;
+            color: $color-text-muted;
+        }
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.6;
+        }
 
         > svg {
             width: 50px;
@@ -61,38 +80,19 @@
 
         }
 
-        h2 {
-            font-size: 28px;
-        }
-
-        p {
-            max-width: 450px;
-            font-size: 14px;
-            line-height: 22px;
-            color: $color-text-muted;
-        }
-
-        > p:last-child {
-            margin-top: 10px;
-            font-size: 12px;
-        }
 
         &:hover,
         &:focus-visible {
             background-color: $color-bg-main;
-            color: $color-text;
             border-color: $color-primary;
-            transition: all ease-in-out 0.1s;
             box-shadow: 8px 8px 0px #BB5808;
 
             > svg{
                 color: $color-primary;
-                transition: all ease-in-out 0.1s;
 
             }
             .button-accent {
                 background-color: $color-bg-main;
-                transition: all ease-in-out 0.1s;
 
             }
         }
@@ -176,9 +176,7 @@
     max-width: 1440px;
     padding: 50px 5px;
     margin: 50px auto 200px auto;
-    border-top: solid 2px $color-text-muted;
-    border-bottom: solid 2px $color-text-muted;
-    border-style: dashed;
+    border-block: 2px dashed $color-text-muted;
     border-right: none;
     border-left: none;
 
@@ -211,29 +209,16 @@
         }
     }
 
-    .features-section {
-        grid-template-columns: 1fr;
-        padding: 50px 20px;
-
-        .features-content {
-            grid-template-rows: auto auto;
-        }
-    }
-
     .home-cta {
         padding: 40px 20px;
         text-align: center;
     }
-}
-
-@media (max-width: 768px) {
     .features-section {
         grid-template-columns: minmax(0, 1fr);
         gap: 25px;
         padding: 50px 20px;
 
         .features-content {
-            min-width: 0;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -242,8 +227,6 @@
         .critique-card,
         .courses-card,
         .exercise-card {
-            min-width: 0;
-
             h2 {
                 min-width: 0;
                 font-size: 26px;
@@ -254,7 +237,6 @@
                 svg {
                     width: 24px;
                     height: 24px;
-                    flex-shrink: 0;
                 }
             }
 

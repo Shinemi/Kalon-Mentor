@@ -3,6 +3,7 @@ import ReactDom from 'react-dom/client'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import './styles/global.scss'
+import DrawingProvider from './contexts/drawingProvider.tsx'
 
 const root = document.getElementById('root')
 
@@ -13,7 +14,9 @@ if (!root) {
 ReactDom.createRoot(root).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+        <DrawingProvider>
+            <App />
+        </DrawingProvider>
     </BrowserRouter>
-  </React.StrictMode>
+</React.StrictMode>
 )

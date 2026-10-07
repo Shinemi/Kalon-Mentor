@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { User, Mail, Lock } from 'lucide-react'
 import { authenticate } from '../services/authService'
 import '../styles/components/form.scss'
-
+import { useDrawing } from '../contexts/drawingContext'
 
 type FormProps = {
     mode: 'login' | 'register'
@@ -18,6 +18,7 @@ const Form = ({ mode }: FormProps) => {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
     const isRegister = mode === 'register'
+    const { image } = useDrawing()
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -35,9 +36,13 @@ const Form = ({ mode }: FormProps) => {
                 password,
                 ...(isRegister ? { username: username.trim() } : {})
             })
-            navigate('/', {
+            navigate(image ? '/mentorship' : '/', {
                 replace: true,
-                state: { message: isRegister ? 'Votre compte a été créé. Bienvenue sur Kalon Mentor !' : 'Vous êtes connecté à Kalon Mentor.' }
+                state: {
+                    message: isRegister
+                        ? 'Votre compte a été créé. Bienvenue sur Kalon Mentor !'
+                        : 'Vous êtes connecté à Kalon Mentor.'
+                }
             })
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Une erreur est survenue.')
@@ -55,7 +60,14 @@ const Form = ({ mode }: FormProps) => {
                         <label htmlFor="username">Pseudo</label>
                         <div className="input-content">
                             <User aria-hidden="true" />
-                            <input id="username" name="username" type="text" autoComplete="username" placeholder="Votre pseudo" required value={username} onChange={event => setUsername(event.target.value)} />
+                            <input 
+                                id="username" 
+                                name="username" 
+                                type="text" autoComplete="username" 
+                                placeholder="Votre pseudo" 
+                                required value={username} 
+                                onChange={event => setUsername(event.target.value)}
+                            />
                         </div>
                     </div>
                 )}
@@ -64,7 +76,15 @@ const Form = ({ mode }: FormProps) => {
                     <label htmlFor="email">Adresse e-mail</label>
                     <div className="input-content">
                         <Mail aria-hidden="true" />
-                        <input id="email" name="email" type="email" autoComplete="email" placeholder="artiste@studio.fr" required value={email} onChange={event => setEmail(event.target.value)} />
+                        <input 
+                            id="email" 
+                            name="email" 
+                            type="email" 
+                            autoComplete="email" 
+                            placeholder="artiste@studio.fr" 
+                            required value={email} 
+                            onChange={event => setEmail(event.target.value)}
+                        />
                     </div>
                 </div>
 
@@ -72,7 +92,16 @@ const Form = ({ mode }: FormProps) => {
                     <label htmlFor="password">Mot de passe</label>
                     <div className="input-content">
                         <Lock aria-hidden="true" />
-                        <input id="password" name="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="Votre mot de passe" minLength={isRegister ? 8 : undefined} aria-describedby={isRegister ? 'password-help' : undefined} required value={password} onChange={event => setPassword(event.target.value)} />
+                        <input 
+                            id="password" 
+                            name="password" 
+                            type="password" 
+                            autoComplete={isRegister ? 'new-password' : 'current-password'} 
+                            placeholder="Votre mot de passe" 
+                            minLength={isRegister ? 8 : undefined} 
+                            aria-describedby={isRegister ? 'password-help' : undefined} 
+                            required value={password} onChange={event => setPassword(event.target.value)} 
+                        />
                     </div>
                     {isRegister && <p id="password-help">Au moins 8 caractères, un chiffre et un caractère spécial.</p>}
                 </div>
