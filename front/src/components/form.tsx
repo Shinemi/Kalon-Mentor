@@ -3,6 +3,8 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { User, Mail, Lock } from 'lucide-react'
 import { authenticate } from '../services/authService'
+import '../styles/components/form.scss'
+
 
 type FormProps = {
     mode: 'login' | 'register'

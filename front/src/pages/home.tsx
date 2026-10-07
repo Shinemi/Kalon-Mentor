@@ -1,27 +1,12 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ArrowRight, FileUp, Lightbulb, Pencil, BookOpen, Flame } from 'lucide-react'
 import '../styles/pages/home.scss'
 
 const Home = () => {
-    const [image, setImage] = useState<File | null>(null)
-    const [error, setError] = useState('')
+    const isConnected = Boolean(sessionStorage.getItem('kalon-token'))
+    const uploadDestination = isConnected ? '/mentorship' : '/login'
     const location = useLocation()
-
-    const selectImage = (file?: File) => {
-        setError('')
-        setImage(null)
-        if (!file) return
-        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-            setError('Choisissez une image JPG, PNG ou WebP.')
-            return
-        }
-        if (file.size > 10 * 1024 * 1024) {
-            setError('Votre image ne doit pas dépasser 10 Mo.')
-            return
-        }
-        setImage(file)
-    }
 
     return (
         <main className="home-page">
@@ -34,20 +19,22 @@ const Home = () => {
                     <Link to="/register" className="button-primary">Commencer mon parcours <ArrowRight aria-hidden="true" /></Link>
                 </div>
 
-                <div className="hero-upload" onDragOver={event => event.preventDefault()} onDrop={event => {
-                    event.preventDefault()
-                    selectImage(event.dataTransfer.files[0])
-                }}>
+                <Link
+                    to={uploadDestination}
+                    className="hero-upload"
+                    aria-labelledby="upload-title"
+                    aria-describedby="drawing-help"
+                >
                     <FileUp aria-hidden="true" />
-                    <h2>Déposez votre dessin ici</h2>
-                    <label htmlFor="drawing">Ou choisissez un fichier</label>
-                    <input id="drawing" name="image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="drawing-help" onChange={event => selectImage(event.target.files?.[0])} />
+                    <h2 id="upload-title">Partagez votre dessin</h2>
+                    <span className="button-accent">Choisir un fichier</span>
                     <p id="drawing-help">JPG, PNG ou WebP — 10 Mo maximum.</p>
-                    {image && <p role="status">Dessin sélectionné : {image.name}</p>}
-                    {error && <p role="alert">{error}</p>}
-
-                    <p>La sélection reste sur cette page. L’envoi pour analyse sera disponible dans l’espace mentorat.</p>
-                </div>
+                    <p>
+                        {isConnected
+                            ? 'Accédez au mentorat pour importer votre dessin.'
+                            : 'Connectez-vous pour importer votre dessin.'}
+                    </p>
+                </Link>
             </section>
 
             <section className="features-section" aria-label="Découvrir Kalon Mentor">
@@ -58,15 +45,14 @@ const Home = () => {
                 </article>
 
                 <div className="features-content">
-                    <article className="courses-card">
-                        
+                    <Link to="/courses" className="courses-card">
                         <h2><BookOpen aria-hidden="true" />Les fondamentaux</h2>
                         <ul>
                             <li>Perspective</li>
                             <li>Lumière et ombres</li>
                         </ul>
                         <p>Des cours pour comprendre les bases et mettre les conseils en pratique.</p>
-                    </article>
+                    </Link>
                     <article className="exercise-card">
                         <p> Une idée pour pratiquer</p>
                         <h2><Flame aria-hidden="true" />Dessinez un souvenir</h2>
