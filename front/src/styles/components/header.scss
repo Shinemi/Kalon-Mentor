@@ -5,6 +5,7 @@
 
 header{
     background-color: $color-secondary;
+    border-bottom: solid 2px #8A7266;
 
     .header-content{
         display: flex;
@@ -65,18 +66,41 @@ header{
                     }
                 }
     
-                &{ @media (max-width: 768px) {
+                @media (max-width: 768px) {
                     display: none;
                     position: absolute;
                     top: 45px;
-                    right: -5px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    z-index: 10;
+                    height: auto;
+                    width: 220px;
+                    padding: 25px;
+                    gap: 20px;
                     flex-direction: column;
-                    padding: 50px;
-    
+                    background-color: $color-text;
+                    border: 2px solid $color-secondary;
+
                     &.open {
-                    display: flex;
+                        display: flex;
                     }
-                }}
+
+                    li {
+                        &:hover,
+                        &:has(a.active) {
+                            border-bottom-color: $color-secondary;
+                        }
+
+                        a {
+                            color: $color-bg-main;
+
+                            &:hover,
+                            &.active {
+                                color: $color-secondary;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

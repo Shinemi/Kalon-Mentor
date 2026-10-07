@@ -39,6 +39,7 @@ main{
     align-items: center;
     justify-content: center;
     gap: 8px;
+    width: fit-content;
 
     background-color: $color-primary;
     padding: 10px 20px;
@@ -50,4 +51,12 @@ main{
         background-color: $color-bg-main;
         color: $color-text;
     }
+}
+
+h1,h2,h3,h4{
+    font-family: $font-family-heading;
+}
+
+h1{
+    font-size: 48px;
 }

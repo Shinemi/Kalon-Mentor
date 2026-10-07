@@ -28,8 +28,8 @@ const Home = () => {
             {location.state?.message && <p className="success-message" role="status">{location.state.message}</p>}
             <section className="hero-section" aria-labelledby="hero-title">
                 <div className="hero-content">
-                    <p className="handwritten">On échauffe son poignet…</p>
-                    <h1 id="hero-title">Maîtrisez l’art du trait</h1>
+                    <p className="handwritten">* On échauffe son poignet…</p>
+                    <h1 id="hero-title">Maîtrisez <span className='titleAlt'>l’Art</span> du trait</h1>
                     <p>Votre mentor de dessin vous accompagne à chaque étape. Partagez vos croquis, recevez des conseils constructifs et progressez, un trait après l’autre.</p>
                     <Link to="/register" className="button-primary">Commencer mon parcours <ArrowRight aria-hidden="true" /></Link>
                 </div>
