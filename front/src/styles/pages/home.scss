@@ -13,6 +13,7 @@
     max-width: 1440px;
     margin: auto;
     padding: 100px 5px;
+    align-items: center;
 
     .hero-content{
         position: relative;
@@ -36,13 +37,104 @@
     }
 
 
-    .hero-upload{
-        background-color: white;
-        border: solid 2px $color-text;
-        border-style: dashed;
+    .hero-upload {
+        background-color: $color-bg-surface;
+        color: $color-text;
+        border: 2px dashed $color-text;
+        box-shadow: 8px 8px 0px $color-text;
+        min-width: 0;
+        min-height: 350px;
+        padding: 40px 25px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px;
+        justify-content: center;
+        gap: 15px;
+        text-align: center;
+
+        > svg {
+            width: 50px;
+            height: 50px;
+            color: $color-text-muted;
+        }
+
+        h2 {
+            font-size: 28px;
+        }
+
+        label {
+            cursor: pointer;
+            color: $color-text-muted;
+
+            &:hover {
+                color: $color-primary;
+            }
+        }
+
+        input {
+            max-width: 100%;
+            padding: 0 8px 8px 0;
+
+            &::file-selector-button {
+                background-color: $color-accent;
+                color: $color-text;
+                border: 2px solid $color-text;
+                padding: 10px 15px;
+                margin-right: 10px;
+                box-shadow: 4px 4px 0px #231914;
+                cursor: pointer;
+            }
+
+
+                &:hover {
+                    background-color: $color-bg-main;
+                }
+        }
+    
+
+        p {
+            max-width: 450px;
+            font-size: 14px;
+            line-height: 22px;
+            color: $color-text-muted;
+        }
+
+        [role="status"] {
+            color: $color-success;
+        }
+
+        [role="alert"] {
+            color: $color-danger;
+        }
+
+        > p:last-child {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+    }
+}
+
+
+.features-section{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    max-width: 1440px;
+    margin: auto;
+    gap: 60px;
+
+    .critique-card{
+        background-color: $color-accent;
+        padding: 30px;
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+        border: solid 2px $color-text;
+        box-shadow: 6px 6px 0px $color-text;
+
+        p{
+            padding-bottom: 100px;
+            max-width: 400px;
+        }
     }
 }

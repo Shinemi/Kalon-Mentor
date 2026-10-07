@@ -53,10 +53,34 @@ main{
     }
 }
 
+.button-accent{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: fit-content;
+
+    background-color: $color-accent;
+    padding: 10px 20px;
+    border: solid 2px black;
+    box-shadow: 6px 6px 0px #231914;
+    color: $color-text;
+
+    &:hover {
+        background-color: $color-bg-main;
+        color: $color-text;
+    }
+}
+
 h1,h2,h3,h4{
     font-family: $font-family-heading;
 }
 
 h1{
     font-size: 48px;
+}
+
+h2{
+    font-size: 32px;
+    font-weight: 400;
 }
