@@ -86,7 +86,7 @@
             box-shadow: 8px 8px 0px #BB5808;
 
             > svg{
-                color: $color-secondary;
+                color: $color-primary;
                 transition: all ease-in-out 0.1s;
 
             }
@@ -187,5 +187,104 @@
     .handwritten{
         color: $color-text;
         font-size: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 100px 20px 50px;
+
+        .hero-content {
+            max-width: 100%;
+            min-width: 0;
+
+            .handwritten {
+                left: 0;
+            }
+        }
+
+        .hero-upload {
+            min-height: 300px;
+            padding: 30px 20px;
+        }
+    }
+
+    .features-section {
+        grid-template-columns: 1fr;
+        padding: 50px 20px;
+
+        .features-content {
+            grid-template-rows: auto auto;
+        }
+    }
+
+    .home-cta {
+        padding: 40px 20px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .features-section {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 25px;
+        padding: 50px 20px;
+
+        .features-content {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .critique-card,
+        .courses-card,
+        .exercise-card {
+            min-width: 0;
+
+            h2 {
+                min-width: 0;
+                font-size: 26px;
+                line-height: 34px;
+                gap: 12px;
+                overflow-wrap: anywhere;
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                    flex-shrink: 0;
+                }
+            }
+
+            p {
+                max-width: 100%;
+                padding-bottom: 0;
+                overflow-wrap: anywhere;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .features-section {
+        .critique-card,
+        .courses-card,
+        .exercise-card {
+            padding: 20px;
+            gap: 15px;
+
+            h2 {
+                flex-direction: column;
+                align-items: flex-start;
+                font-size: 24px;
+                line-height: 30px;
+
+                svg {
+                    align-self: flex-start;
+                }
+            }
+        }
     }
 }

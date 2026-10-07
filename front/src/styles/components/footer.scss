@@ -1,55 +1,103 @@
 @use "../_variables.scss" as *;
 
-footer{
-    
+footer {
     background-color: $color-text;
     color: $color-bg-main;
-    height: 150px;
-    align-items: center;
+    min-height: 150px;
+    padding: 30px 20px;
     display: flex;
-    
+    align-items: center;
 
-    .footer-content{
+    .footer-content {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
-        max-width: 1440px;
-        margin: auto;
         align-items: center;
+        gap: 30px;
+        max-width: 1440px;
         width: 100%;
+        min-width: 0;
+        margin: auto;
 
-        h2{
+        h2 {
             font-family: 'Architects Daughter', cursive;
             font-weight: 400;
         }
 
-        a{
-            color: $color-bg-main;
-            &:hover{
-                color: $color-secondary;
-            }
-        }
-
         nav {
-            display: flex;
-            
+            min-width: 0;
+
             ul {
                 display: flex;
-                gap: 25px;
+                flex-wrap: wrap;
+                justify-content: center;
                 align-items: center;
+                gap: 20px 25px;
 
                 li {
                     border-bottom: 1px solid transparent;
                     transition: all 0.1s ease-in-out;
 
-                    &:hover {
+                    &:hover,
+                    &:focus-within {
                         border-bottom-color: $color-secondary;
                         padding-bottom: 8px;
                     }
 
                     a {
-                        display: flex;
+                        display: block;
+                        color: $color-bg-main;
+                        overflow-wrap: anywhere;
+
+                        &:hover,
+                        &:focus-visible {
+                            color: $color-secondary;
+                        }
+
+                        &:focus-visible {
+                            outline: 2px solid $color-secondary;
+                            outline-offset: 5px;
+                        }
                     }
                 }
+            }
+        }
+
+        .copyright {
+            line-height: 22px;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    @media (max-width: 1100px) {
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        padding: 35px 20px;
+
+        .footer-content {
+            gap: 25px;
+
+            h2 {
+                font-size: 28px;
+            }
+
+            nav {
+                width: 100%;
+
+                ul {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+            }
+
+            .copyright {
+                font-size: 12px;
+                max-width: 260px;
             }
         }
     }
