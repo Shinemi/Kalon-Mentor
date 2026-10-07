@@ -122,6 +122,7 @@
     max-width: 1440px;
     margin: auto;
     gap: 60px;
+    padding: 100px 5px;
 
     .critique-card{
         background-color: $color-accent;
@@ -166,5 +167,27 @@
             border: solid 2px $color-text;
             box-shadow: 8px 8px 0px #BB5808;
         }
+    }
+}
+
+.home-cta{
+    display: flex;
+    flex-direction:column;
+    gap: 20px;
+    align-items: center;
+    max-width: 1440px;
+    padding: 50px 5px;
+    margin: 50px auto 200px auto;
+    border-top: solid 2px $color-text-muted;
+    border-bottom: solid 2px $color-text-muted;
+    border-style: dashed;
+    border-right: none;
+    border-left: none;
+
+    
+
+    .handwritten{
+        color: $color-text;
+        font-size: 18px;
     }
 }
