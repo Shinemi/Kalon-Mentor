@@ -1,5 +1,4 @@
 import Form from '../components/form'
-import '../styles/pages/register.scss'
 
 const Register = () => {
     return (

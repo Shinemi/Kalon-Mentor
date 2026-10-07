@@ -1,7 +1,6 @@
 // import { useState } from 'react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useDrawing } from '../contexts/drawingContext'
 import { ArrowRight, FileUp, Lightbulb, Pencil, BookOpen, Flame } from 'lucide-react'
 import '../styles/pages/home.scss'
 
@@ -9,16 +8,30 @@ const Home = () => {
     const inputRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
     const location = useLocation()
+    
 
-    const { selectImage, error, isLoading } = useDrawing()
+    const [error, setError] = useState('')
 
     const handleImage = (file?: File) => {
-        if (!file || !selectImage(file)) return
+        if (!file) return
+
+        setError('')
+
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            setError('Choisissez une image JPG, PNG ou WebP.')
+            return
+        }
+
+        if (file.size === 0 || file.size > 10 * 1024 * 1024) {
+            setError('Choisissez une image non vide de 10 Mo maximum.')
+            return
+        }
 
         navigate(
             sessionStorage.getItem('kalon-token')
                 ? '/mentorship'
-                : '/login'
+                : '/login',
+            { state: { image: file } }
         )
     }
 
@@ -37,7 +50,6 @@ const Home = () => {
                     <button
                         type="button"
                         className="hero-upload"
-                        disabled={isLoading}
                         onClick={() => inputRef.current?.click()}
                         onDragOver={event => event.preventDefault()}
                         onDrop={event => {

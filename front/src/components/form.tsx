@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { User, Mail, Lock } from 'lucide-react'
 import { authenticate } from '../services/authService'
 import '../styles/components/form.scss'
-import { useDrawing } from '../contexts/drawingContext'
 
 type FormProps = {
     mode: 'login' | 'register'
@@ -18,7 +17,9 @@ const Form = ({ mode }: FormProps) => {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
     const isRegister = mode === 'register'
-    const { image } = useDrawing()
+    const location = useLocation()
+    const image = location.state?.image instanceof File ? location.state.image : null
+
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -39,6 +40,7 @@ const Form = ({ mode }: FormProps) => {
             navigate(image ? '/mentorship' : '/', {
                 replace: true,
                 state: {
+                    image,
                     message: isRegister
                         ? 'Votre compte a été créé. Bienvenue sur Kalon Mentor !'
                         : 'Vous êtes connecté à Kalon Mentor.'
@@ -114,7 +116,10 @@ const Form = ({ mode }: FormProps) => {
 
             <p className="auth-link">
                 {isRegister ? 'Vous avez déjà un compte ? ' : 'Pas encore de compte ? '}
-                <Link to={isRegister ? '/login' : '/register'}>
+                <Link
+                    to={isRegister ? '/login' : '/register'}
+                    state={{ image }}
+                >
                     {isRegister ? 'Connectez-vous' : 'Inscrivez-vous'}
                 </Link>
             </p>
