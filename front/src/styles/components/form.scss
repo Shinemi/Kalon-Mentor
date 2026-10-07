@@ -1,3 +1,224 @@
 @use "../_variables.scss" as *;
 
+.auth-page {
+    min-height: 750px;
+    padding: 90px 20px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    color: $color-text;
 
+    .auth-heading {
+        max-width: 600px;
+        text-align: center;
+
+        h1 {
+            font-size: 36px;
+            line-height: 44px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: $color-text-muted;
+            font-family: $font-family-handwritten;
+            font-size: 18px;
+            line-height: 28px;
+        }
+    }
+}
+
+.auth-form {
+    width: 100%;
+    max-width: 607px;
+    min-width: 0;
+    padding: 50px 25px;
+    background-color: $color-bg-surface;
+    border: 2px solid $color-text;
+    box-shadow: 4px 4px 0px $color-text;
+
+    fieldset {
+        width: 100%;
+        max-width: 350px;
+        min-width: 0;
+        margin: auto;
+        padding: 0;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+
+        // Accessible aux lecteurs d’écran, sans titre supplémentaire visible.
+        legend {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        &:disabled {
+            .input-content {
+                opacity: 0.6;
+            }
+
+            .button-primary {
+                opacity: 0.6;
+                cursor: wait;
+            }
+        }
+    }
+
+    .form-field {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: $color-text-muted;
+        }
+
+        > p {
+            font-size: 12px;
+            line-height: 20px;
+            color: $color-text-muted;
+        }
+    }
+
+    .input-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: $color-text-muted;
+        }
+
+        input {
+            width: 100%;
+            min-width: 0;
+            flex: 1;
+            min-height: 44px;
+            padding: 10px;
+            border: 1px solid $color-text;
+            border-radius: 0;
+            background-color: $color-bg-surface;
+            color: $color-text;
+            font-size: 16px;
+
+            &::placeholder {
+                color: $color-text-muted;
+                opacity: 0.7;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $color-primary;
+                outline-offset: 3px;
+            }
+        }
+
+        &:focus-within {
+            svg {
+                color: $color-primary;
+            }
+        }
+    }
+
+    .button-primary {
+        width: 100%;
+        min-height: 46px;
+        margin-top: 15px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 4px 4px 0px #BB5808;
+
+        &:hover {
+            box-shadow: 4px 4px 0px $color-text;
+        }
+
+        &:focus-visible {
+            outline: 2px solid $color-text;
+            outline-offset: 6px;
+        }
+    }
+
+    .form-error {
+        color: $color-danger;
+        font-size: 14px;
+        line-height: 22px;
+        overflow-wrap: anywhere;
+    }
+
+    .auth-link {
+        max-width: 350px;
+        margin: 25px auto 0;
+        text-align: center;
+        font-size: 14px;
+        line-height: 26px;
+        color: $color-text-muted;
+
+        a {
+            color: $color-secondary;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+
+            &:hover {
+                color: $color-text;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $color-primary;
+                outline-offset: 4px;
+            }
+        }
+    }
+}
+
+.login-page {
+    .auth-form {
+        max-width: 550px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-page {
+        min-height: 650px;
+        padding: 50px 20px 70px;
+        gap: 30px;
+
+        .auth-heading {
+            h1 {
+                font-size: 30px;
+                line-height: 38px;
+            }
+
+            p {
+                font-size: 16px;
+                line-height: 25px;
+            }
+        }
+    }
+
+    .auth-form {
+        padding: 30px 20px;
+
+        fieldset {
+            gap: 20px;
+        }
+
+        .auth-link {
+            margin-top: 25px;
+        }
+    }
+}
