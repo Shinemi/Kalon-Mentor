@@ -1,7 +1,9 @@
+'use strict'
+
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const validator = require('validator')
 const userModel = require('../models/userModel')
+const validator = require('validator')
 
 const PASSWORD_RULES = {
     minLength: 8,
@@ -20,18 +22,6 @@ function generateToken(userId) {
 // POST /auth/register
 async function register(req, res) {
     const { username, email, password } = req.body
-
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: 'username, email and password are required' })
-    }
-
-    if (!validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Invalid email' })
-    }
-
-    if (!validator.isStrongPassword(password, PASSWORD_RULES)) {
-        return res.status(400).json({ message: PASSWORD_ERROR })
-    }
 
     try {
         const existingUser = await userModel.findUserByEmail(email)
@@ -80,13 +70,11 @@ async function login(req, res) {
 }
 
 // GET /auth/profile (route protégée)
-// authMiddleware a déjà récupéré l'utilisateur et l'a mis dans req.user
 async function getProfile(req, res) {
     res.json({ user: req.user })
 }
 
 // PUT /auth/profileUpdate (route protégée)
-// Met à jour les champs fournis : username, email, password (tous optionnels)
 async function updateProfile(req, res) {
     const { username, email, password } = req.body
 

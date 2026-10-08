@@ -1,3 +1,5 @@
+'use strict'
+
 const pg = require('pg')
 const { Pool } = pg
 require('dotenv').config()

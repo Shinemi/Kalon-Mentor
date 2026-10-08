@@ -28,7 +28,8 @@
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
-    "validator": "^13.15.35"
+    "validator": "^13.15.35",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "jest": "^29.7.0",

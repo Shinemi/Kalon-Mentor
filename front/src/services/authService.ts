@@ -30,7 +30,11 @@ export const authenticate = async (mode: 'login' | 'register', credentials: Cred
         if (response.status === 401) throw new Error('Adresse e-mail ou mot de passe incorrect.')
         if (response.status === 409) throw new Error('Un compte existe déjà avec cette adresse e-mail.')
         if (response.status === 429) throw new Error('Trop de tentatives. Réessayez plus tard.')
-        throw new Error(errorMessages[data?.message] || 'La demande a échoué. Veuillez réessayer.')
+        const title = data?.title || data?.message
+        const validationMessage = data?.invalidParams?.find(
+            (param: { message?: unknown }) => typeof param?.message === 'string'
+        )?.message
+        throw new Error(errorMessages[title] || validationMessage || title || 'La demande a échoué. Veuillez réessayer.')
     }
     if (typeof data?.token !== 'string' || !data.token) {
         throw new Error('La réponse du serveur est invalide.')
@@ -66,4 +70,3 @@ export const getProfile = async (signal: AbortSignal): Promise<UserProfile | nul
     }
     return data.user
 }
-

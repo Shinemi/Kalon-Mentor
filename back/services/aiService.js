@@ -1,3 +1,5 @@
+'use strict'
+
 // Tout ce qui touche au fournisseur d'IA est isolé ici.
 // Pour changer de fournisseur (OpenAI, Claude...), seul ce fichier change.
 
@@ -216,8 +218,7 @@ async function analyseDrawing(imageBuffer, resources) {
                     ],
                 },
             ],
-            // Force une réponse JSON pure (sans ```json ... ```), en plus
-            // de la consigne déjà donnée dans le prompt — ceinture et bretelles.
+            // Force une réponse JSON pure (sans ```json ... ```)
             generationConfig: {
                 responseMimeType: 'application/json',
             },
@@ -235,8 +236,7 @@ async function analyseDrawing(imageBuffer, resources) {
         throw new Error('Empty response from the AI')
     }
 
-    // Filet de sécurité si jamais le modèle entoure quand même sa réponse
-    // de ```json ... ``` malgré responseMimeType
+    // Filet de sécurité si jamais le modèle entoure quand même sa réponse de ```json ... ``` malgré responseMimeType
     const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim()
 
     return JSON.parse(cleaned)

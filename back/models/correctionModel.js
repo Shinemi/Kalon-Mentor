@@ -1,12 +1,10 @@
+'use strict'
+
 const { pool } = require('../db/db')
 
-// resourceIds : tableau de 0 à 3 UUID (ordre = priorité : le premier
-// élément est la ressource la plus importante).
-// On utilise une transaction (BEGIN/COMMIT) parce que deux tables sont
-// écrites (corrections, puis corrections_resources) : si l'une des
-// insertions échoue, on annule tout plutôt que de laisser une correction
-// à moitié liée à ses ressources.
-exports.createCorrection = async (userId, imageUrl, feedbackText, resourceIds = []) => {
+// On utilise une transaction (BEGIN/COMMIT) parce que deux tables sont écrites (corrections, puis corrections_resources) : 
+// si l'une des insertions échoue, on annule tout 
+exports.createSaveCorrection = async (userId, imageUrl, feedbackText, resourceIds = []) => {
     const client = await pool.connect()
 
     try {
@@ -51,9 +49,7 @@ exports.findCorrectionsByUser = async (userId) => {
         return []
     }
 
-    // Une seule requête pour récupérer toutes les ressources liées à
-    // toutes ces corrections, puis on les regroupe en JS (plus simple
-    // à lire qu'un GROUP BY + json_agg côté SQL).
+    // on les regroupe en JS (plus simple à lire qu'un GROUP BY + json_agg côté SQL).
     const correctionIds = corrections.map((correction) => correction.id)
     const { rows: resourceLinks } = await pool.query(
         `SELECT correction_id, resource_id, priority
@@ -80,9 +76,7 @@ exports.countCorrectionsByUser = async (userId) => {
     return Number(rows[0].count)
 }
 
-// Le user_id dans le WHERE empêche de supprimer la correction d'un autre
-// membre. ON DELETE CASCADE sur corrections_resources (défini en SQL)
-// supprime automatiquement les liaisons vers ses ressources.
+
 exports.deleteCorrection = async (id, userId) => {
     const { rows } = await pool.query(
         `DELETE FROM corrections

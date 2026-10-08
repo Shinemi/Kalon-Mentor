@@ -1,3 +1,5 @@
+'use strict'
+
 require('dotenv').config()
 
 const express = require('express')
@@ -31,7 +33,11 @@ app.use(cors(corsoptions))
 const limiter = rateLimit({
     windowMs: 15*60*1000, // fenetre de 15 minutes
     limit:100, // max 100 requetes par IP sur ce créneau
-    message: {status : 429,error: 'trop de requete, ressayez plus tard'}
+    message: {
+        title: 'Trop de requêtes, réessayez plus tard.',
+        statut: 429,
+        invalidParams: [],
+    }
 })
 
 app.use(limiter)
@@ -55,16 +61,48 @@ app.get('/', (req, res) => {
     res.send('bienvenue sur mon API RESTful !')
 })
 
-// Gestion des erreurs d'upload (fichier trop lourd, mauvais format)
+// Route inconnue.
+app.use((req, res) => {
+    res.status(404).json({ title: 'Route introuvable.', statut: 404, invalidParams: [] })
+})
+
+// Gestion des erreurs d'upload, de lecture du JSON et des erreurs inattendues.
 app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err)
+
     if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ message: 'Image is too large (10 MB max)' })
+        return res.status(400).json({
+            title: 'Image trop volumineuse.',
+            statut: 400,
+            invalidParams: [{ path: 'image', message: '10 Mo maximum.' }],
+        })
     }
     if (err.message === 'Only image files are allowed') {
-        return res.status(400).json({ message: err.message })
+        return res.status(400).json({
+            title: 'Format de fichier invalide.',
+            statut: 400,
+            invalidParams: [{ path: 'image', message: 'Un fichier image est requis.' }],
+        })
+    }
+    if (err.name === 'MulterError') {
+        return res.status(400).json({
+            title: 'Envoi de fichier invalide.',
+            statut: 400,
+            invalidParams: [{ path: err.field || 'image', message: 'Envoyez un seul fichier dans le champ image.' }],
+        })
+    }
+    if (err.type === 'entity.parse.failed') {
+        return res.status(400).json({
+            title: 'JSON invalide.',
+            statut: 400,
+            invalidParams: [{ path: 'body', message: 'Le corps de la requête doit être un JSON valide.' }],
+        })
+    }
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({ title: 'Corps de requête trop volumineux.', statut: 413, invalidParams: [] })
     }
     console.error(err)
-    res.status(500).json({ message: 'Unexpected server error' })
+    res.status(500).json({ title: 'Unexpected server error', statut: 500, invalidParams: [] })
 })
 
 // On ne démarre le serveur que si ce fichier est lancé directement
