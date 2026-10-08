@@ -1,3 +1,5 @@
+'use strict'
+
 const { pool } = require('../db/db')
 
 // On utilise une transaction (BEGIN/COMMIT) parce que deux tables sont écrites (corrections, puis corrections_resources) : 

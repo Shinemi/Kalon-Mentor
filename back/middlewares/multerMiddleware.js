@@ -1,3 +1,5 @@
+'use strict'
+
 const multer = require('multer')
 
 // memoryStorage : le fichier reste en mémoire (req.file.buffer)

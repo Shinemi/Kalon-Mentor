@@ -1,3 +1,5 @@
+'use strict'
+
 const { pool } = require('../db/db')
 
 // content ->>'level' accède a la donnée de la clé level

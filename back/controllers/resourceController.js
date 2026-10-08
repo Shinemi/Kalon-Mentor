@@ -1,3 +1,5 @@
+'use strict'
+
 const resourceModel = require('../models/resourceModel')
 
 // GET /resources/courses

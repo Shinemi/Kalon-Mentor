@@ -1,3 +1,5 @@
+'use strict'
+
 const { registerSchema, loginSchema } = require('../schemas/authSchemas')
 
 const credentials = {

@@ -1,3 +1,5 @@
+'use strict'
+
 // Tout ce qui touche au fournisseur d'IA est isolé ici.
 // Pour changer de fournisseur (OpenAI, Claude...), seul ce fichier change.
 

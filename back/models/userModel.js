@@ -1,3 +1,5 @@
+'use strict'
+
 const { pool } = require('../db/db')
 
 exports.createUser = async (username, email, hashedPassword) => {

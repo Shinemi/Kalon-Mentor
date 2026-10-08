@@ -1,3 +1,5 @@
+'use strict'
+
 const {z} = require('zod')
 
 //middleware générique de validation zod

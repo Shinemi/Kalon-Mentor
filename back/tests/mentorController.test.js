@@ -1,3 +1,5 @@
+'use strict'
+
 const request = require('supertest')
 const sharp = require('sharp')
 const app = require('../app')
