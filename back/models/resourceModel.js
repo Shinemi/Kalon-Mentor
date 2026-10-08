@@ -1,6 +1,6 @@
 const { pool } = require('../db/db')
 
-// définir content ->>'level'
+// content ->>'level' accède a la donnée de la clé level
 exports.findAllResources = async () => {
     const { rows } = await pool.query(
         `SELECT id, title, category, type, content->>'level' AS level 
