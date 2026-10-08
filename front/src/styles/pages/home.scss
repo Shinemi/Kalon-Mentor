@@ -175,7 +175,7 @@
     align-items: center;
     max-width: 1440px;
     padding: 50px 5px;
-    margin: 50px auto 200px auto;
+    margin: 100px auto 0;
     border-block: 2px dashed $color-text-muted;
     border-right: none;
     border-left: none;
@@ -269,4 +269,9 @@
             }
         }
     }
+}
+
+
+.home-page {
+    padding-bottom: 200px;
 }

@@ -1,5 +1,17 @@
 @use "./_variables.scss" as *;
 
+#root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+header,
+footer {
+    flex-shrink: 0;
+}
 
 *{
     margin: 0;
@@ -23,12 +35,35 @@ a{
     }
 }
 
-main{
-    background-color: rgba(255, 255, 255, 0.8);;
-    background-image: url("/background-img.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-blend-mode: lighten;
+main {
+    flex: 1;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: $color-bg-main;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        aspect-ratio: 1672 / 941;
+
+        background-image: url("/background-img.png");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        opacity: 0.2;
+        mask-image: linear-gradient(
+            to bottom,
+            black 70%,
+            transparent 100%
+        );
+
+        pointer-events: none;
+        z-index: -1;
+        
+    }
 }
 
 
