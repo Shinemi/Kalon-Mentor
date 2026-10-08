@@ -4,16 +4,6 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const userModel = require('../models/userModel')
 
-const PASSWORD_RULES = {
-    minLength: 8,
-    minLowercase: 0,
-    minUppercase: 0,
-    minNumbers: 1,
-    minSymbols: 1,
-}
-
-const PASSWORD_ERROR = 'Password must be at least 8 characters long and contain at least one number and one special character'
-
 function generateToken(userId) {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
@@ -76,18 +66,6 @@ async function getProfile(req, res) {
 // PUT /auth/profileUpdate (route protégée)
 async function updateProfile(req, res) {
     const { username, email, password } = req.body
-
-    if (!username && !email && !password) {
-        return res.status(400).json({ message: 'Provide at least one field to update' })
-    }
-
-    if (email && !validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Invalid email' })
-    }
-
-    if (password && !validator.isStrongPassword(password, PASSWORD_RULES)) {
-        return res.status(400).json({ message: PASSWORD_ERROR })
-    }
 
     try {
         const fields = { username, email }

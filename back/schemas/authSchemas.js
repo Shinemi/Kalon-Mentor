@@ -30,4 +30,27 @@ const loginSchema = z.object({
         .min(1, { error: 'Le mot de passe est requis.' }),
 }).strict()
 
-module.exports = { registerSchema, loginSchema }
+const updateProfileSchema = z.object({
+    username: z.string({ error: 'Le pseudo est invalide.' })
+        .trim()
+        .min(2, { error: 'Le pseudo doit contenir au moins 2 caractères.' })
+        .max(50, { error: 'Le pseudo ne peut pas dépasser 50 caractères.' })
+        .optional(),
+
+    password: z.string({ error: 'Le mot de passe est invalide.' })
+        .min(8, { error: 'Le mot de passe doit contenir au moins 8 caractères.' })
+        .regex(/[0-9]/, { error: 'Le mot de passe doit contenir au moins un chiffre.' })
+        .regex(/[^a-zA-Z0-9\s]/, { error: 'Le mot de passe doit contenir au moins un caractère spécial.' })
+        .optional(),
+
+    email: z.email({ error: 'Adresse e-mail invalide.' })
+        .trim()
+        .toLowerCase()
+        .optional(),
+}).strict()
+    .refine(
+        data => data.username !== undefined || data.email !== undefined || data.password !== undefined,
+        { error: 'Veuillez fournir au moins un champ à modifier.' }
+    )
+
+module.exports = { registerSchema, loginSchema, updateProfileSchema }
