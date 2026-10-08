@@ -1,17 +1,15 @@
 const { pool } = require('../db/db')
 
-// Utilisé pour construire le prompt de l'IA : la liste fermée dans
-// laquelle elle doit choisir ses recommandations.
+// définir content ->>'level'
 exports.findAllResources = async () => {
     const { rows } = await pool.query(
-        `SELECT id, title, category, type, content->>'level' AS level
+        `SELECT id, title, category, type, content->>'level' AS level 
          FROM resources`
     )
 
     return rows
 }
 
-// Récupère uniquement les ressources de type "course".
 // Les cours sont triés par catégorie puis par ordre pédagogique.
 exports.findCourses = async (category) => {
     const values = []
@@ -37,7 +35,6 @@ exports.findCourses = async (category) => {
     return rows
 }
 
-// Récupère un cours précis à partir de son ID.
 exports.findCourseById = async (id) => {
     const { rows } = await pool.query(
         `SELECT id, title, category, type, order_index, content, author_name
@@ -49,9 +46,7 @@ exports.findCourseById = async (id) => {
     return rows[0]
 }
 
-// Vérifie qu'un ID recommandé par l'IA correspond bien à une vraie
-// ressource en base, avant de le stocker (défense contre une éventuelle
-// hallucination, malgré la consigne donnée dans le prompt).
+// Vérifie qu'un ID recommandé par l'IA correspond bien à une vraie ressource en base,
 exports.resourceExists = async (id) => {
     const { rows } = await pool.query(
         `SELECT id FROM resources WHERE id = $1`,

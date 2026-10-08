@@ -6,15 +6,11 @@ const correctionModel = require('../models/correctionModel')
 const resourceModel = require('../models/resourceModel')
 const { analyseDrawing } = require('../services/aiService')
 
-// Nombre de corrections sauvegardées max sur le plan gratuit
 const MAX_SAVED_CORRECTIONS = 10
 
 const UPLOADS_DIR = path.join(__dirname, '..', 'uploads')
 
 // POST /mentor/correction  (US-04 + US-05)
-// Analyse l'image et renvoie le feedback complet de l'IA. Rien n'est
-// stocké à cette étape : l'utilisateur décide ensuite s'il garde la
-// correction dans son historique.
 async function analyseCorrection(req, res) {
     if (!req.file) {
         return res.status(400).json({ message: 'No image provided' })
@@ -23,17 +19,15 @@ async function analyseCorrection(req, res) {
     try {
         // Version envoyée à l'IA : assez grande pour qu'elle voie les détails
         const imageForAi = await sharp(req.file.buffer)
-            .rotate() // corrige l'orientation d'après les métadonnées EXIF
+            .rotate()
             .resize({ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true })
             .jpeg({ quality: 85 })
             .toBuffer()
 
-        // La liste fermée dans laquelle l'IA doit choisir ses recommandations (US-06)
         const resources = await resourceModel.findAllResources()
         const feedback = await analyseDrawing(imageForAi, resources)
 
-        // Version légère pour l'historique, renvoyée au front qui nous la
-        // renverra telle quelle s'il choisit de sauvegarder
+        // Version légère pour l'historique
         const imageForHistory = await sharp(req.file.buffer)
             .rotate()
             .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true })
@@ -47,9 +41,7 @@ async function analyseCorrection(req, res) {
     }
 }
 
-// À partir du feedback complet de l'IA, trie les ressources recommandées
-// par priorité, vérifie que chaque ID existe vraiment en base (défense
-// contre une hallucination malgré la consigne du prompt), et garde les
+
 // 3 premières — une ligne par ressource dans corrections_resources.
 async function resolveResourceIds(feedback) {
     const recommendations = feedback?.ressources_recommandees
@@ -96,7 +88,6 @@ async function saveCorrection(req, res) {
         await fs.writeFile(path.join(UPLOADS_DIR, filename), Buffer.from(image, 'base64'))
 
         // Jusqu'à 3 ressources liées en base (table corrections_resources) ;
-        // le détail complet des recommandations reste aussi dans feedback_text.
         const resourceIds = await resolveResourceIds(feedback)
 
         const correction = await correctionModel.createCorrection(

@@ -80,13 +80,11 @@ async function login(req, res) {
 }
 
 // GET /auth/profile (route protégée)
-// authMiddleware a déjà récupéré l'utilisateur et l'a mis dans req.user
 async function getProfile(req, res) {
     res.json({ user: req.user })
 }
 
 // PUT /auth/profileUpdate (route protégée)
-// Met à jour les champs fournis : username, email, password (tous optionnels)
 async function updateProfile(req, res) {
     const { username, email, password } = req.body
 
