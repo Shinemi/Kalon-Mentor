@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const validator = require('validator')
 const userModel = require('../models/userModel')
 
 const PASSWORD_RULES = {
@@ -20,18 +19,6 @@ function generateToken(userId) {
 // POST /auth/register
 async function register(req, res) {
     const { username, email, password } = req.body
-
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: 'username, email and password are required' })
-    }
-
-    if (!validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Invalid email' })
-    }
-
-    if (!validator.isStrongPassword(password, PASSWORD_RULES)) {
-        return res.status(400).json({ message: PASSWORD_ERROR })
-    }
 
     try {
         const existingUser = await userModel.findUserByEmail(email)
