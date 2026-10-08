@@ -3,7 +3,7 @@
 
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent'
 
-// Prompt écrit par Lucas, adapté pour notre architecture :
+// Prompt adapté pour notre architecture :
 // - la recherche "dans la base de données" devient une liste de ressources
 //   fournie directement dans le prompt (notre IA n'a pas d'accès direct à Supabase)
 // - le format de sortie reste identique à l'original
