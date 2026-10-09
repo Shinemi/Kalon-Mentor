@@ -2,7 +2,7 @@
 
 
 .handwritten{
-    color: $color-secondary;
+    color: $color-primary;
     font-family: $font-family-handwritten;
     font-size: 20px;
 }
@@ -31,7 +31,7 @@
         .handwritten{
             position: absolute;
             top: -50px;
-            left: -30px;
+            left: 0px;
             rotate: (-8deg);
         }
     }
@@ -85,7 +85,7 @@
         &:focus-visible {
             background-color: $color-bg-main;
             border-color: $color-primary;
-            box-shadow: 8px 8px 0px #BB5808;
+            box-shadow: 8px 8px 0px #731802;
 
             > svg{
                 color: $color-primary;
@@ -157,7 +157,7 @@
         &:focus-visible {
             background-color: $color-bg-main;
             border-color: $color-primary;
-            box-shadow: 8px 8px 0px #BB5808;
+            box-shadow: 8px 8px 0px #731802;
 
         }
     }
