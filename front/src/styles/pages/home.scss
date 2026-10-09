@@ -7,6 +7,17 @@
     font-size: 20px;
 }
 
+.success-message{
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: #27ae5f62;
+    border: solid 1px $color-success;
+    padding: 4px 12px;
+}
+
 .hero-section{
     display: grid;
     grid-template-columns: 1fr 1fr;
