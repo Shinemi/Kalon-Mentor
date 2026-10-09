@@ -77,17 +77,6 @@ async function resolveResourceIds(feedback) {
 async function saveCorrection(req, res) {
     const { image, feedback } = req.body
 
-    if (!image || !feedback) {
-        return res.status(400).json({
-            title: 'image and feedback are required',
-            statut: 400,
-            invalidParams: [
-                ...(!image ? [{ path: 'image', message: 'L’image est requise.' }] : []),
-                ...(!feedback ? [{ path: 'feedback', message: 'Le retour d’analyse est requis.' }] : []),
-            ],
-        })
-    }
-
     try {
         const savedCount = await correctionModel.countCorrectionsByUser(req.user.id)
 

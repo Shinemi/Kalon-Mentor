@@ -1,5 +1,4 @@
-﻿// Active le mode strict de JavaScript pour détecter les erreurs courantes.
-'use strict'
+﻿'use strict'
 
 const { z } = require('zod')
 
