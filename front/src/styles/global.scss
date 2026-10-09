@@ -28,10 +28,10 @@ a{
     text-decoration: none;
     color: $color-text;
     transition: all 0.2s ease-in-out;
-
+    font-weight: 500;
 
     &:hover{
-        color: $color-text-muted;
+        color: $color-text;
     }
 }
 
@@ -80,7 +80,7 @@ main {
 
 .button-primary {
     background-color: $color-primary;
-    box-shadow: 6px 6px 0px #BB5808;
+    box-shadow: 6px 6px 0px #731802;
     color: white;
 
     &:hover {

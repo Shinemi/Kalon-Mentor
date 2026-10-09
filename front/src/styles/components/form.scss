@@ -140,7 +140,7 @@
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
-        box-shadow: 4px 4px 0px #BB5808;
+        box-shadow: 4px 4px 0px #731802;
 
         &:hover {
             box-shadow: 4px 4px 0px $color-text;
@@ -168,7 +168,7 @@
         color: $color-text-muted;
 
         a {
-            color: $color-secondary;
+            color: $color-primary;
             font-weight: 600;
             text-decoration: underline;
             text-underline-offset: 4px;

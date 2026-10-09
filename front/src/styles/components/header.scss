@@ -1,8 +1,6 @@
 @use "../_variables.scss" as *;
 
 
-
-
 header{
     background-color: $color-secondary;
     border-bottom: solid 2px #8A7266;
@@ -53,16 +51,16 @@ header{
 
                     &:hover,
                     &:has(a.active){
-                        border-bottom-color: $color-text-muted;
+                        border-bottom-color: $color-text;
                         padding-bottom: 8px;
                     }
 
                     a {
                         display: flex;
 
-                        &.active {
-                            color: $color-text-muted;
-                        }
+                        // &.active {
+                        //     color: $color-text-muted;
+                        // }
                     }
                 }
     
