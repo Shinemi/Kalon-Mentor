@@ -107,7 +107,7 @@ test('refuse la sauvegarde sans feedback', async () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ image: imageBuffer.toString('base64') })
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(422)
 })
 
 test('refuse la sauvegarde sans image', async () => {
@@ -116,7 +116,7 @@ test('refuse la sauvegarde sans image', async () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ feedback: { resume: 'test' } })
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(422)
 })
 
 test('supprime une correction de la galerie', async () => {

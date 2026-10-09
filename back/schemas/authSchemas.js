@@ -2,6 +2,15 @@
 
 const { z } = require('zod')
 
+const emailSchema = z.string({
+    error: 'L’adresse e-mail est requise.'
+})
+    .trim()
+    .toLowerCase()
+    .pipe(z.email({
+        error: 'L’adresse e-mail est invalide.'
+    }))
+
 const registerSchema = z.object({
 
     username: z.string({ error: 'Le pseudo est requis.' })
@@ -14,16 +23,12 @@ const registerSchema = z.object({
         .regex(/[0-9]/, { error: 'Le mot de passe doit contenir au moins un chiffre.' })
         .regex(/[^a-zA-Z0-9\s]/, { error: 'Le mot de passe doit contenir au moins un caractère spécial.' }),
 
-    email: z.email({ error: 'L’adresse e-mail est requise.' })
-        .trim()
-        .toLowerCase()
+    email: emailSchema
 }).strict() // Interdit les champs supplémentaires non définis.
 
 
 const loginSchema = z.object({
-    email: z.email({ error: 'L’adresse e-mail invalide.' })
-        .trim()
-        .toLowerCase(),
+    email: emailSchema,
     // La complexité est vérifiée à l'inscription, pas à la connexion.
     password: z.string({ error: 'Le mot de passe est requis.' })
         .min(1, { error: 'Le mot de passe est requis.' }),
@@ -42,10 +47,7 @@ const updateProfileSchema = z.object({
         .regex(/[^a-zA-Z0-9\s]/, { error: 'Le mot de passe doit contenir au moins un caractère spécial.' })
         .optional(),
 
-    email: z.email({ error: 'Adresse e-mail invalide.' })
-        .trim()
-        .toLowerCase()
-        .optional(),
+    email: emailSchema.optional(),
 }).strict()
     .refine(
         data => data.username !== undefined || data.email !== undefined || data.password !== undefined,

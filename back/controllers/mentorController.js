@@ -96,7 +96,7 @@ async function saveCorrection(req, res) {
         // Jusqu'à 3 ressources liées en base (table corrections_resources) ;
         const resourceIds = await resolveResourceIds(feedback)
 
-        const correction = await correctionModel.createCorrection(
+        const correction = await correctionModel.createSaveCorrection(
             req.user.id,
             `/uploads/${filename}`,
             JSON.stringify(feedback),

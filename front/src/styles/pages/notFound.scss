@@ -1,0 +1,43 @@
+@use "../_variables.scss" as *;
+
+
+.notFound-main {
+    background-color: $color-bg-main;
+    background-image: url("/404_bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &::before {
+        content: none;
+    }
+
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+   
+    
+    
+    .handwritten{
+        font-size: 60px;
+        color: $color-text;
+        padding-bottom: 50px;
+    
+        span{
+            color: $color-primary;
+        }
+    }
+
+    
+}
+
+@media (max-width: 720px) {
+        .notFound-main {
+            .handwritten {
+                font-size: 36px;
+                padding-bottom: 30px;
+            }
+        }
+    }
