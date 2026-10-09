@@ -1,0 +1,108 @@
+@use "../_variables.scss" as *;
+
+.legal-main{
+    padding: 50px 20px 80px;
+
+    .legal-content{
+        max-width: 900px;
+        margin: 0 auto;
+        overflow-wrap: anywhere;
+    }
+
+    h1{
+        margin-bottom: 25px;
+    }
+
+    h2{
+        display: block;
+        margin-bottom: 20px;
+        scroll-margin-top: 30px;
+    }
+
+    h3{
+        margin: 25px 0 12px;
+    }
+
+    p{
+        margin-bottom: 15px;
+        line-height: 1.8;
+    }
+
+    nav{
+        margin: 35px 0;
+        padding: 20px;
+        border: 2px solid $color-text;
+
+        ul{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+            padding: 0;
+            list-style: none;
+        }
+    }
+
+    section{
+        padding: 35px 0;
+        border-top: 1px solid $color-text-muted;
+
+        ul{
+            padding-left: 25px;
+            line-height: 1.8;
+        }
+    }
+
+    a{
+        color: $color-primary;
+        text-decoration: underline;
+
+        &:hover{
+            color: $color-text;
+        }
+
+        &:focus-visible{
+            outline: 2px solid $color-primary;
+            outline-offset: 5px;
+        }
+    }
+
+    h2:focus-visible{
+        outline: 2px solid $color-primary;
+        outline-offset: 5px;
+    }
+
+    dt{
+        font-weight: 700;
+        margin-top: 20px;
+    }
+
+    dd{
+        margin: 8px 0 0;
+        line-height: 1.8;
+    }
+
+    .legal-draft,
+    .legal-pending{
+        padding: 15px;
+        border-left: 4px solid $color-primary;
+        background-color: $color-bg-surface;
+    }
+}
+
+@media (max-width: 720px){
+    .legal-main{
+        padding: 30px 15px 50px;
+
+        h1{
+            font-size: 30px;
+        }
+
+        h2{
+            font-size: 24px;
+        }
+
+        nav{
+            padding: 15px;
+        }
+    }
+}

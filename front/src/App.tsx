@@ -8,6 +8,7 @@ import Profile from './pages/profile'
 import Mentorship from './pages/mentorship'
 import Courses from './pages/courses'
 import NotFound from './pages/notFound'
+import Legal from './pages/legal'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path='/mentorship' element={<Mentorship/>}/>
         <Route path='/courses' element={<Courses/>}/>
         <Route path='/*' element={<NotFound/>}/>
+        <Route path='/legal' element={<Legal />} />
       </Routes>
       <Footer />
     </>
