@@ -1,0 +1,223 @@
+@use "../_variables.scss" as *;
+
+.profile-page{
+    padding: 60px 30px 80px;
+    color: $color-text;
+
+    .profile-content{
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .profile-heading{
+        margin-bottom: 40px;
+
+        h1{
+            margin-bottom: 12px;
+        }
+
+        p{
+            color: $color-text-muted;
+            line-height: 26px;
+        }
+    }
+
+    .profile-identity{
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 40px;
+
+        > div{
+            min-width: 0;
+        }
+
+        h2{
+            display: block;
+            font-size: 36px;
+            margin: 8px 0;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    .profile-avatar{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 100px;
+        height: 100px;
+        background-color: $color-secondary;
+        border: 2px solid $color-text;
+        box-shadow: 5px 5px 0 $color-text;
+
+        svg{
+            width: 60px;
+            height: 60px;
+        }
+    }
+
+    .profile-label{
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 22px;
+    }
+
+    .profile-note{
+        font-family: $font-family-handwritten;
+        font-size: 20px;
+        line-height: 28px;
+    }
+
+    .profile-grid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    .profile-card{
+        min-width: 0;
+        padding: 30px;
+        background-color: $color-bg-surface;
+        border: 2px solid $color-text;
+        box-shadow: 6px 6px 0 $color-text;
+
+        h2{
+            display: block;
+            font-size: 26px;
+            margin-bottom: 25px;
+        }
+
+        p{
+            line-height: 26px;
+            margin-bottom: 25px;
+        }
+    }
+
+    .profile-information{
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+
+        dt{
+            color: $color-text-muted;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        dd{
+            margin: 0;
+            font-weight: 600;
+            line-height: 26px;
+            overflow-wrap: anywhere;
+        }
+    }
+
+    .profile-workspace{
+        background-color: $color-accent;
+    }
+
+    .profile-links{
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .profile-action{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border: 2px solid $color-text;
+        background-color: $color-bg-surface;
+        transition: background-color 0.15s ease;
+
+        svg{
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        &:hover{
+            background-color: $color-secondary;
+        }
+
+        &:focus-visible{
+            outline: 3px solid $color-text;
+            outline-offset: 4px;
+        }
+    }
+
+    .profile-session{
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 40px;
+
+        button{
+            cursor: pointer;
+            white-space: normal;
+
+            svg{
+                width: 20px;
+                height: 20px;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    .profile-error{
+        color: $color-danger;
+        line-height: 26px;
+    }
+
+    @media (max-width: 720px){
+        padding: 40px 20px 60px;
+
+        .profile-heading h1{
+            font-size: 36px;
+        }
+
+        .profile-grid{
+            grid-template-columns: 1fr;
+        }
+
+        .profile-card{
+            padding: 25px;
+        }
+    }
+
+    @media (max-width: 480px){
+        padding: 30px 16px 50px;
+
+        .profile-identity{
+            flex-direction: column;
+            align-items: flex-start;
+
+            h2{
+                font-size: 30px;
+            }
+        }
+
+        .profile-avatar{
+            width: 80px;
+            height: 80px;
+
+            svg{
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        .profile-card{
+            padding: 20px;
+
+            h2{
+                font-size: 24px;
+            }
+        }
+
+        .profile-session{
+            justify-content: flex-start;
+        }
+    }
+}
