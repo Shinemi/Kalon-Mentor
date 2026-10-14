@@ -70,3 +70,55 @@ export const getProfile = async (signal: AbortSignal): Promise<UserProfile | nul
     }
     return data.user
 }
+
+type ProfileUpdates = {
+    username?: string
+    email?: string
+    password?: string
+}
+
+export const updateProfile = async (
+    fields: ProfileUpdates
+): Promise<UserProfile | null> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return null
+
+    const response = await fetch(`${API_URL}/auth/profileUpdate`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(fields)
+    })
+
+    const data = await response.json().catch(() => null)
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return null
+    }
+
+    if (!response.ok) {
+        const validationMessage = data?.invalidParams?.find(
+            (param: { message?: unknown }) =>
+                typeof param?.message === 'string'
+        )?.message
+
+        throw new Error(
+            validationMessage ||
+            data?.title ||
+            'Impossible de modifier votre profil.'
+        )
+    }
+
+    if (
+        !data?.user ||
+        typeof data.user.username !== 'string' ||
+        typeof data.user.email !== 'string'
+    ) {
+        throw new Error('La réponse du serveur est invalide.')
+    }
+
+    return data.user
+}
