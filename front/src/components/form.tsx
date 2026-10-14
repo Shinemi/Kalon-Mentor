@@ -116,12 +116,7 @@ const Form = ({ mode }: FormProps) => {
 
             <p className="auth-link">
                 {isRegister ? 'Vous avez déjà un compte ? ' : 'Pas encore de compte ? '}
-                <Link
-                    to={isRegister ? '/login' : '/register'}
-                    state={{ image }}
-                >
-                    {isRegister ? 'Connectez-vous' : 'Inscrivez-vous'}
-                </Link>
+                <Link to={isRegister ? '/login' : '/register'} state={{ image }}>{isRegister ? 'Connectez-vous' : 'Inscrivez-vous'}</Link>
             </p>
         </form>
     )

@@ -48,28 +48,15 @@ const Profile = () => {
                 <p>Un espace pour cultiver votre coup de crayon.</p>
             </div>
 
-            {error ? (
-                <p className="profile-error" role="alert">
-                    {error}
-                </p>
-            ) : user ? (
+            {error ? ( <p className="profile-error" role="alert">{error}</p> ) : user ? (
                 <>
-                    <section
-                        className="profile-identity"
-                        aria-labelledby="profile-name"
-                    >
-                        <div className="profile-avatar">
-                            <CircleUser aria-hidden="true" />
-                        </div>
+                    <section className="profile-identity" aria-labelledby="profile-name">
+                        <div className="profile-avatar"> <CircleUser aria-hidden="true" /> </div>
 
                         <div>
-                            <p className="profile-label">
-                                Votre espace personnel
-                            </p>
+                            <p className="profile-label"> Votre espace personnel </p>
                             <h2 id="profile-name">{user.username}</h2>
-                            <p className="profile-note">
-                                Chaque dessin est un pas de plus.
-                            </p>
+                            <p className="profile-note"> Chaque dessin est un pas de plus. </p>
                         </div>
                     </section>
 
@@ -78,10 +65,7 @@ const Profile = () => {
                             className="profile-card"
                             aria-labelledby="account-title"
                         >
-                            <h2 id="account-title">
-                                Informations du compte
-                            </h2>
-
+                            <h2 id="account-title"> Informations du compte </h2>
                             <dl className="profile-information">
                                 <div>
                                     <dt>Pseudo</dt>
@@ -95,35 +79,15 @@ const Profile = () => {
                             </dl>
                         </section>
 
-                        <section
-                            className="profile-card profile-workspace"
-                            aria-labelledby="workspace-title"
-                        >
-                            <h2 id="workspace-title">
-                                Votre atelier
-                            </h2>
+                        <section className="profile-card profile-workspace" aria-labelledby="workspace-title">
+                            <h2 id="workspace-title"> Votre atelier </h2>
 
-                            <p>
-                                Retrouvez les outils pour poursuivre
-                                votre apprentissage.
-                            </p>
+                            <p> Retrouvez les outils pour poursuivre votre apprentissage. </p>
 
                             <div className="profile-links">
-                                <Link
-                                    to="/mentorship"
-                                    className="profile-action"
-                                >
-                                    <PencilLine aria-hidden="true" />
-                                    Accéder au mentorat
-                                </Link>
+                                <Link to="/mentorship" className="profile-action"><PencilLine aria-hidden="true" />Accéder au mentorat</Link>
 
-                                <Link
-                                    to="/courses"
-                                    className="profile-action"
-                                >
-                                    <BookOpen aria-hidden="true" />
-                                    Explorer les cours
-                                </Link>
+                                <Link to="/courses" className="profile-action"><BookOpen aria-hidden="true" />Explorer les cours</Link>
                             </div>
                         </section>
                     </div>

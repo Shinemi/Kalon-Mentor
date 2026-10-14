@@ -35,45 +35,17 @@ const Legal = () => {
 
                 <nav aria-label="Sommaire des informations légales">
                     <ul>
-                        <li>
-                            <a href="#mentions-legales">Mentions légales</a>
-                        </li>
-                        <li>
-                            <a href="#confidentialite">Confidentialité</a>
-                        </li>
-                        <li>
-                            <a href="#donnees">Données et utilisations</a>
-                        </li>
-                        <li>
-                            <a href="#prestataires">Prestataires</a>
-                        </li>
-                        <li>
-                            <a href="#intelligence-artificielle">
-                                Intelligence artificielle
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#conservation">Conservation</a>
-                        </li>
-                        <li>
-                            <a href="#vos-droits">Vos droits</a>
-                        </li>
-                        <li>
-                            <a href="#cookies">Cookies et stockage local</a>
-                        </li>
-                        <li>
-                            <a href="#conditions-utilisation">
-                                Conditions d’utilisation
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#propriete-intellectuelle">
-                                Propriété intellectuelle
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#contact">Contact et assistance</a>
-                        </li>
+                        <li><a href="#mentions-legales">Mentions légales</a></li>
+                        <li><a href="#confidentialite">Confidentialité</a></li>
+                        <li><a href="#donnees">Données et utilisations</a></li>
+                        <li><a href="#prestataires">Prestataires</a></li>
+                        <li><a href="#intelligence-artificielle">Intelligence artificielle</a></li>
+                        <li><a href="#conservation">Conservation</a></li>
+                        <li><a href="#vos-droits">Vos droits</a></li>
+                        <li><a href="#cookies">Cookies et stockage local</a></li>
+                        <li><a href="#conditions-utilisation">Conditions d’utilisation</a></li>
+                        <li><a href="#propriete-intellectuelle">Propriété intellectuelle</a></li>
+                        <li><a href="#contact">Contact et assistance</a></li>
                     </ul>
                 </nav>
 
@@ -94,9 +66,7 @@ const Legal = () => {
 
                         <dt>Contact</dt>
                         <dd>
-                            <a href="mailto:kalon-mentor@gmail.com">
-                                kalon-mentor@gmail.com
-                            </a>
+                            <a href="mailto:kalon-mentor@gmail.com">kalon-mentor@gmail.com</a>
                         </dd>
 
                         <dt>Hébergement prévu du site et de l’API</dt>
@@ -104,9 +74,7 @@ const Legal = () => {
                             Vercel Inc., 440 N Barranca Avenue #4133,
                             Covina, CA 91723, États-Unis.
                             {' '}
-                            <a href="https://vercel.com/legal">
-                                Informations légales de Vercel
-                            </a>
+                            <a href="https://vercel.com/legal">Informations légales de Vercel</a>
                         </dd>
 
                         <dt>Base de données</dt>
@@ -282,9 +250,7 @@ const Legal = () => {
                         le cadre contractuel applicable au projet.
                         Elles sont consultables dans les
                         {' '}
-                        <a href="https://ai.google.dev/gemini-api/terms?hl=fr">
-                            conditions de l’API Gemini
-                        </a>.
+                        <a href="https://ai.google.dev/gemini-api/terms?hl=fr">conditions de l’API Gemini</a>.
                     </p>
 
                     <p className="legal-pending">
@@ -338,9 +304,7 @@ const Legal = () => {
                     <p>
                         Pour exercer vos droits, écrivez à
                         {' '}
-                        <a href="mailto:kalon-mentor@gmail.com">
-                            kalon-mentor@gmail.com
-                        </a>
+                        <a href="mailto:kalon-mentor@gmail.com">kalon-mentor@gmail.com</a>
                         {' '}
                         en précisant votre demande et le compte concerné.
                         Ne transmettez jamais votre mot de passe.
@@ -357,9 +321,7 @@ const Legal = () => {
                     <p>
                         Vous pouvez déposer une réclamation auprès de la
                         {' '}
-                        <a href="https://www.cnil.fr/fr/adresser-une-plainte">
-                            CNIL
-                        </a>.
+                        <a href="https://www.cnil.fr/fr/adresser-une-plainte">CNIL</a>.
                     </p>
                 </section>
 
@@ -479,9 +441,7 @@ const Legal = () => {
                         un signalement ou une demande concernant vos données :
                     </p>
 
-                    <a href="mailto:kalon-mentor@gmail.com">
-                        kalon-mentor@gmail.com
-                    </a>
+                    <a href="mailto:kalon-mentor@gmail.com">kalon-mentor@gmail.com</a>
                 </section>
             </div>
         </main>

@@ -12,9 +12,7 @@ const Navbar = () => {
   return (
     <header>
         <div className="header-content">
-            <Link to="/" className="logo" onClick={() => setIsOpen(false)}>
-                <img src="/Logo Kalon Mentor au trait noir.png" alt="Logo Kalon Mentor" />
-            </Link>
+            <Link to="/" className="logo" onClick={() => setIsOpen(false)}><img src="/Logo Kalon Mentor au trait noir.png" alt="Logo Kalon Mentor" /></Link>
 
             <nav>
                 <button
@@ -26,35 +24,17 @@ const Navbar = () => {
                 </button>
 
                 <ul className={isOpen ? 'navbar-links open' : 'navbar-links'}>
-                    <li>
-                        <NavLink to="/" end onClick={() => setIsOpen(false)}>
-                            Accueil
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/mentorship" onClick={() => setIsOpen(false)}>
-                            Mentorat
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/courses" onClick={() => setIsOpen(false)}>
-                            Cours
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/gallery" onClick={() => setIsOpen(false)}>
-                            Historique
-                        </NavLink>
-                    </li>
+                    <li><NavLink to="/" end onClick={() => setIsOpen(false)}>Accueil</NavLink></li>
+                    <li><NavLink to="/mentorship" onClick={() => setIsOpen(false)}>Mentorat</NavLink></li>
+                    <li><NavLink to="/courses" onClick={() => setIsOpen(false)}>Cours</NavLink></li>
+                    <li><NavLink to="/gallery" onClick={() => setIsOpen(false)}>Historique</NavLink></li>
                 </ul>
             </nav>
             <div className="account-link">
                 {isConnected ? (
-                    <Link to="/profile" className="profile-link" aria-label="Mon profil" onClick={() => setIsOpen(false)}>
-                        <CircleUser aria-hidden="true" /> 
-                    </Link>
+                    <Link to="/profile" className="profile-link" aria-label="Mon profil" onClick={() => setIsOpen(false)}><CircleUser aria-hidden="true" /></Link>
                 ) : (
-                    <Link to="/login" className="button-primary" onClick={() => setIsOpen(false)}> Connexion </Link>
+                    <Link to="/login" className="button-primary" onClick={() => setIsOpen(false)}>Connexion</Link>
                 )}
             </div>
       </div>

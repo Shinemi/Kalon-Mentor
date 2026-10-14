@@ -60,13 +60,9 @@ const Home = () => {
                         aria-describedby="drawing-help"
                     >
                         <FileUp aria-hidden="true" />
-                        <span id="upload-title" className="upload-title">
-                            Partagez votre dessin
-                        </span>
+                        <span id="upload-title" className="upload-title">Partagez votre dessin</span>
                         <span className="button-accent">Choisir un fichier</span>
-                        <span id="drawing-help">
-                            JPG, PNG ou WebP — 10 Mo maximum.
-                        </span>
+                        <span id="drawing-help">JPG, PNG ou WebP — 10 Mo maximum.</span>
                         <span>Ou glissez votre dessin ici.</span>
                     </button>
 
@@ -93,14 +89,7 @@ const Home = () => {
                 </article>
 
                 <div className="features-content">
-                    <Link to="/courses" className="courses-card">
-                        <h2><BookOpen aria-hidden="true" />Les fondamentaux</h2>
-                        <ul>
-                            <li>Perspective</li>
-                            <li>Lumière et ombres</li>
-                        </ul>
-                        <p>Des cours pour comprendre les bases et mettre les conseils en pratique.</p>
-                    </Link>
+                    <Link to="/courses" className="courses-card"><h2><BookOpen aria-hidden="true" />Les fondamentaux</h2><ul><li>Perspective</li><li>Lumière et ombres</li></ul><p>Des cours pour comprendre les bases et mettre les conseils en pratique.</p></Link>
                     <article className="exercise-card">
                         <p> Une idée pour pratiquer</p>
                         <h2><Flame aria-hidden="true" />Dessinez un souvenir</h2>
