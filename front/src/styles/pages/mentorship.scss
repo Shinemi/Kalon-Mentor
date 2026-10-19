@@ -1,0 +1,145 @@
+@use "../_variables.scss" as *;
+
+.mentorship-page{
+    padding: 60px 30px 80px;
+    color: $color-text;
+
+    .mentorship-content{
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .mentorship-heading{
+        margin-bottom: 40px;
+
+        h1{
+            margin-bottom: 15px;
+        }
+
+        p{
+            line-height: 28px;
+        }
+    }
+
+    .drawing-upload{
+        padding: 30px;
+        background-color: $color-bg-surface;
+        border: 2px solid $color-text;
+        box-shadow: 6px 6px 0 $color-text;
+
+        h2{
+            display: block;
+            margin-bottom: 25px;
+        }
+    }
+
+    .drawing-picker{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        min-height: 180px;
+        padding: 25px;
+        border: 2px dashed $color-text;
+        background-color: $color-bg-main;
+        text-align: center;
+        transition: background-color 0.15s ease;
+
+        > svg{
+            width: 35px;
+            height: 35px;
+        }
+
+        input{
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        &:hover{
+            background-color: $color-accent;
+        }
+
+        &:focus-within{
+            outline: 3px solid $color-primary;
+            outline-offset: 5px;
+        }
+    }
+
+    .drawing-help{
+        margin-top: 15px;
+        color: $color-text-muted;
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    .drawing-error{
+        margin-top: 20px;
+        color: $color-danger;
+        line-height: 26px;
+    }
+
+    .drawing-selection{
+        margin-top: 30px;
+
+        img{
+            display: block;
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            background-color: $color-bg-main;
+            border: 1px solid $color-text;
+        }
+    }
+
+    .drawing-filename{
+        margin: 15px 0;
+        overflow-wrap: anywhere;
+        line-height: 24px;
+    }
+
+    .drawing-remove{
+        padding: 10px 15px;
+        border: 2px solid $color-text;
+        background-color: $color-bg-surface;
+        color: $color-text;
+        cursor: pointer;
+
+        &:hover{
+            background-color: $color-accent;
+        }
+    }
+
+    @media (max-width: 720px){
+        padding: 40px 20px 60px;
+
+        .mentorship-heading h1{
+            font-size: 36px;
+        }
+    }
+
+    @media (max-width: 480px){
+        padding: 30px 16px 50px;
+
+        .mentorship-heading h1{
+            font-size: 30px;
+        }
+
+        .drawing-upload{
+            padding: 20px;
+
+            h2{
+                font-size: 26px;
+            }
+        }
+
+        .drawing-picker{
+            padding: 20px 12px;
+        }
+    }
+}
