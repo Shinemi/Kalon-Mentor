@@ -1,10 +1,6 @@
 'use strict'
 
-// Tout ce qui touche au fournisseur d'IA est isolé ici.
-// Pour changer de fournisseur (OpenAI, Claude...), seul ce fichier change.
-
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent'
-
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent'
 // Prompt adapté pour notre architecture :
 // - la recherche "dans la base de données" devient une liste de ressources
 //   fournie directement dans le prompt (notre IA n'a pas d'accès direct à Supabase)

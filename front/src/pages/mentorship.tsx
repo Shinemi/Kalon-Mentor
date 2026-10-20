@@ -4,6 +4,7 @@ import { FileUp } from 'lucide-react'
 import { analyseImage } from '../services/mentorService'
 import type { AnalysisResult } from '../services/mentorService'
 import '../styles/pages/mentorship.scss'
+import DrawingAnalysis from '../components/drawingAnalysis'
 
 const Mentorship = () => {
     const location = useLocation()
@@ -103,72 +104,74 @@ const Mentorship = () => {
                     <p>Partagez votre dessin pour découvrir ses points forts et les pistes à explorer.</p>
                 </div>
 
-                <section className="drawing-upload" aria-labelledby="drawing-title">
-                    <h2 id="drawing-title">Votre dessin</h2>
+                {!result ? (
+                    <section className="drawing-upload" aria-labelledby="drawing-title">
+                        <h2 id="drawing-title">Votre dessin</h2>
 
-                    <label className="drawing-picker">
-                        <FileUp aria-hidden="true" />
-                        <span>{image ? 'Choisir un autre dessin' : 'Choisir un dessin'}</span>
+                        <label className="drawing-picker">
+                            <FileUp aria-hidden="true" />
+                            <span>{image ? 'Choisir un autre dessin' : 'Choisir un dessin'}</span>
 
-                        <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
-                            aria-label="Choisir un dessin"
-                            aria-describedby="drawing-help"
-                            disabled={isLoading}
-                            onChange={event => {
-                                handleImage(event.target.files?.[0])
-                                event.target.value = ''
-                            }}
-                        />
-                    </label>
+                            <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                aria-label="Choisir un dessin"
+                                aria-describedby="drawing-help"
+                                disabled={isLoading}
+                                onChange={event => {
+                                    handleImage(event.target.files?.[0])
+                                    event.target.value = ''
+                                }}
+                            />
+                        </label>
 
-                    <p id="drawing-help" className="drawing-help">JPG, PNG ou WebP — 10 Mo maximum.</p>
+                        <p id="drawing-help" className="drawing-help">JPG, PNG ou WebP — 10 Mo maximum.</p>
 
-                    {error && (
-                        <p className="drawing-error" role="alert">{error}</p>
-                    )}
+                        {error && (
+                            <p className="drawing-error" role="alert">{error}</p>
+                        )}
 
-                    {image && (
-                        <div className="drawing-selection">
-                            {previewUrl ? (
-                                <img src={previewUrl} alt="Aperçu de votre dessin" />
-                            ) : !error ? (
-                                <p role="status">Préparation de l’aperçu…</p>
-                            ) : null}
+                        {image && (
+                            <div className="drawing-selection">
+                                {previewUrl ? (
+                                    <img src={previewUrl} alt="Aperçu de votre dessin" />
+                                ) : !error ? (
+                                    <p role="status">Préparation de l’aperçu…</p>
+                                ) : null}
 
-                            <p className="drawing-filename">{image.name}</p>
+                                <p className="drawing-filename">{image.name}</p>
 
-                            <div className="drawing-actions">
-                                <button
-                                    type="button"
-                                    className="button-primary"
-                                    onClick={handleAnalyse}
-                                    disabled={isLoading || !previewUrl || Boolean(result)}
-                                >
-                                    {isLoading ? 'Analyse en cours…' : result ? 'Dessin analysé' : 'Analyser mon dessin'}
-                                </button>
+                                <div className="drawing-actions">
+                                    <button
+                                        type="button"
+                                        className="button-primary"
+                                        onClick={handleAnalyse}
+                                        disabled={isLoading || !previewUrl}
+                                    >
+                                        {isLoading ? 'Analyse en cours…' : 'Analyser mon dessin'}
+                                    </button>
 
-                                <button
-                                    type="button"
-                                    className="drawing-remove"
-                                    onClick={removeImage}
-                                    disabled={isLoading}
-                                >
-                                    Retirer le dessin
-                                </button>
+                                    <button
+                                        type="button"
+                                        className="drawing-remove"
+                                        onClick={removeImage}
+                                        disabled={isLoading}
+                                    >
+                                        Retirer le dessin
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {isLoading && (
-                        <p className="drawing-status" role="status">Votre dessin est en cours d’analyse. Cela peut prendre quelques instants.</p>
-                    )}
+                        {isLoading && (
+                            <p className="drawing-status" role="status">Votre dessin est en cours d’analyse. Cela peut prendre quelques instants.</p>
+                        )}
+                    </section>
+                ) : (
+                    <DrawingAnalysis result={result} imageUrl={previewUrl} onReset={removeImage} />
+                )}
 
-                    {result && (
-                        <p className="drawing-success" role="status">L’analyse de votre dessin est terminée.</p>
-                    )}
-                </section>
+                <p className="analysis-announcement" role="status">{result ? 'L’analyse de votre dessin est disponible.' : ''}</p>
             </div>
         </main>
     )
