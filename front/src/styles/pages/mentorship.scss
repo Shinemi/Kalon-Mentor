@@ -3,6 +3,41 @@
 .mentorship-page{
     padding: 60px 30px 80px;
     color: $color-text;
+    
+    .drawing-actions{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+
+        button{
+            cursor: pointer;
+
+            &:disabled{
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    .drawing-picker:has(input:disabled){
+        opacity: 0.6;
+
+        input{
+            cursor: not-allowed;
+        }
+    }
+
+    .drawing-status,
+    .drawing-success{
+        margin-top: 25px;
+        line-height: 26px;
+    }
+
+    .drawing-success{
+        color: $color-success;
+    }
 
     .mentorship-content{
         max-width: 1000px;

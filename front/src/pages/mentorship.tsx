@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { FileUp } from 'lucide-react'
+import { analyseImage } from '../services/mentorService'
+import type { AnalysisResult } from '../services/mentorService'
 import '../styles/pages/mentorship.scss'
 
 const Mentorship = () => {
     const location = useLocation()
+    const navigate = useNavigate()
 
     const [image, setImage] = useState<File | null>(() => {
         return location.state?.image instanceof File
@@ -14,6 +17,8 @@ const Mentorship = () => {
 
     const [previewUrl, setPreviewUrl] = useState('')
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [result, setResult] = useState<AnalysisResult | null>(null)
 
     useEffect(() => {
         if (!image) return
@@ -34,7 +39,7 @@ const Mentorship = () => {
     }, [image])
 
     const handleImage = (file?: File) => {
-        if (!file) return
+        if (!file || isLoading) return
 
         setError('')
 
@@ -48,14 +53,46 @@ const Mentorship = () => {
             return
         }
 
+        setResult(null)
         setPreviewUrl('')
         setImage(file)
     }
 
     const removeImage = () => {
+        if (isLoading) return
+
         setImage(null)
         setPreviewUrl('')
+        setResult(null)
         setError('')
+    }
+
+    const handleAnalyse = async () => {
+        if (!image || !previewUrl || isLoading || result) return
+
+        setError('')
+        setIsLoading(true)
+
+        try {
+            const analysis = await analyseImage(image)
+
+            if (!analysis) {
+                navigate('/login', {
+                    state: { image }
+                })
+                return
+            }
+
+            setResult(analysis)
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'Une erreur est survenue pendant l’analyse.'
+            )
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -78,6 +115,7 @@ const Mentorship = () => {
                             accept="image/jpeg,image/png,image/webp"
                             aria-label="Choisir un dessin"
                             aria-describedby="drawing-help"
+                            disabled={isLoading}
                             onChange={event => {
                                 handleImage(event.target.files?.[0])
                                 event.target.value = ''
@@ -101,10 +139,34 @@ const Mentorship = () => {
 
                             <p className="drawing-filename">{image.name}</p>
 
-                            <button type="button" className="drawing-remove" onClick={removeImage}>
-                                Retirer le dessin
-                            </button>
+                            <div className="drawing-actions">
+                                <button
+                                    type="button"
+                                    className="button-primary"
+                                    onClick={handleAnalyse}
+                                    disabled={isLoading || !previewUrl || Boolean(result)}
+                                >
+                                    {isLoading ? 'Analyse en cours…' : result ? 'Dessin analysé' : 'Analyser mon dessin'}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="drawing-remove"
+                                    onClick={removeImage}
+                                    disabled={isLoading}
+                                >
+                                    Retirer le dessin
+                                </button>
+                            </div>
                         </div>
+                    )}
+
+                    {isLoading && (
+                        <p className="drawing-status" role="status">Votre dessin est en cours d’analyse. Cela peut prendre quelques instants.</p>
+                    )}
+
+                    {result && (
+                        <p className="drawing-success" role="status">L’analyse de votre dessin est terminée.</p>
                     )}
                 </section>
             </div>
