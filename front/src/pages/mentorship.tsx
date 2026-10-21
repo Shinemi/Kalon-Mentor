@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FileUp } from 'lucide-react'
-import { analyseImage } from '../services/mentorService'
+import { analyseImage, saveAnalysis } from '../services/mentorService'
 import type { AnalysisResult } from '../services/mentorService'
 import '../styles/pages/mentorship.scss'
 import DrawingAnalysis from '../components/drawingAnalysis'
+import SaveLimitDialog from '../components/saveLimitDialog'
 
 const Mentorship = () => {
     const location = useLocation()
@@ -20,6 +21,9 @@ const Mentorship = () => {
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [result, setResult] = useState<AnalysisResult | null>(null)
+    const [isSaved, setIsSaved] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
+    const [saveLimit, setSaveLimit] = useState<number | null>(null)
 
     useEffect(() => {
         if (!image) return
@@ -40,7 +44,7 @@ const Mentorship = () => {
     }, [image])
 
     const handleImage = (file?: File) => {
-        if (!file || isLoading) return
+        if (!file || isLoading || isSaving) return
 
         setError('')
 
@@ -55,17 +59,22 @@ const Mentorship = () => {
         }
 
         setResult(null)
+        setIsSaved(false)
+        setSaveLimit(null)
         setPreviewUrl('')
         setImage(file)
     }
 
     const removeImage = () => {
-        if (isLoading) return
+        if (isLoading || isSaving) return
 
         setImage(null)
         setPreviewUrl('')
         setResult(null)
+        setIsSaved(false)
+        setSaveLimit(null)
         setError('')
+        navigate('/mentorship', { replace: true, state: null })
     }
 
     const handleAnalyse = async () => {
@@ -85,6 +94,9 @@ const Mentorship = () => {
             }
 
             setResult(analysis)
+            setIsSaved(false)
+            // Ne pas réutiliser le fichier transmis par l'accueil au rechargement.
+            navigate('/mentorship', { replace: true, state: null })
         } catch (error) {
             setError(
                 error instanceof Error
@@ -93,6 +105,28 @@ const Mentorship = () => {
             )
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const handleSave = async () => {
+        if (!result || isSaved || isSaving) return
+
+        setIsSaving(true)
+        setError('')
+
+        try {
+            const limit = await saveAnalysis(result)
+
+            if (limit) {
+                setSaveLimit(limit)
+                return
+            }
+
+            setIsSaved(true)
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Impossible de sauvegarder cette analyse.')
+        } finally {
+            setIsSaving(false)
         }
     }
 
@@ -168,8 +202,20 @@ const Mentorship = () => {
                         )}
                     </section>
                 ) : (
-                    <DrawingAnalysis result={result} imageUrl={previewUrl} onReset={removeImage} />
+                    <>
+                        <DrawingAnalysis
+                            result={result}
+                            imageUrl={previewUrl || `data:image/jpeg;base64,${result.image}`}
+                            onReset={removeImage}
+                            onSave={handleSave}
+                            isSaving={isSaving}
+                            isSaved={isSaved}
+                        />
+                        {error && <p className="drawing-error" role="alert">{error}</p>}
+                    </>
                 )}
+
+                {saveLimit !== null && <SaveLimitDialog limit={saveLimit} onClose={() => setSaveLimit(null)} />}
 
                 <p className="analysis-announcement" role="status">{result ? 'L’analyse de votre dessin est disponible.' : ''}</p>
             </div>

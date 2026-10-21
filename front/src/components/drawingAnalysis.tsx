@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { AnalysisResult } from '../services/mentorService'
+import { getCourseAnchor } from '../services/courseAnchor'
 import '../styles/components/drawingAnalysis.scss'
 
 
@@ -7,6 +8,9 @@ type DrawingAnalysisProps = {
     result: AnalysisResult
     imageUrl: string
     onReset: () => void
+    onSave: () => void
+    isSaving: boolean
+    isSaved: boolean
 }
 
 const getObject = (value: unknown): Record<string, unknown> => {
@@ -44,7 +48,7 @@ const categories = [
     { key: 'lumiere', label: 'Lumière' }
 ]
 
-const DrawingAnalysis = ({ result, imageUrl, onReset }: DrawingAnalysisProps) => {
+const DrawingAnalysis = ({ result, imageUrl, onReset, onSave, isSaving, isSaved }: DrawingAnalysisProps) => {
     const feedback = result.feedback
     const style = getObject(feedback.style)
     const analysis = getObject(feedback.analyse)
@@ -135,7 +139,7 @@ const DrawingAnalysis = ({ result, imageUrl, onReset }: DrawingAnalysisProps) =>
                         const skills = getList(detail.competences_a_travailler)
 
                         return (
-                            <article className="analysis-card" key={category.key}>
+                            <article className={`analysis-card analysis-category-${category.key}`} key={category.key}>
                                 <div className="analysis-category-heading">
                                     <h4>{category.label}</h4>
                                     <span>{score === null ? 'Non évalué' : `${score} / 100`}</span>
@@ -173,16 +177,23 @@ const DrawingAnalysis = ({ result, imageUrl, onReset }: DrawingAnalysisProps) =>
 
                 {resources.length > 0 ? (
                     <div className="analysis-resource-grid">
-                        {resources.map((resource, index) => (
-                            <article className="analysis-card" key={index}>
-                                <h4>{getText(resource.titre)}</h4>
-                                <p>{getText(resource.raison)}</p>
+                        {resources.map((resource, index) => {
+                            const anchor = resource.type === 'course'
+                                ? getCourseAnchor(resource.ressource_id)
+                                : null
+                            const content = (
+                                <>
+                                    <h4>{getText(resource.titre)}</h4>
+                                    <p>{getText(resource.raison)}</p>
+                                    {getText(resource.competence) && <p className="analysis-resource-skill">À travailler : {getText(resource.competence)}</p>}
+                                    {anchor && <span className="analysis-resource-link">Lire ce cours →</span>}
+                                </>
+                            )
 
-                                {getText(resource.competence) && (
-                                    <p className="analysis-resource-skill">À travailler : {getText(resource.competence)}</p>
-                                )}
-                            </article>
-                        ))}
+                            return anchor
+                                ? <Link to={`/courses#${anchor}`} className="analysis-card analysis-course-link" key={index}>{content}</Link>
+                                : <article className="analysis-card" key={index}>{content}</article>
+                        })}
                     </div>
                 ) : (
                     <p>Aucune ressource complémentaire recommandée pour ce dessin.</p>
@@ -193,9 +204,11 @@ const DrawingAnalysis = ({ result, imageUrl, onReset }: DrawingAnalysisProps) =>
                 </Link>
             </section>
 
-            <button type="button" className="button-primary" onClick={onReset}>
-                Analyser un autre dessin
-            </button>
+            <div className="analysis-actions">
+                <button type="button" className="button-primary" onClick={onSave} disabled={isSaving || isSaved}>{isSaving ? 'Enregistrement…' : isSaved ? 'Analyse sauvegardée' : 'Sauvegarder cette analyse'}</button>
+                <button type="button" className="button-accent" onClick={onReset} disabled={isSaving}>Analyser un autre dessin</button>
+            </div>
+            {isSaved && <p className="analysis-saved-message" role="status">Cette analyse est enregistrée dans votre galerie.</p>}
         </section>
     )
 }
