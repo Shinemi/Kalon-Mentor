@@ -4,6 +4,23 @@
     padding: 60px 30px 80px;
     color: $color-text;
 
+    .course-level{
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: $color-text-muted;
+    }
+
+    .course-exercise{
+        margin-top: 25px;
+        padding: 20px;
+        border-left: 4px solid $color-primary;
+        background-color: $color-accent;
+
+        h4{
+            margin-top: 0;
+        }
+    }
+
     .courses-content{
         max-width: 1440px;
         margin: auto;
