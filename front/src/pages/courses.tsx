@@ -7,7 +7,11 @@ type Course = {
     title: string
     category: string
     content?: {
+        level?: string
         lesson?: string
+        exercise?: string
+        objectives?: string[]
+        commonMistakes?: string[]
     }
 }
 
@@ -96,8 +100,44 @@ const Courses = () => {
                                                 </summary>
 
                                                 <div className="course-content">
-                                                    <p className="course-lesson">{course.content?.lesson || 'Le contenu de ce cours sera bientôt disponible.'}</p>
-                                                </div>
+                                                  {course.content?.level && (
+                                                      <p className="course-level"><strong>Niveau :</strong> {course.content.level}</p>
+                                                  )}
+
+                                                  {course.content?.objectives && course.content.objectives.length > 0 && (
+                                                      <section>
+                                                          <h4>Les objectifs</h4>
+                                                          <ul>
+                                                              {course.content.objectives.map(objective => (
+                                                                  <li key={objective}>{objective}</li>
+                                                              ))}
+                                                          </ul>
+                                                      </section>
+                                                  )}
+
+                                                  <section>
+                                                      <h4>La leçon</h4>
+                                                      <p className="course-lesson">{course.content?.lesson || 'Le contenu de ce cours sera bientôt disponible.'}</p>
+                                                  </section>
+
+                                                  {course.content?.exercise && (
+                                                      <section className="course-exercise">
+                                                          <h4>À vous de jouer</h4>
+                                                          <p>{course.content.exercise}</p>
+                                                      </section>
+                                                  )}
+
+                                                  {course.content?.commonMistakes && course.content.commonMistakes.length > 0 && (
+                                                      <section>
+                                                          <h4>Les erreurs fréquentes</h4>
+                                                          <ul>
+                                                              {course.content.commonMistakes.map(mistake => (
+                                                                  <li key={mistake}>{mistake}</li>
+                                                              ))}
+                                                          </ul>
+                                                      </section>
+                                                  )}
+                                              </div>
                                             </details>
                                         ))}
                                 </div>
