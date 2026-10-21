@@ -181,6 +181,64 @@
         clip-path: inset(50%);
     }
 
+    .analysis-category-grid{
+    .analysis-card{
+        border-top: 6px solid $color-secondary;
+    }
+
+    .analysis-category-anatomie,
+    .analysis-category-lumiere{
+        border-top-color: $color-primary;
+    }
+
+    .analysis-category-composition{
+        border-top-color: $color-accent;
+        background-color: $color-bg-main;
+    }
+}
+
+    .analysis-course-link{
+        display: block;
+        color: $color-text;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+        &:hover{
+            transform: translateY(-4px);
+            box-shadow: 5px 9px 0 $color-text;
+            background-color: $color-accent;
+        }
+    }
+
+    .analysis-resource-link{
+        display: inline-block;
+        margin-top: 20px;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .analysis-actions{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 35px;
+
+        button{
+            cursor: pointer;
+
+            &:disabled{
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        }
+    }
+
+    .analysis-saved-message{
+        margin-top: 25px;
+        font-weight: 600;
+        color: $color-text;
+    }
+
     @media (max-width: 900px){
         .analysis-overview,
         .analysis-resource-grid{

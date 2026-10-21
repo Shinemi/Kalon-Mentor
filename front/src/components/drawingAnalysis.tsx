@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import type { AnalysisResult } from '../services/mentorService'
-import { getCourseAnchor } from '../services/courseAnchor'
 import '../styles/components/drawingAnalysis.scss'
 
 
@@ -178,9 +177,7 @@ const DrawingAnalysis = ({ result, imageUrl, onReset, onSave, isSaving, isSaved 
                 {resources.length > 0 ? (
                     <div className="analysis-resource-grid">
                         {resources.map((resource, index) => {
-                            const anchor = resource.type === 'course'
-                                ? getCourseAnchor(resource.ressource_id)
-                                : null
+                            const anchor = resource.type === 'course' ? `course-${resource.ressource_id}` : null
                             const content = (
                                 <>
                                     <h4>{getText(resource.titre)}</h4>

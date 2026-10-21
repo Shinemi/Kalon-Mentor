@@ -40,12 +40,13 @@
     }
 
     .mentorship-content{
-        max-width: 1000px;
+        max-width: 1440px;
         margin: auto;
     }
 
     .mentorship-heading{
         margin-bottom: 40px;
+        text-align: center;
 
         h1{
             margin-bottom: 15px;
@@ -150,11 +151,65 @@
         }
     }
 
+    .save-limit-dialog{
+        position: fixed;
+        inset: 0;
+        width: calc(100% - 40px);
+        max-width: 520px;
+        max-height: calc(100% - 40px);
+        margin: auto;
+        padding: 30px;
+        overflow: auto;
+        color: $color-text;
+        background-color: $color-bg-main;
+        border: 2px solid $color-text;
+        box-shadow: 6px 6px 0 $color-text;
+
+        &::backdrop{
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        h2{
+            display: block;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        p{
+            line-height: 26px;
+
+            + p{
+                margin-top: 15px;
+            }
+        }
+
+        form{
+            margin-top: 25px;
+        }
+
+        button{
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px){
+            padding: 20px;
+
+            h2{
+                font-size: 24px;
+            }
+
+            button{
+                width: 100%;
+            }
+        }
+    }
+
     @media (max-width: 720px){
         padding: 40px 20px 60px;
 
         .mentorship-heading h1{
             font-size: 36px;
+            
         }
     }
 
@@ -175,6 +230,23 @@
 
         .drawing-picker{
             padding: 20px 12px;
+        }
+    }
+
+    @media (max-width: 480px){
+        .analysis-actions{
+            flex-direction: column;
+
+            button{
+                width: 100%;
+            }
+        }
+
+        .analysis-course-link{
+            &:hover{
+                transform: none;
+                box-shadow: 5px 5px 0 $color-text;
+            }
         }
     }
 }

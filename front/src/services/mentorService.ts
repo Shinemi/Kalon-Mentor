@@ -71,3 +71,47 @@ export const analyseImage = async (
         image: data.image
     }
 }
+
+
+export const saveAnalysis = async (
+    result: AnalysisResult
+): Promise<number | null> => {
+    const token = sessionStorage.getItem('kalon-token')
+
+    if (!token) {
+        throw new Error('Connectez-vous pour sauvegarder votre analyse.')
+    }
+
+    const response = await fetch(`${API_URL}/mentor/correctionSave`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(result)
+    })
+
+    const data = await response.json()
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        throw new Error('Votre session a expiré. Veuillez vous reconnecter.')
+    }
+
+    if (
+        response.status === 403 &&
+        typeof data.maxCorrections === 'number'
+    ) {
+        return data.maxCorrections
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            data.invalidParams?.[0]?.message ||
+            data.title ||
+            'Impossible de sauvegarder cette analyse.'
+        )
+    }
+
+    return null
+}

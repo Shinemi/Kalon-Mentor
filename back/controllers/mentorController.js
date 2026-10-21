@@ -82,9 +82,10 @@ async function saveCorrection(req, res) {
 
         if (savedCount >= MAX_SAVED_CORRECTIONS) {
             return res.status(403).json({
-                title: `Your gallery is full (${MAX_SAVED_CORRECTIONS} saved corrections). Delete one to make room.`,
+                title: 'Votre galerie est pleine. Supprimez une analyse pour libérer une place.',
                 statut: 403,
                 invalidParams: [],
+                maxCorrections: MAX_SAVED_CORRECTIONS,
             })
         }
 
