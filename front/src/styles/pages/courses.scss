@@ -1,0 +1,227 @@
+@use "../_variables.scss" as *;
+
+.courses-page{
+    padding: 60px 30px 80px;
+    color: $color-text;
+
+    .courses-content{
+        max-width: 1440px;
+        margin: auto;
+
+        > h1{
+            margin-bottom: 20px;
+        }
+
+        > p{
+            margin-bottom: 40px;
+            line-height: 28px;
+        }
+    }
+
+    .courses-list{
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    summary{
+        cursor: pointer;
+        overflow-wrap: anywhere;
+
+        &::marker{
+            color: $color-primary;
+        }
+
+        &:focus-visible{
+            outline: 3px solid $color-primary;
+            outline-offset: -5px;
+        }
+
+        h2,
+        h3{
+            display: inline;
+        }
+    }
+
+    .course-category{
+        min-width: 0;
+        border: 2px solid $color-text;
+        background-color: $color-bg-surface;
+        box-shadow: 6px 6px 0 $color-text;
+    }
+
+    .category-summary{
+        padding: 25px 30px;
+        background-color: $color-accent;
+        transition: background-color 0.15s ease;
+
+        h2{
+            font-size: 30px;
+        }
+
+        &:hover{
+            background-color: $color-secondary;
+        }
+    }
+
+    .course-category[open]{
+        > .category-summary{
+            border-bottom: 2px solid $color-text;
+        }
+    }
+
+    .category-courses{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 30px;
+    }
+
+    .course-card{
+        min-width: 0;
+        border: 2px solid $color-text;
+        background-color: $color-bg-main;
+        scroll-margin-top: 30px;
+    }
+
+    .course-summary{
+        padding: 20px 25px;
+        transition: background-color 0.15s ease;
+
+        h3{
+            font-size: 23px;
+        }
+
+        &:hover{
+            background-color: $color-accent;
+        }
+    }
+
+    .course-card[open]{
+        > .course-summary{
+            border-bottom: 1px dashed $color-text;
+            background-color: $color-accent;
+        }
+    }
+
+    .course-content{
+        padding: 25px;
+        overflow-wrap: anywhere;
+
+        p,
+        li{
+            line-height: 28px;
+        }
+
+        h4{
+            margin: 25px 0 15px;
+            font-size: 21px;
+        }
+
+        ul,
+        ol{
+            padding-left: 25px;
+        }
+
+        ul{
+            list-style: disc;
+        }
+
+        li + li{
+            margin-top: 10px;
+        }
+    }
+
+    .course-lesson{
+        white-space: pre-line;
+    }
+
+    .courses-error{
+        color: $color-danger;
+    }
+
+    @media (max-width: 720px){
+        padding: 40px 20px 60px;
+
+        .courses-content{
+            > h1{
+                font-size: 36px;
+            }
+        }
+
+        .category-summary{
+            padding: 20px;
+
+            h2{
+                font-size: 26px;
+            }
+        }
+
+        .category-courses{
+            padding: 20px;
+        }
+
+        .course-summary{
+            padding: 18px 20px;
+
+            h3{
+                font-size: 21px;
+            }
+        }
+
+        .course-content{
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 480px){
+        padding: 30px 16px 50px;
+
+        .courses-content{
+            > h1{
+                font-size: 30px;
+            }
+
+            > p{
+                margin-bottom: 30px;
+                font-size: 14px;
+                line-height: 25px;
+            }
+        }
+
+        .category-summary{
+            padding: 18px 15px;
+
+            h2{
+                font-size: 23px;
+            }
+        }
+
+        .category-courses{
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .course-summary{
+            padding: 15px 12px;
+
+            h3{
+                font-size: 19px;
+            }
+        }
+
+        .course-content{
+            padding: 15px 12px;
+            font-size: 14px;
+
+            p,
+            li{
+                line-height: 25px;
+            }
+
+            h4{
+                font-size: 19px;
+            }
+        }
+    }
+}
