@@ -1,5 +1,8 @@
 @use "../_variables.scss" as *;
-.mentorship-page{
+
+.mentorship-page,
+.history-page{
+    
     .drawing-analysis{
         > h2{
             display: block;

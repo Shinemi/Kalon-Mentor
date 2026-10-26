@@ -2,14 +2,13 @@ import { Link } from 'react-router-dom'
 import type { AnalysisResult } from '../services/mentorService'
 import '../styles/components/drawingAnalysis.scss'
 
-
 type DrawingAnalysisProps = {
     result: AnalysisResult
     imageUrl: string
-    onReset: () => void
-    onSave: () => void
-    isSaving: boolean
-    isSaved: boolean
+    onReset?: () => void
+    onSave?: () => void
+    isSaving?: boolean
+    isSaved?: boolean
 }
 
 const getObject = (value: unknown): Record<string, unknown> => {
@@ -47,7 +46,14 @@ const categories = [
     { key: 'lumiere', label: 'Lumière' }
 ]
 
-const DrawingAnalysis = ({ result, imageUrl, onReset, onSave, isSaving, isSaved }: DrawingAnalysisProps) => {
+const DrawingAnalysis = ({
+    result,
+    imageUrl,
+    onReset,
+    onSave,
+    isSaving = false,
+    isSaved = false
+}: DrawingAnalysisProps) => {
     const feedback = result.feedback
     const style = getObject(feedback.style)
     const analysis = getObject(feedback.analyse)
@@ -158,6 +164,7 @@ const DrawingAnalysis = ({ result, imageUrl, onReset, onSave, isSaving, isSaved 
                                 {skills.length > 0 && (
                                     <>
                                         <h5>À travailler</h5>
+
                                         <ul>
                                             {skills.map((skill, index) => (
                                                 <li key={index}>{skill}</li>
@@ -177,35 +184,71 @@ const DrawingAnalysis = ({ result, imageUrl, onReset, onSave, isSaving, isSaved 
                 {resources.length > 0 ? (
                     <div className="analysis-resource-grid">
                         {resources.map((resource, index) => {
-                            const anchor = resource.type === 'course' ? `course-${resource.ressource_id}` : null
+                            const anchor = resource.type === 'course'
+                                ? `course-${resource.ressource_id}`
+                                : null
+
                             const content = (
                                 <>
                                     <h4>{getText(resource.titre)}</h4>
                                     <p>{getText(resource.raison)}</p>
-                                    {getText(resource.competence) && <p className="analysis-resource-skill">À travailler : {getText(resource.competence)}</p>}
-                                    {anchor && <span className="analysis-resource-link">Lire ce cours →</span>}
+
+                                    {getText(resource.competence) && (
+                                        <p className="analysis-resource-skill">À travailler : {getText(resource.competence)}</p>
+                                    )}
+
+                                    {anchor && (
+                                        <span className="analysis-resource-link">Lire ce cours →</span>
+                                    )}
                                 </>
                             )
 
-                            return anchor
-                                ? <Link to={`/courses#${anchor}`} className="analysis-card analysis-course-link" key={index}>{content}</Link>
-                                : <article className="analysis-card" key={index}>{content}</article>
+                            return anchor ? (
+                                <Link to={`/courses#${anchor}`} className="analysis-card analysis-course-link" key={index}>
+                                    {content}
+                                </Link>
+                            ) : (
+                                <article className="analysis-card" key={index}>
+                                    {content}
+                                </article>
+                            )
                         })}
                     </div>
                 ) : (
                     <p>Aucune ressource complémentaire recommandée pour ce dessin.</p>
                 )}
 
-                <Link to="/courses" className="button-accent">
-                    Explorer les cours
-                </Link>
+                <Link to="/courses" className="button-accent">Explorer les cours</Link>
             </section>
 
-            <div className="analysis-actions">
-                <button type="button" className="button-primary" onClick={onSave} disabled={isSaving || isSaved}>{isSaving ? 'Enregistrement…' : isSaved ? 'Analyse sauvegardée' : 'Sauvegarder cette analyse'}</button>
-                <button type="button" className="button-accent" onClick={onReset} disabled={isSaving}>Analyser un autre dessin</button>
-            </div>
-            {isSaved && <p className="analysis-saved-message" role="status">Cette analyse est enregistrée dans votre galerie.</p>}
+            {(onSave || onReset) && (
+                <div className="analysis-actions">
+                    {onSave && (
+                        <button
+                            type="button"
+                            className="button-primary"
+                            onClick={onSave}
+                            disabled={isSaving || isSaved}
+                        >
+                            {isSaving
+                                ? 'Enregistrement…'
+                                : isSaved
+                                    ? 'Analyse sauvegardée'
+                                    : 'Sauvegarder cette analyse'}
+                        </button>
+                    )}
+
+                    {onReset && (
+                        <button type="button" className="button-accent" onClick={onReset} disabled={isSaving}>
+                            Analyser un autre dessin
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {isSaved && (
+                <p className="analysis-saved-message" role="status">Cette analyse est enregistrée dans votre galerie.</p>
+            )}
         </section>
     )
 }

@@ -115,3 +115,81 @@ export const saveAnalysis = async (
 
     return null
 }
+
+export type SavedAnalysis = {
+    id: string
+    imageUrl: string
+    feedback: Record<string, unknown>
+    createdAt: string
+}
+
+type GalleryResponse = {
+    corrections: {
+        id: string
+        image_url: string
+        feedback_text: string | Record<string, unknown>
+        created_at: string
+    }[]
+    maxCorrections: number
+}
+
+export const getHistory = async (signal?: AbortSignal) => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return null
+
+    const response = await fetch(`${API_URL}/mentor/correctionGallery`, {
+        headers: { Authorization: `Bearer ${token}` },
+        signal
+    })
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return null
+    }
+
+    if (!response.ok) {
+        throw new Error('Impossible de charger votre historique.')
+    }
+
+    const data: GalleryResponse = await response.json()
+
+    const corrections: SavedAnalysis[] = data.corrections.map(correction => {
+        const feedback = typeof correction.feedback_text === 'string'
+            ? JSON.parse(correction.feedback_text)
+            : correction.feedback_text
+
+        if (!feedback || typeof feedback !== 'object' || Array.isArray(feedback)) {
+            throw new Error('Une analyse sauvegardée contient un retour invalide.')
+        }
+
+        return {
+            id: correction.id,
+            imageUrl: new URL(correction.image_url, API_URL).href,
+            feedback,
+            createdAt: correction.created_at
+        }
+    })
+
+    return { corrections, maxCorrections: data.maxCorrections }
+}
+
+export const deleteAnalysis = async (id: string) => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return false
+
+    const response = await fetch(`${API_URL}/mentor/correctionDelete/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return false
+    }
+
+    if (!response.ok) {
+        throw new Error('Impossible de supprimer cette analyse.')
+    }
+
+    return true
+}
