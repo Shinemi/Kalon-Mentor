@@ -27,7 +27,7 @@ const Footer = () => (
                     <a href="https://github.com/Shinemi/Kalon-Mentor" target="_blank" rel="noopener noreferrer">GitHub du projet ↗</a>
                 </div>
 
-                <Link to="/" className="footer-brand"><img src="/Logo Kalon Mentor au trait noir.png" alt="Kalon Mentor — Accueil" /></Link>
+                <Link to="/" className="footer-brand"><img src="/Logo Kalon Mentor au trait noir.webp" alt="Kalon Mentor — Accueil" /></Link>
             </div>
 
             <p className="copyright">

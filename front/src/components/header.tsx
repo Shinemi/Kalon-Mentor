@@ -12,7 +12,7 @@ const Navbar = () => {
   return (
     <header>
         <div className="header-content">
-            <Link to="/" className="logo" onClick={() => setIsOpen(false)}><img src="/Logo Kalon Mentor au trait noir.png" alt="Logo Kalon Mentor" /></Link>
+            <Link to="/" className="logo" onClick={() => setIsOpen(false)}><img src="/Logo Kalon Mentor au trait noir.webp" alt="Logo Kalon Mentor" /></Link>
 
             <nav>
                 <button
