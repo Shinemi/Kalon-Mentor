@@ -24,9 +24,15 @@ app.use(
 )
 
 // CORS : autorise les requêtes venant du frontend
+// Autorise le front local et le front déployé.
 const corsoptions = {
-    origin: ['http://localhost:3000', 'http://localhost:5173']
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:5173',
+        process.env.FRONTEND_URL
+    ].filter(Boolean)
 }
+
 app.use(cors(corsoptions))
 
 // Rate limit global
