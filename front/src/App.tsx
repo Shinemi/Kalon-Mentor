@@ -9,7 +9,7 @@ import Mentorship from './pages/Mentorship'
 import Courses from './pages/Courses'
 import NotFound from './pages/NotFound'
 import Legal from './pages/Legal'
-import Gallery from './pages/gallery'
+import Gallery from './pages/Gallery'
 import CookieBanner from './components/CookieBanner'
 
 function App() {
