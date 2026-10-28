@@ -82,16 +82,3 @@
     }
 }
 
-footer .cookie-settings-button {
-    padding: 4px 0;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-weight: 500;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    cursor: pointer;
-
-    &:hover { color: $color-secondary; }
-}
