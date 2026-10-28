@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { getProfile, updateProfile } from '../services/authService'
-import type { UserProfile } from '../services/authService'
+import { getProfile, updateProfile } from '../services/AuthService'
+import type { UserProfile } from '../services/AuthService'
 import { CircleUser, PencilLine, BookOpen, LogOut } from 'lucide-react'
 import '../styles/pages/profile.scss'
 

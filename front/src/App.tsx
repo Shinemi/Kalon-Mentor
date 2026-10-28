@@ -1,20 +1,22 @@
 import { Routes, Route } from 'react-router-dom'
-import Header from './components/header'
-import Footer from './components/footer'
-import Home from './pages/home'
-import Login from './pages/login'
-import Register from './pages/register'
-import Profile from './pages/profile'
-import Mentorship from './pages/mentorship'
-import Courses from './pages/courses'
-import NotFound from './pages/notFound'
-import Legal from './pages/legal'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Home from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Profile from './pages/Profile'
+import Mentorship from './pages/Mentorship'
+import Courses from './pages/Courses'
+import NotFound from './pages/NotFound'
+import Legal from './pages/Legal'
 import Gallery from './pages/gallery'
+import CookieBanner from './components/CookieBanner'
 
 function App() {
   return (
     <>
       <Header />
+      <CookieBanner/>
       <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Login/>}/>

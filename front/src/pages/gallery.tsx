@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getHistory, deleteAnalysis } from '../services/mentorService'
-import type { SavedAnalysis } from '../services/mentorService'
-import HistoryCard from '../components/historyCard'
-import DrawingAnalysis from '../components/drawingAnalysis'
+import { getHistory, deleteAnalysis } from '../services/MentorService'
+import type { SavedAnalysis } from '../services/MentorService'
+import HistoryCard from '../components/HistoryCard'
+import DrawingAnalysis from '../components/DrawingAnalysis'
 import '../styles/pages/gallery.scss'
 
 const Gallery = () => {

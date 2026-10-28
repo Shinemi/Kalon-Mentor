@@ -1,4 +1,4 @@
-import type { SavedAnalysis } from '../services/mentorService'
+import type { SavedAnalysis } from '../services/MentorService'
 
 type HistoryCardProps = {
     analysis: SavedAnalysis

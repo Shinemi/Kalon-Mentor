@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FileUp } from 'lucide-react'
-import { analyseImage, saveAnalysis } from '../services/mentorService'
-import type { AnalysisResult } from '../services/mentorService'
+import { analyseImage, saveAnalysis } from '../services/MentorService'
+import type { AnalysisResult } from '../services/MentorService'
 import '../styles/pages/mentorship.scss'
-import DrawingAnalysis from '../components/drawingAnalysis'
-import SaveLimitDialog from '../components/saveLimitDialog'
+import DrawingAnalysis from '../components/DrawingAnalysis'
+import SaveLimitDialog from '../components/SaveLimitDialog'
 
 const Mentorship = () => {
     const location = useLocation()

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { openCookieSettings } from '../utils/analytics'
 import '../styles/components/footer.scss'
 
 const Footer = () => (
@@ -13,6 +14,7 @@ const Footer = () => (
                         <li><Link to="/legal#confidentialite">Confidentialité</Link></li>
                         <li><Link to="/legal#conditions-utilisation">Conditions d’utilisation</Link></li>
                         <li><Link to="/legal#cookies">Cookies et stockage local</Link></li>
+                        <li><button type="button" className="cookie-settings-button" onClick={openCookieSettings}>Gérer mes cookies</button></li>
                         <li><Link to="/artists">Communauté d’artistes</Link></li>
                     </ul>
                 </nav>

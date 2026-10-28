@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import type { AnalysisResult } from '../services/mentorService'
+import type { AnalysisResult } from '../services/MentorService'
 import '../styles/components/drawingAnalysis.scss'
 
 type DrawingAnalysisProps = {
