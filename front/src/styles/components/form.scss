@@ -37,6 +37,43 @@
     border: 2px solid $color-text;
     box-shadow: 4px 4px 0px $color-text;
 
+    .form-terms {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+
+        input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            accent-color: $color-primary;
+            cursor: pointer;
+        }
+
+        label {
+            font-size: 14px;
+            line-height: 22px;
+            cursor: pointer;
+        }
+
+        a {
+            color: $color-primary;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+
+            &:hover {
+                color: $color-text;
+            }
+        }
+
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid $color-primary;
+            outline-offset: 4px;
+        }
+    }
+
     fieldset {
         width: 100%;
         max-width: 350px;

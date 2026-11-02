@@ -105,6 +105,12 @@ const Form = ({ mode }: FormProps) => {
                             required value={password} onChange={event => setPassword(event.target.value)} 
                         />
                     </div>
+                    {isRegister && (
+                        <div className="form-terms">
+                            <input id="accept-terms" name="acceptTerms" type="checkbox" required />
+                            <label htmlFor="accept-terms">J’accepte les <Link to="/legal#conditions-utilisation" target="_blank" rel="noopener noreferrer">conditions générales d’utilisation</Link>.</label>
+                        </div>
+                    )}
                     {isRegister && <p id="password-help">Au moins 8 caractères, un chiffre et un caractère spécial.</p>}
                 </div>
 
