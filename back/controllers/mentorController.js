@@ -1,18 +1,18 @@
 'use strict'
 
 const sharp = require('sharp')
-const fs = require('fs/promises')
-const path = require('path')
-const crypto = require('crypto')
+// const fs = require('fs/promises')
+// const path = require('path')
+// const crypto = require('crypto')
 const correctionModel = require('../models/correctionModel')
 const resourceModel = require('../models/resourceModel')
 const { analyseDrawing } = require('../services/aiService')
 const imageStorage = require('../services/imageStorage')
-const { get } = require('@vercel/blob')
+const { get, del } = require('@vercel/blob')
 
 const MAX_SAVED_CORRECTIONS = 10
 
-const UPLOADS_DIR = path.join(__dirname, '..', 'uploads')
+// const UPLOADS_DIR = path.join(__dirname, '..', 'uploads')
 
 // POST /mentor/correction  (US-04 + US-05)
 async function analyseCorrection(req, res) {
@@ -176,8 +176,9 @@ async function deleteCorrection(req, res) {
         }
 
         // On supprime aussi le fichier pour ne pas laisser d'images orphelines
-        const filename = path.basename(deleted.image_url)
-        await fs.unlink(path.join(UPLOADS_DIR, filename)).catch(() => {})
+        await del(deleted.image_url, {
+            token: process.env.BLOB_READ_WRITE_TOKEN
+        })
 
         res.json({ message: 'Correction deleted' })
     } catch (error) {
