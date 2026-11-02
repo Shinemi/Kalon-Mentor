@@ -126,7 +126,7 @@ export type SavedAnalysis = {
 type GalleryResponse = {
     corrections: {
         id: string
-        image_url: string
+        image: string
         feedback_text: string | Record<string, unknown>
         created_at: string
     }[]
@@ -164,7 +164,7 @@ export const getHistory = async (signal?: AbortSignal) => {
 
         return {
             id: correction.id,
-            imageUrl: new URL(correction.image_url, API_URL).href,
+            imageUrl: `data:image/webp;base64,${correction.image}`,           
             feedback,
             createdAt: correction.created_at
         }

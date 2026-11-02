@@ -8,6 +8,7 @@ const correctionModel = require('../models/correctionModel')
 const resourceModel = require('../models/resourceModel')
 const { analyseDrawing } = require('../services/aiService')
 const imageStorage = require('../services/imageStorage')
+const { get } = require('@vercel/blob')
 
 const MAX_SAVED_CORRECTIONS = 10
 
@@ -37,7 +38,7 @@ async function analyseCorrection(req, res) {
 
         const resources = await resourceModel.findAllResources()
         const feedback = await analyseDrawing(imageForAi, resources)
-        
+
         // Version légère pour l’historique.
         const imageForHistory = await sharp(req.file.buffer)
             .rotate()
@@ -131,6 +132,22 @@ async function getCorrections(req, res) {
     try {
         const corrections = await correctionModel.findCorrectionsByUser(req.user.id)
 
+        for (const correction of corrections) {
+            const image = await get(correction.image_url, {
+                access: 'private',
+                token: process.env.BLOB_READ_WRITE_TOKEN
+            })
+
+            if (!image || image.statusCode !== 200) {
+                throw new Error('Impossible de récupérer un dessin sauvegardé.')
+            }
+
+            const imageBuffer = await new Response(image.stream).arrayBuffer()
+            correction.image = Buffer.from(imageBuffer).toString('base64')
+        }
+
+        res.set('Cache-Control', 'private, no-store')
+
         res.json({
             corrections,
             savedCount: corrections.length,
@@ -138,10 +155,11 @@ async function getCorrections(req, res) {
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ 
-            title: 'Error while fetching the gallery', 
-            statut: 500, 
-            invalidParams: [] })
+        res.status(500).json({
+            title: 'Error while fetching the gallery',
+            statut: 500,
+            invalidParams: []
+        })
     }
 }
 
