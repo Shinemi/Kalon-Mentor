@@ -207,7 +207,7 @@ async function analyseDrawing(imageBuffer, resources) {
                         { text: buildPrompt(resources) },
                         {
                             inline_data: {
-                                mime_type: 'image/jpeg',
+                                mime_type: 'image/webp',
                                 data: imageBuffer.toString('base64'),
                             },
                         },

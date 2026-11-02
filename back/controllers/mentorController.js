@@ -22,21 +22,28 @@ async function analyseCorrection(req, res) {
     }
 
     try {
-        // Version envoyée à l'IA : assez grande pour qu'elle voie les détails
+        // Image envoyée à Gemini.
         const imageForAi = await sharp(req.file.buffer)
             .rotate()
-            .resize({ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true })
-            .jpeg({ quality: 85 })
+            .resize({
+                width: 1200,
+                height: 1200,
+                fit: 'inside',
+                withoutEnlargement: true
+            })
+            .webp({ quality: 85 })
             .toBuffer()
 
-        const resources = await resourceModel.findAllResources()
-        const feedback = await analyseDrawing(imageForAi, resources)
-
-        // Version légère pour l'historique
+        // Version légère pour l’historique.
         const imageForHistory = await sharp(req.file.buffer)
             .rotate()
-            .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true })
-            .jpeg({ quality: 70 })
+            .resize({
+                width: 800,
+                height: 800,
+                fit: 'inside',
+                withoutEnlargement: true
+            })
+            .webp({ quality: 80 })
             .toBuffer()
 
         res.json({ feedback, image: imageForHistory.toString('base64') })
@@ -89,17 +96,18 @@ async function saveCorrection(req, res) {
             })
         }
 
-        // Écriture du fichier compressé sur le disque
-        await fs.mkdir(UPLOADS_DIR, { recursive: true })
-        const filename = `${crypto.randomUUID()}.jpg`
-        await fs.writeFile(path.join(UPLOADS_DIR, filename), Buffer.from(image, 'base64'))
+        //écriture locale
+        const blob = await imageStorage.saveImage(
+            Buffer.from(image, 'base64'),
+            req.user.id
+        )
 
         // Jusqu'à 3 ressources liées en base (table corrections_resources) ;
         const resourceIds = await resolveResourceIds(feedback)
 
-        const correction = await correctionModel.createSaveCorrection(
+       const correction = await correctionModel.createSaveCorrection(
             req.user.id,
-            `/uploads/${filename}`,
+            blob.url,
             JSON.stringify(feedback),
             resourceIds
         )
