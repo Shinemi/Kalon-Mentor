@@ -7,6 +7,7 @@ const crypto = require('crypto')
 const correctionModel = require('../models/correctionModel')
 const resourceModel = require('../models/resourceModel')
 const { analyseDrawing } = require('../services/aiService')
+const imageStorage = require('../services/imageStorage')
 
 const MAX_SAVED_CORRECTIONS = 10
 
@@ -34,6 +35,9 @@ async function analyseCorrection(req, res) {
             .webp({ quality: 85 })
             .toBuffer()
 
+        const resources = await resourceModel.findAllResources()
+        const feedback = await analyseDrawing(imageForAi, resources)
+        
         // Version légère pour l’historique.
         const imageForHistory = await sharp(req.file.buffer)
             .rotate()

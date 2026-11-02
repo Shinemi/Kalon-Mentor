@@ -205,7 +205,7 @@ const Mentorship = () => {
                     <>
                         <DrawingAnalysis
                             result={result}
-                            imageUrl={previewUrl || `data:image/jpeg;base64,${result.image}`}
+                            imageUrl={previewUrl || `data:image/webp;base64,${result.image}`}
                             onReset={removeImage}
                             onSave={handleSave}
                             isSaving={isSaving}
