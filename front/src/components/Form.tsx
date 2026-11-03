@@ -13,6 +13,7 @@ const Form = ({ mode }: FormProps) => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [acceptedTerms, setAcceptedTerms] = useState(false)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
@@ -30,12 +31,20 @@ const Form = ({ mode }: FormProps) => {
             return
         }
 
+        if (isRegister && !acceptedTerms) {
+            setError('Vous devez accepter les conditions générales d’utilisation.')
+            return
+        }
+
         setIsLoading(true)
         try {
-            await authenticate(mode, {
+           await authenticate(mode, {
                 email: email.trim(),
                 password,
-                ...(isRegister ? { username: username.trim() } : {})
+                ...(isRegister ? {
+                    username: username.trim(),
+                    acceptedTerms
+                } : {})
             })
             navigate(image ? '/mentorship' : '/', {
                 replace: true,
@@ -107,7 +116,9 @@ const Form = ({ mode }: FormProps) => {
                     </div>
                     {isRegister && (
                         <div className="form-terms">
-                            <input id="accept-terms" name="acceptTerms" type="checkbox" required />
+                            <input
+                                id="accept-terms" name="acceptTerms" type="checkbox" checked={acceptedTerms} required onChange={event => setAcceptedTerms(event.target.checked)}
+                            />
                             <label htmlFor="accept-terms">J’accepte les <Link to="/legal#conditions-utilisation" target="_blank" rel="noopener noreferrer">conditions générales d’utilisation</Link>.</label>
                         </div>
                     )}

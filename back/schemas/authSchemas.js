@@ -23,7 +23,11 @@ const registerSchema = z.object({
         .regex(/[0-9]/, { error: 'Le mot de passe doit contenir au moins un chiffre.' })
         .regex(/[^a-zA-Z0-9\s]/, { error: 'Le mot de passe doit contenir au moins un caractère spécial.' }),
 
-    email: emailSchema
+    email: emailSchema,
+    
+    acceptedTerms: z.literal(true, {
+        error: 'Vous devez accepter les conditions générales d’utilisation.'
+    })
 }).strict() // Interdit les champs supplémentaires non définis.
 
 
