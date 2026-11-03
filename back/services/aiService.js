@@ -220,6 +220,11 @@ async function analyseDrawing(imageBuffer, resources) {
             },
         }),
     })
+    if (response.status === 503) {
+        const error = new Error('Le mentor est temporairement indisponible.')
+        error.code = 'AI_UNAVAILABLE'
+        throw error
+    }
 
     if (!response.ok) {
         throw new Error(`AI request failed (${response.status})`)

@@ -36,6 +36,10 @@ export const analyseImage = async (
     if (response.status === 429) {
         throw new Error('Trop de demandes. Réessayez dans quelques instants.')
     }
+    
+    if (response.status === 503) {
+        throw new Error('Le mentor est temporairement indisponible.')
+    }
 
     if (response.status >= 500) {
         throw new Error('L’analyse a échoué. Veuillez réessayer dans un instant.')

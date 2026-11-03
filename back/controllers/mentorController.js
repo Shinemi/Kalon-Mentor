@@ -54,6 +54,15 @@ async function analyseCorrection(req, res) {
         res.json({ feedback, image: imageForHistory.toString('base64') })
     } catch (error) {
         console.error(error)
+        
+        if (error.code === 'AI_UNAVAILABLE') {
+            return res.status(503).json({
+                title: 'Le mentor est temporairement indisponible.',
+                statut: 503,
+                invalidParams: []
+            })
+        }
+        
         res.status(500).json({ 
             title: 'Error while analysing the drawing', 
             statut: 500, 
