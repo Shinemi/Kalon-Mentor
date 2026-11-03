@@ -43,7 +43,9 @@ const Home = () => {
                     <p className="handwritten">* On échauffe son poignet…</p>
                     <h1 id="hero-title">Maîtrisez <span className='titleAlt'>l’Art</span> du trait</h1>
                     <p>Votre mentor de dessin vous accompagne à chaque étape. Partagez vos croquis, recevez des conseils constructifs et progressez, un trait après l’autre.</p>
-                    <Link to="/register" className="button-primary">Commencer mon parcours <ArrowRight aria-hidden="true" /></Link>
+                    <Link to={sessionStorage.getItem('kalon-token') ? '/mentorship' : '/register'} className="button-primary">
+                        Commencer mon parcours <ArrowRight aria-hidden="true" />
+                    </Link>                
                 </div>
 
                 <div>
@@ -100,7 +102,9 @@ const Home = () => {
 
             <section className="home-cta" aria-labelledby="cta-title">
                 <h2 id="cta-title">Prêt à faire évoluer votre dessin ?</h2>
-                <Link to="/register" className="button-primary"><Pencil aria-hidden="true" /> Commencer mon parcours artistique</Link>
+                <Link to={sessionStorage.getItem('kalon-token') ? '/mentorship' : '/register'} className="button-primary">
+                    <Pencil aria-hidden="true" /> Commencer mon parcours artistique
+                </Link>                
                 <p className="handwritten">Vous avez le droit de vous tromper.</p>
             </section>
         </main>
