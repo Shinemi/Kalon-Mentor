@@ -309,6 +309,11 @@ const Profile = () => {
                                         <BookOpen aria-hidden="true" />
                                         Explorer les cours
                                     </Link>
+                                    
+                                    <Link to="/gallery" className="profile-action">
+                                        <BookOpen aria-hidden="true" />
+                                        Explorer les cours
+                                    </Link>
                                 </div>
                             </section>
                         </div>
