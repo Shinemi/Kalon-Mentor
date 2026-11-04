@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { getProfile, updateProfile, deleteAccount } from '../services/AuthService'
 import type { UserProfile } from '../services/AuthService'
-import { CircleUser, PencilLine, BookOpen, LogOut } from 'lucide-react'
+import { CircleUser, PencilLine, BookOpen, LogOut, RotateCcwClock } from 'lucide-react'
 import '../styles/pages/profile.scss'
 
 const Profile = () => {
@@ -311,8 +311,8 @@ const Profile = () => {
                                     </Link>
                                     
                                     <Link to="/gallery" className="profile-action">
-                                        <BookOpen aria-hidden="true" />
-                                        Explorer les cours
+                                        <RotateCcwClock aria-hidden="true" />
+                                        Consulter votre Historique
                                     </Link>
                                 </div>
                             </section>
