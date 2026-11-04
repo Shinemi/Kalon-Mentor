@@ -5,11 +5,12 @@
     color: $color-text;
 
     .profile-delete {
-        color: $color-danger;
-        border-color: $color-danger;
+        color: $color-primary;
+        border-color: $color-primary;
+        box-shadow: 6px 6px #731802;
 
         &:hover:not(:disabled) {
-            background-color: $color-danger;
+            background-color: $color-primary;
             color: white;
         }
     }
