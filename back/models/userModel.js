@@ -68,3 +68,36 @@ exports.updateUser = async (id, fields) => {
 
     return rows[0]
 }
+
+exports.deleteUser = async (userId) => {
+    const client = await pool.connect()
+
+    try {
+        await client.query('BEGIN')
+
+        await client.query(
+            `DELETE FROM corrections_resources
+             WHERE correction_id IN (
+                 SELECT id FROM corrections WHERE user_id = $1
+             )`,
+            [userId]
+        )
+
+        await client.query(
+            'DELETE FROM corrections WHERE user_id = $1',
+            [userId]
+        )
+
+        await client.query(
+            'DELETE FROM users WHERE id = $1',
+            [userId]
+        )
+
+        await client.query('COMMIT')
+    } catch (error) {
+        await client.query('ROLLBACK')
+        throw error
+    } finally {
+        client.release()
+    }
+}

@@ -123,3 +123,26 @@ export const updateProfile = async (
 
     return data.user
 }
+
+export const deleteAccount = async (): Promise<boolean> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return false
+
+    const response = await fetch(`${API_URL}/auth/profile`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return false
+    }
+
+    if (!response.ok) {
+        const data = await response.json().catch(() => null)
+        throw new Error(data?.title || 'Impossible de supprimer votre compte.')
+    }
+
+    sessionStorage.removeItem('kalon-token')
+    return true
+}

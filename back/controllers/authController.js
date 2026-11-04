@@ -3,6 +3,8 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const userModel = require('../models/userModel')
+const correctionModel = require('../models/correctionModel')
+const { del } = require('@vercel/blob')
 
 function generateToken(userId) {
     return jwt.sign(
@@ -131,4 +133,29 @@ async function updateProfile(req, res) {
     }
 }
 
-module.exports = { register, login, getProfile, updateProfile }
+async function deleteAccount(req, res) {
+    try {
+        const corrections = await correctionModel.findCorrectionsByUser(req.user.id)
+        const imageUrls = corrections.map(correction => correction.image_url)
+
+        if (imageUrls.length > 0) {
+            await del(imageUrls, {
+                token: process.env.BLOB_READ_WRITE_TOKEN
+            })
+        }
+
+        await userModel.deleteUser(req.user.id)
+
+        res.status(204).end()
+    } catch (error) {
+        console.error(error)
+
+        res.status(500).json({
+            title: 'La suppression du compte n’a pas pu être terminée. Réessayez ou contactez l’assistance.',
+            statut: 500,
+            invalidParams: []
+        })
+    }
+}
+
+module.exports = { register, login, getProfile, updateProfile, deleteAccount }

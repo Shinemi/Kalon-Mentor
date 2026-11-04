@@ -3,6 +3,16 @@
 .profile-page{
     padding: 60px 30px 80px;
     color: $color-text;
+
+    .profile-delete {
+        color: $color-danger;
+        border-color: $color-danger;
+
+        &:hover:not(:disabled) {
+            background-color: $color-danger;
+            color: white;
+        }
+    }
     
     .profile-edit-buttons{
         display: flex;
@@ -233,6 +243,8 @@
         display: flex;
         justify-content: flex-end;
         margin-top: 40px;
+        flex-wrap: wrap;
+        gap: 20px;
 
         button{
             cursor: pointer;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { getProfile, updateProfile } from '../services/AuthService'
+import { getProfile, updateProfile, deleteAccount } from '../services/AuthService'
 import type { UserProfile } from '../services/AuthService'
 import { CircleUser, PencilLine, BookOpen, LogOut } from 'lucide-react'
 import '../styles/pages/profile.scss'
@@ -13,6 +13,8 @@ const Profile = () => {
     const [saving, setSaving] = useState(false)
     const [formError, setFormError] = useState('')
     const [successMessage, setSuccessMessage] = useState('')
+    const [isDeleting, setIsDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -58,7 +60,7 @@ const Profile = () => {
     const handleUpdate = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (!editing || saving) return
+        if (!editing || saving || isDeleting) return
 
         setFormError('')
         setSuccessMessage('')
@@ -109,6 +111,37 @@ const Profile = () => {
             )
         } finally {
             setSaving(false)
+        }
+    }
+
+    const handleDeleteAccount = async () => {
+        if (isDeleting || saving) return
+
+        if (!window.confirm('Supprimer définitivement votre compte, vos analyses et vos dessins sauvegardés ? Cette action est irréversible.')) return
+
+        setIsDeleting(true)
+        setDeleteError('')
+
+        try {
+            const deleted = await deleteAccount()
+
+            if (!deleted) {
+                navigate('/login', { replace: true })
+                return
+            }
+
+            navigate('/', {
+                replace: true,
+                state: { message: 'Votre compte a été supprimé.' }
+            })
+        } catch (error) {
+            setDeleteError(
+                error instanceof Error
+                    ? error.message
+                    : 'Impossible de supprimer votre compte.'
+            )
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -191,7 +224,7 @@ const Profile = () => {
                                                 : 'Modifier mon mot de passe'}
                                         </h3>
 
-                                        <fieldset disabled={saving}>
+                                        <fieldset disabled={saving || isDeleting}>
                                             {editing === 'information' ? (
                                                 <>
                                                     <label htmlFor="profile-username">Pseudo</label>
@@ -281,11 +314,17 @@ const Profile = () => {
                         </div>
 
                         <div className="profile-session">
-                            <button type="button" className="button-primary" onClick={handleLogout}>
+                            <button type="button" className="button-primary" onClick={handleLogout} disabled={saving || isDeleting}>
                                 <LogOut aria-hidden="true" />
                                 Se déconnecter
                             </button>
+
+                            <button type="button" className="profile-action profile-delete" onClick={handleDeleteAccount} disabled={saving || isDeleting}>
+                                {isDeleting ? 'Suppression en cours…' : 'Supprimer mon compte'}
+                            </button>
                         </div>
+
+                        {deleteError && <p className="profile-error" role="alert">{deleteError}</p>}
                     </>
                 ) : (
                     <p role="status">Chargement du profil…</p>
