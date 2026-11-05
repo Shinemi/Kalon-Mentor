@@ -1,92 +1,65 @@
-'use strict'
-
+﻿'use strict'
+jest.mock('../models/userModel', () => ({ findUserByEmail: jest.fn(), createUser: jest.fn(), findUserById: jest.fn(), updateUser: jest.fn() }))
+jest.mock('../models/correctionModel', () => ({}))
 const request = require('supertest')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 const app = require('../app')
-const db = require('../db/db')
-
-// Un email dédié aux tests, qu'on nettoie avant/après pour ne pas
-// polluer la vraie table users avec de faux comptes à chaque exécution.
-const TEST_EMAIL = 'test.jest@kalonmentor.local'
-const TEST_PASSWORD = 'motdepasse123!'
-
-beforeAll(async () => {
-    await db.query('DELETE FROM users WHERE email = $1', [TEST_EMAIL])
+const users = require('../models/userModel')
+const user = { id: 1, username: 'artiste', email: 'artiste@example.com', token_version: 2 }
+const password = 'dessin123!'
+const credentials = { email: user.email, password }
+let token
+beforeEach(() => {
+  jest.resetAllMocks()
+  process.env.JWT_SECRET = 'secret-exclusivement-pour-les-tests'
+  token = jwt.sign({ id: user.id, tokenVersion: 2 }, process.env.JWT_SECRET)
+  users.findUserById.mockResolvedValue(user)
 })
-
-afterAll(async () => {
-    await db.query('DELETE FROM users WHERE email = $1', [TEST_EMAIL])
-    await db.pool.end() // ferme la connexion à la base, sinon Jest ne se termine pas
+test('inscription : hache le mot de passe et signe la version de session', async () => {
+  users.findUserByEmail.mockResolvedValue(null)
+  users.createUser.mockResolvedValue(user)
+  const response = await request(app).post('/api/v1/auth/register').send({ ...credentials, username: user.username, acceptedTerms: true })
+  expect(response.status).toBe(201)
+  const hash = users.createUser.mock.calls[0][2]
+  expect(hash).not.toBe(password)
+  expect(await bcrypt.compare(password, hash)).toBe(true)
+  expect(jwt.verify(response.body.token, process.env.JWT_SECRET)).toMatchObject({ id: 1, tokenVersion: 2 })
 })
-
-test('inscription réussie renvoie un token', async () => {
-    const response = await request(app)
-        .post('/api/v1/auth/register')
-        .send({ username: 'jest-tester', email: TEST_EMAIL, password: TEST_PASSWORD })
-
-    expect(response.status).toBe(201)
-    expect(response.body.token).toBeDefined()
+test('refuse une inscription sans acceptation des conditions', async () => {
+  const response = await request(app).post('/api/v1/auth/register').send({ ...credentials, username: user.username })
+  expect(response.status).toBe(422)
+  expect(users.createUser).not.toHaveBeenCalled()
 })
-
-test('inscription refusée si l\'email existe déjà', async () => {
-    // Le compte créé au test précédent existe toujours en base ici
-    const response = await request(app)
-        .post('/api/v1/auth/register')
-        .send({ username: 'jest-tester', email: TEST_EMAIL, password: TEST_PASSWORD })
-
-    expect(response.status).toBe(409)
+test('refuse un e-mail déjà utilisé sans créer de compte', async () => {
+  users.findUserByEmail.mockResolvedValue(user)
+  const response = await request(app).post('/api/v1/auth/register').send({ ...credentials, username: user.username, acceptedTerms: true })
+  expect(response.status).toBe(409)
+  expect(users.createUser).not.toHaveBeenCalled()
 })
-
-test('connexion réussie avec le bon mot de passe', async () => {
-    const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({ email: TEST_EMAIL, password: TEST_PASSWORD })
-
-    expect(response.status).toBe(200)
-    expect(response.body.token).toBeDefined()
+test.each([true, false])('connexion avec mot de passe correct : %s', async correct => {
+  users.findUserByEmail.mockResolvedValue({ ...user, password: await bcrypt.hash(password, 4) })
+  const response = await request(app).post('/api/v1/auth/login').send({ ...credentials, password: correct ? password : 'incorrect' })
+  expect(response.status).toBe(correct ? 200 : 401)
+  expect(response.body.user?.password).toBeUndefined()
+  if (correct) expect(response.body.token).toEqual(expect.any(String))
 })
-
-test('connexion refusée avec un mauvais mot de passe', async () => {
-    const response = await request(app)
-        .post('/api/v1/auth/login')
-        .send({ email: TEST_EMAIL, password: 'mauvais-mot-de-passe' })
-
-    expect(response.status).toBe(401)
+test('récupère le profil authentifié', async () => {
+  const response = await request(app).get('/api/v1/auth/profile').set('Authorization', `Bearer ${token}`)
+  expect(response.status).toBe(200)
+  expect(response.body.user).toEqual(user)
 })
-
-test('récupère le profil avec un token valide', async () => {
-    // On se reconnecte pour récupérer un token frais
-    const loginResponse = await request(app)
-        .post('/api/v1/auth/login')
-        .send({ email: TEST_EMAIL, password: TEST_PASSWORD })
-
-    const token = loginResponse.body.token
-
-    const response = await request(app)
-        .get('/api/v1/auth/profile')
-        .set('Authorization', `Bearer ${token}`)
-
-    expect(response.status).toBe(200)
-    expect(response.body.user.email).toBe(TEST_EMAIL)
+test.each(['absent', 'invalide', 'révoqué', 'supprimé'])('refuse une session %s', async kind => {
+  if (kind === 'révoqué') users.findUserById.mockResolvedValue({ ...user, token_version: 3 })
+  if (kind === 'supprimé') users.findUserById.mockResolvedValue(null)
+  const req = request(app).get('/api/v1/auth/profile')
+  if (kind !== 'absent') req.set('Authorization', `Bearer ${kind === 'invalide' ? 'invalide' : token}`)
+  expect((await req).status).toBe(401)
 })
-
-test('refuse l\'accès au profil sans token', async () => {
-    const response = await request(app).get('/api/v1/auth/profile')
-
-    expect(response.status).toBe(401)
-})
-
-test('modifie le username du profil', async () => {
-    const loginResponse = await request(app)
-        .post('/api/v1/auth/login')
-        .send({ email: TEST_EMAIL, password: TEST_PASSWORD })
-
-    const token = loginResponse.body.token
-
-    const response = await request(app)
-        .put('/api/v1/auth/profileUpdate')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ username: 'jest-tester-modifie' })
-
-    expect(response.status).toBe(200)
-    expect(response.body.user.username).toBe('jest-tester-modifie')
+test('modifie uniquement le profil de la session', async () => {
+  users.updateUser.mockResolvedValue({ ...user, username: 'nouveau' })
+  const response = await request(app).put('/api/v1/auth/profileUpdate').set('Authorization', `Bearer ${token}`).send({ username: 'nouveau' })
+  expect(response.status).toBe(200)
+  expect(users.updateUser).toHaveBeenCalledWith(user.id, expect.objectContaining({ username: 'nouveau' }))
+  expect(response.body.user.username).toBe('nouveau')
 })

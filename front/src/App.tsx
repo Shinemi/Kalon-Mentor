@@ -11,7 +11,7 @@ import NotFound from './pages/NotFound'
 import Legal from './pages/Legal'
 import Gallery from './pages/Gallery'
 import CookieBanner from './components/CookieBanner'
-import PasswordRecovery from './pages/PasswordRecovery'
+import PasswordRecovery from './pages/PassWordRecovery'
 
 function App() {
   return (

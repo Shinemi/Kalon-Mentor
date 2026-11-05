@@ -47,7 +47,7 @@ test('identifiants incorrects : 401', async () => {
 test('e-mail déjà utilisé : 409 avec le champ email', async () => {
     userModel.findUserByEmail.mockResolvedValue({ id: 1 })
     const response = await request(app).post('/api/v1/auth/register')
-        .send({ username: 'artiste', email: 'artiste@example.com', password: 'dessin123!' })
+        .send({ username: 'artiste', email: 'artiste@example.com', password: 'dessin123!', acceptedTerms: true })
     expectError(response, 409)
     expect(response.body.invalidParams[0].path).toBe('email')
 })
