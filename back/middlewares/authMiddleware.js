@@ -26,6 +26,10 @@ async function authMiddleware(req, res, next) {
                 invalidParams: [] })
         }
 
+        if ((decoded.tokenVersion ?? 0) !== (user.token_version ?? 0)) {
+            return res.status(401).json({ title: 'Votre session a expiré. Reconnectez-vous.', statut: 401, invalidParams: [] })
+        }
+
         req.user = user
         next()
     } catch (error) {

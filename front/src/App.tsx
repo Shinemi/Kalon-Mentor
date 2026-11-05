@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound'
 import Legal from './pages/Legal'
 import Gallery from './pages/Gallery'
 import CookieBanner from './components/CookieBanner'
+import PasswordRecovery from './pages/PasswordRecovery'
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
+        <Route path='/forgot-password' element={<PasswordRecovery key="request" mode="request" />} />
+        <Route path='/reset-password' element={<PasswordRecovery key="reset" mode="reset" />} />
         <Route path='/profile' element={<Profile/>}/>
         <Route path='/mentorship' element={<Mentorship/>}/>
         <Route path='/courses' element={<Courses/>}/>
