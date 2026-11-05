@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound'
 import Legal from './pages/Legal'
 import Gallery from './pages/Gallery'
 import CookieBanner from './components/CookieBanner'
+import PasswordRecovery from './pages/PasswordRecovery'
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
         <Route path='/*' element={<NotFound/>}/>
         <Route path='/legal' element={<Legal />} />
         <Route path='/gallery' element={<Gallery/>}/>
+        <Route path="/forgot-password" element={<PasswordRecovery key="request" mode="request" />} />
+        <Route path="/reset-password" element={<PasswordRecovery key="reset" mode="reset" />} />
       </Routes>
       <Footer />
     </>

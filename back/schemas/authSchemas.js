@@ -58,4 +58,27 @@ const updateProfileSchema = z.object({
         { error: 'Veuillez fournir au moins un champ à modifier.' }
     )
 
-module.exports = { registerSchema, loginSchema, updateProfileSchema }
+
+const forgotPasswordSchema = z.object({
+    email: emailSchema
+}).strict()
+
+const resetPasswordSchema = z.object({
+    token: z.string({
+        error: 'Le lien de réinitialisation est requis.'
+    })
+        .regex(/^[a-f0-9]{64}$/, {
+            error: 'Le lien de réinitialisation est invalide.'
+        }),
+
+    password: registerSchema.shape.password
+}).strict()
+
+
+module.exports = {
+    registerSchema,
+    loginSchema,
+    updateProfileSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema
+}

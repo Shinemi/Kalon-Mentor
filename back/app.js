@@ -10,6 +10,9 @@ const path = require('path')
 
 
 const app = express()
+if (process.env.RENDER === 'true') {
+    app.set('trust proxy', 1)
+}
 const port = process.env.PORT || 3000
 
 // Helmet : sécurisation des headers HTTP

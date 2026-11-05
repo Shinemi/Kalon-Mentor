@@ -14,6 +14,48 @@ const errorMessages: Record<string, string> = {
     'Password must be at least 8 characters long and contain at least one number and one special character': 'Le mot de passe doit contenir au moins 8 caractères, un chiffre et un caractère spécial.'
 }
 
+export const recoverPassword = async (
+    mode: 'request' | 'reset',
+    fields: { email?: string; token?: string; password?: string }
+): Promise<string> => {
+    const route = mode === 'request'
+        ? 'forgotPassword'
+        : 'resetPassword'
+
+    let response: Response
+
+    try {
+        response = await fetch(`${API_URL}/auth/${route}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fields)
+        })
+    } catch {
+        throw new Error('Impossible de joindre le serveur. Réessayez plus tard.')
+    }
+
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok) {
+        throw new Error(
+            data?.invalidParams?.[0]?.message ||
+            data?.title ||
+            'La demande a échoué. Réessayez plus tard.'
+        )
+    }
+
+    if (typeof data?.message !== 'string') {
+        throw new Error('La réponse du serveur est invalide.')
+    }
+
+    if (mode === 'reset') {
+        sessionStorage.removeItem('kalon-token')
+    }
+
+    return data.message
+}
+
+
 export const authenticate = async (mode: 'login' | 'register', credentials: Credentials) => {
     let response: Response
     try {
