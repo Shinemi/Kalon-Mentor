@@ -6,6 +6,7 @@ const credentials = {
     username: 'artiste',
     email: 'artiste@example.com',
     password: 'motdepasse123!',
+    acceptedTerms: true,
 }
 
 test('normalise le pseudo et l’e-mail du formulaire', () => {

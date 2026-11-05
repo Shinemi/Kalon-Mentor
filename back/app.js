@@ -12,6 +12,9 @@ const path = require('path')
 const app = express()
 const port = process.env.PORT || 3000
 
+// Render place un proxy devant Express : retrouver l'IP pour les limites de requêtes.
+if (process.env.RENDER === 'true') app.set('trust proxy', 1)
+
 // Helmet : sécurisation des headers HTTP
 app.use(
     helmet({

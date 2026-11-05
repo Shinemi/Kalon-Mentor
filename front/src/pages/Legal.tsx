@@ -106,6 +106,9 @@ const Legal = () => {
                     <h3>Compte et authentification</h3>
                     <p>Le pseudo, l’adresse e-mail, le mot de passe haché, l’identifiant et la date de création servent à gérer le compte et les accès. Le mot de passe est haché avec bcrypt ; il n’est pas enregistré en clair. Ces traitements reposent sur l’exécution du service demandé, au sens de l’article 6, paragraphe 1, b du RGPD.</p>
                     <p>Les champs obligatoires du formulaire sont nécessaires à la création du compte. Sans eux ou sans acceptation des CGU, l’inscription est refusée. Le site ne vous demande pas votre nom civil pour utiliser le mentorat.</p>
+                    <h3>Récupération du mot de passe</h3>
+                    <p>Si vous demandez une réinitialisation, votre adresse e-mail et un lien temporaire sont transmis à Brevo pour l’envoi du message. Le lien est valable 30 minutes, utilisable une seule fois et remplacé par une nouvelle demande. Seule son empreinte est conservée en base avec sa date d’expiration. Ces données servent à sécuriser l’accès au compte et reposent sur l’exécution du service demandé. Aucun abonnement à une newsletter n’est créé par cette demande.</p>
+                    <p>Une réinitialisation réussie invalide les anciennes sessions. L’empreinte du lien est supprimée lors de son utilisation, de son remplacement ou d’une modification de l’e-mail ou du mot de passe. Une empreinte expirée peut rester en base jusqu’à l’une de ces opérations ou à la suppression du compte ; elle ne permet plus de modifier le mot de passe.</p>
                     <h3>Mentorat et historique</h3>
                     <p>L’image soumise est utilisée pour produire l’analyse. Si vous la sauvegardez, le dessin, le retour, les ressources associées et la date sont rattachés à votre compte. Le traitement du dessin et la sauvegarde demandée reposent sur l’exécution du service ; la sauvegarde reste facultative.</p>
                     <h3>Assistance et sécurité</h3>
@@ -128,6 +131,7 @@ const Legal = () => {
                         <li>Google Analytics : mesure de fréquentation, uniquement après votre accord.</li>
                         <li>Google Fonts : chargement des polices, impliquant une connexion technique à Google, notamment avec votre adresse IP.</li>
                         <li>Gmail : réception des messages adressés à l’éditeur.</li>
+                        <li>Brevo : acheminement des e-mails de réinitialisation et informations techniques de livraison. Les durées des journaux et les réglages de suivi du compte Brevo restent à confirmer. <a href="https://www.brevo.com/fr/legal/privacypolicy/">Politique de confidentialité de Brevo</a>.</li>
                     </ul>
                     <p>Les dessins sauvegardés utilisent un stockage Blob privé configuré à Paris, en France. Les adresses des sociétés citées dans les mentions légales ne correspondent pas nécessairement aux lieux de stockage des données.</p>
                     <p>Certains prestataires et leurs sous-traitants opèrent hors de l’Espace économique européen. Les accès techniques et transferts éventuels doivent être examinés au regard des contrats de traitement et des garanties applicables. Une région de stockage européenne ne garantit pas que tout traitement reste en Europe.</p>

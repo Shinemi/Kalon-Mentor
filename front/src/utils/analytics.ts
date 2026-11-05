@@ -56,6 +56,9 @@ export const getCookieConsent = (): boolean | null => {
 let analyticsLoading = false
 
 export const startAnalytics = () => {
+    // Ne pas charger de mesure d'audience sur la page contenant le lien secret.
+    if (window.location.pathname === '/reset-password') return
+
     if (getCookieConsent() === true && GA_ID) {
         window[`ga-disable-${GA_ID}`] = false
         if (analyticsStarted || analyticsLoading) {

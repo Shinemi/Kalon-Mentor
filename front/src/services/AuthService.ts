@@ -7,6 +7,37 @@ type Credentials = {
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1').replace(/\/$/, '')
 
+export const recoverPassword = async (
+    mode: 'request' | 'reset',
+    fields: { email?: string; token?: string; password?: string }
+): Promise<string> => {
+    const route = mode === 'request' ? 'forgotPassword' : 'resetPassword'
+    let response: Response
+
+    try {
+        response = await fetch(`${API_URL}/auth/${route}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fields)
+        })
+    } catch {
+        throw new Error('Impossible de joindre le serveur. Réessayez plus tard.')
+    }
+
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok) {
+        throw new Error(data?.invalidParams?.[0]?.message || data?.title || 'La demande a échoué. Réessayez plus tard.')
+    }
+
+    if (typeof data?.message !== 'string') {
+        throw new Error('La réponse du serveur est invalide.')
+    }
+
+    if (mode === 'reset') sessionStorage.removeItem('kalon-token')
+    return data.message
+}
+
 const errorMessages: Record<string, string> = {
     'Invalid email': 'Cette adresse e-mail est invalide.',
     'username, email and password are required': 'Veuillez remplir tous les champs.',

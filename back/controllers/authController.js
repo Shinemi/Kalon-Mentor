@@ -2,13 +2,16 @@
 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const crypto = require('node:crypto')
+const { setTimeout: wait } = require('node:timers/promises')
+const { sendPasswordResetEmail } = require('../services/emailService')
 const userModel = require('../models/userModel')
 const correctionModel = require('../models/correctionModel')
 const { del } = require('@vercel/blob')
 
-function generateToken(userId) {
+function generateToken(userId, tokenVersion = 0) {
     return jwt.sign(
-        { id: userId },
+        { id: userId, tokenVersion },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
     )
@@ -43,7 +46,7 @@ async function register(req, res) {
 
         res.status(201).json({
             user,
-            token: generateToken(user.id)
+            token: generateToken(user.id, user.token_version)
         })
     } catch (error) {
         console.error(error)
@@ -90,7 +93,7 @@ async function login(req, res) {
                 username: user.username,
                 email: user.email
             },
-            token: generateToken(user.id)
+            token: generateToken(user.id, user.token_version)
         })
     } catch (error) {
         console.error(error)
@@ -158,4 +161,55 @@ async function deleteAccount(req, res) {
     }
 }
 
-module.exports = { register, login, getProfile, updateProfile, deleteAccount }
+async function forgotPassword(req, res) {
+    const startedAt = Date.now()
+
+    try {
+        const user = await userModel.findUserByEmail(req.body.email)
+
+        if (user) {
+            const token = crypto.randomBytes(32).toString('hex')
+            const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+            const saved = await userModel.savePasswordResetToken(user.id, tokenHash)
+
+            if (saved) {
+                try {
+                    await sendPasswordResetEmail(user.email, token)
+                } catch (error) {
+                    await userModel.clearPasswordResetToken(user.id, tokenHash)
+                    throw error
+                }
+            }
+        }
+    } catch (error) {
+        // Pas d'e-mail, de lien de réinitialisation ou de clé dans les logs.
+        console.error('Échec de la demande de réinitialisation :', error.code || error.name, error.status || '')
+    }
+
+    // Réduit l'écart de temps entre une adresse inconnue et une adresse connue.
+    await wait(Math.max(0, 1000 - (Date.now() - startedAt)))
+    res.status(202).json({ message: 'Si un compte correspond à cette adresse, un e-mail de réinitialisation a été envoyé.' })
+}
+
+async function resetPassword(req, res) {
+    try {
+        const tokenHash = crypto.createHash('sha256').update(req.body.token).digest('hex')
+        const hashedPassword = await bcrypt.hash(req.body.password, 10)
+        const user = await userModel.resetPassword(tokenHash, hashedPassword)
+
+        if (!user) {
+            return res.status(400).json({
+                title: 'Ce lien est invalide ou a expiré. Demandez un nouveau lien.',
+                statut: 400,
+                invalidParams: [{ path: 'token', message: 'Ce lien est invalide ou a expiré.' }]
+            })
+        }
+
+        res.json({ message: 'Votre mot de passe a été modifié. Vous pouvez vous connecter.' })
+    } catch (error) {
+        console.error('Échec de la réinitialisation :', error.code || error.name)
+        res.status(500).json({ title: 'Impossible de modifier le mot de passe. Réessayez plus tard.', statut: 500, invalidParams: [] })
+    }
+}
+
+module.exports = { register, login, getProfile, updateProfile, deleteAccount, forgotPassword, resetPassword }
