@@ -4,5 +4,17 @@
             "source": "/(.*)",
             "destination": "/index.html"
         }
-    ]
+    ],
+    "headers": [
+        {
+            "source": "/:page(login|register|profile|mentorship|gallery|forgot-password|reset-password)/:path*",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        }
+    ],
+    "trailingSlash": false
 }

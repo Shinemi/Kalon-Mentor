@@ -12,10 +12,12 @@ import Legal from './pages/Legal'
 import Gallery from './pages/Gallery'
 import CookieBanner from './components/CookieBanner'
 import PasswordRecovery from './pages/PassWordRecovery'
+import Seo from './components/Seo'
 
 function App() {
     return (
         <>
+            <Seo />
             <Header />
             <CookieBanner />
             <Routes>
