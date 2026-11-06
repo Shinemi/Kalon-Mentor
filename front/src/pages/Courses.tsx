@@ -19,87 +19,70 @@ const API_URL = (
     import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1'
 ).replace(/\/$/, '')
 
-const Courses = () => {
-    const location = useLocation()
-    const [courses, setCourses] = useState<Course[] | null>(null)
-    const [error, setError] = useState('')
+const CourseList = ({ courses, hash }: { courses: Course[]; hash: string }) => {
+    const targetCourse = courses.find(course => `#course-${course.id}` === hash)
 
-    const categories = [...new Set(courses?.map(course => course.category) ?? [])]
+    const [openCategories, setOpenCategories] = useState<string[]>(
+        targetCourse ? [targetCourse.category] : []
+    )
 
-    useEffect(() => {
-        const controller = new AbortController()
+    const [openCourses, setOpenCourses] = useState<string[]>(
+        targetCourse ? [targetCourse.id] : []
+    )
 
-        const loadCourses = async () => {
-            try {
-                const response = await fetch(`${API_URL}/resources/courses`, {
-                    signal: controller.signal
-                })
-
-                if (!response.ok) {
-                    throw new Error('Impossible de charger les cours.')
-                }
-
-                const data = await response.json()
-                setCourses(Array.isArray(data.courses) ? data.courses : [])
-            } catch {
-                if (!controller.signal.aborted) {
-                    setError('Impossible de charger les cours.')
-                }
-            }
-        }
-
-        loadCourses()
-
-        return () => controller.abort()
-    }, [])
+    const categories = [...new Set(courses.map(course => course.category))]
 
     useEffect(() => {
-        if (!courses || !location.hash) return
+        if (!targetCourse) return
 
-        const target = document.getElementById(location.hash.slice(1))
+        const title = document.getElementById(`course-${targetCourse.id}`)
 
-        if (!(target instanceof HTMLDetailsElement)) return
-
-        const category = target.parentElement?.closest('details')
-
-        if (category) {
-            category.open = true
+        if (title) {
+            title.focus({ preventScroll: true })
+            title.scrollIntoView({ block: 'start' })
         }
+    }, [targetCourse])
 
-        target.open = true
-        target.scrollIntoView({ behavior: 'smooth' })
-    }, [courses, location.hash])
+    const toggleCategory = (category: string) => {
+        setOpenCategories(current => current.includes(category)
+            ? current.filter(value => value !== category)
+            : [...current, category]
+        )
+    }
+
+    const toggleCourse = (id: string) => {
+        setOpenCourses(current => current.includes(id)
+            ? current.filter(value => value !== id)
+            : [...current, id]
+        )
+    }
 
     return (
-        <main className="courses-page">
-            <div className="courses-content">
-                <h1>Les cours</h1>
-                <p>Retrouvez ici les notions recommandées par votre mentor et avancez à votre rythme.</p>
+        <div className="courses-list">
+            {categories.map((category, index) => {
+                const categoryOpen = openCategories.includes(category)
+                const categoryId = `category-${index}`
 
-                {error ? (
-                    <p className="courses-error" role="alert">{error}</p>
-                ) : courses === null ? (
-                    <p role="status">Chargement des cours…</p>
-                ) : courses.length === 0 ? (
-                    <p>Aucun cours n’est disponible pour le moment.</p>
-                ) : (
-                    <div className="courses-list">
-                        {categories.map(category => (
-                            <details className="course-category" key={category}>
-                                <summary className="category-summary">
-                                    <h2>{category}</h2>
-                                </summary>
+                return (
+                    <section className="course-category" key={category}>
+                        <h2>
+                            <button type="button" className="category-summary" aria-expanded={categoryOpen} aria-controls={categoryId} onClick={() => toggleCategory(category)}>{category}</button>
+                        </h2>
 
-                                <div className="category-courses">
-                                    {courses
-                                        .filter(course => course.category === category)
-                                        .map(course => (
-                                            <details id={`course-${course.id}`} className="course-card" key={course.id}>
-                                                <summary className="course-summary">
-                                                    <h3>{course.title}</h3>
-                                                </summary>
+                        <div id={categoryId} className="category-courses" hidden={!categoryOpen}>
+                            {courses.filter(course => course.category === category).map(course => {
+                                const courseOpen = categoryOpen && openCourses.includes(course.id)
+                                const courseId = `course-${course.id}`
 
-                                                <div className="course-content">
+                                return (
+                                    <article className="course-card" key={course.id}>
+                                        <h3>
+                                            <button id={courseId} type="button" className="course-summary" aria-expanded={courseOpen} aria-controls={`${courseId}-content`} onClick={() => toggleCourse(course.id)}>{course.title}</button>
+                                        </h3>
+
+                                        <div id={`${courseId}-content`} className="course-content" hidden={!courseOpen}>
+                                            {courseOpen && (
+                                                <>
                                                     {course.content?.level && (
                                                         <p className="course-level"><strong>Niveau :</strong> {course.content.level}</p>
                                                     )}
@@ -137,13 +120,69 @@ const Courses = () => {
                                                             </ul>
                                                         </section>
                                                     )}
-                                                </div>
-                                            </details>
-                                        ))}
-                                </div>
-                            </details>
-                        ))}
-                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    </section>
+                )
+            })}
+        </div>
+    )
+}
+
+const Courses = () => {
+    const location = useLocation()
+    const [courses, setCourses] = useState<Course[] | null>(null)
+    const [error, setError] = useState('')
+
+    useEffect(() => {
+        const controller = new AbortController()
+
+        const loadCourses = async () => {
+            try {
+                const response = await fetch(`${API_URL}/resources/courses`, {
+                    signal: controller.signal
+                })
+
+                if (!response.ok) {
+                    throw new Error('Impossible de charger les cours.')
+                }
+
+                const data = await response.json()
+
+                if (!controller.signal.aborted) {
+                    setCourses(Array.isArray(data.courses) ? data.courses : [])
+                }
+            } catch {
+                if (!controller.signal.aborted) {
+                    setError('Impossible de charger les cours.')
+                }
+            }
+        }
+
+        loadCourses()
+
+        return () => controller.abort()
+    }, [])
+
+    return (
+        <main className="courses-page">
+            <div className="courses-content">
+                <h1>Les cours</h1>
+                <p>Retrouvez ici les notions recommandées par votre mentor et avancez à votre rythme.</p>
+
+                {error ? (
+                    <p className="courses-error" role="alert">{error}</p>
+                ) : courses === null ? (
+                    <p role="status">Chargement des cours…</p>
+                ) : courses.length === 0 ? (
+                    <p>Aucun cours n’est disponible pour le moment.</p>
+                ) : (
+                    <CourseList key={location.key + location.hash} courses={courses} hash={location.hash} />
                 )}
             </div>
         </main>

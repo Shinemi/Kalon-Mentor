@@ -1,242 +1,244 @@
 @use "../_variables.scss" as *;
 
-.courses-page{
+.courses-page {
     padding: 60px 30px 80px;
     color: $color-text;
 
-    .course-level{
-        margin-bottom: 20px;
-        font-size: 14px;
-        color: $color-text-muted;
-    }
-
-    .course-exercise{
-        margin-top: 25px;
-        padding: 20px;
-        border-left: 4px solid $color-primary;
-        background-color: $color-accent;
-
-        h4{
-            margin-top: 0;
-        }
-    }
-
-    .courses-content{
+    .courses-content {
         max-width: 1440px;
         margin: auto;
 
-        > h1{
+        > h1 {
             margin-bottom: 20px;
         }
 
-        > p{
+        > p {
             margin-bottom: 40px;
             line-height: 28px;
         }
     }
 
-    .courses-list{
+    .courses-list {
         display: flex;
         flex-direction: column;
         gap: 25px;
     }
 
-    summary{
+    .course-category > h2,
+    .course-card > h3 {
+        display: block;
+        margin: 0;
+    }
+
+    .category-summary,
+    .course-summary {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        border: 0;
+        color: inherit;
+        font-family: $font-family-heading;
+        line-height: 1.3;
+        text-align: left;
         cursor: pointer;
         overflow-wrap: anywhere;
+        transition: background-color 0.15s ease;
 
-        &::marker{
-            color: $color-primary;
+        &::before {
+            content: "";
+            flex-shrink: 0;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid $color-primary;
+            border-bottom: 2px solid $color-primary;
+            transform: rotate(-45deg);
         }
 
-        &:focus-visible{
+        &[aria-expanded="true"]::before {
+            transform: rotate(45deg);
+        }
+
+        &:focus-visible {
             outline: 3px solid $color-primary;
             outline-offset: -5px;
         }
-
-        h2,
-        h3{
-            display: inline;
-        }
     }
 
-    .course-category{
+    .category-courses[hidden],
+    .course-content[hidden] {
+        display: none;
+    }
+
+    .course-category {
         min-width: 0;
         border: 2px solid $color-text;
         background-color: $color-bg-surface;
         box-shadow: 6px 6px 0 $color-text;
     }
 
-    .category-summary{
+    .category-summary {
         padding: 25px 30px;
         background-color: $color-accent;
-        transition: background-color 0.15s ease;
+        font-size: 30px;
 
-        h2{
-            font-size: 30px;
-        }
-
-        &:hover{
+        &:hover {
             background-color: $color-secondary;
         }
-    }
 
-    .course-category[open]{
-        > .category-summary{
+        &[aria-expanded="true"] {
             border-bottom: 2px solid $color-text;
         }
     }
 
-    .category-courses{
+    .category-courses {
         display: flex;
         flex-direction: column;
         gap: 20px;
         padding: 30px;
     }
 
-    .course-card{
+    .course-card {
         min-width: 0;
         border: 2px solid $color-text;
         background-color: $color-bg-main;
-        scroll-margin-top: 30px;
     }
 
-    .course-summary{
+    .course-summary {
         padding: 20px 25px;
-        transition: background-color 0.15s ease;
+        font-size: 23px;
+        background-color: $color-bg-main;
+        scroll-margin-top: 30px;
 
-        h3{
-            font-size: 23px;
-        }
-
-        &:hover{
+        &:hover {
             background-color: $color-accent;
         }
-    }
 
-    .course-card[open]{
-        > .course-summary{
+        &[aria-expanded="true"] {
             border-bottom: 1px dashed $color-text;
             background-color: $color-accent;
         }
     }
 
-    .course-content{
+    .course-content {
         padding: 25px;
         overflow-wrap: anywhere;
 
         p,
-        li{
+        li {
             line-height: 28px;
         }
 
-        h4{
+        h4 {
             margin: 25px 0 15px;
             font-size: 21px;
         }
 
         ul,
-        ol{
+        ol {
             padding-left: 25px;
         }
 
-        ul{
+        ul {
             list-style: disc;
         }
 
-        li + li{
+        li + li {
             margin-top: 10px;
         }
     }
 
-    .course-lesson{
+    .course-level {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: $color-text-muted;
+    }
+
+    .course-lesson {
         white-space: pre-line;
     }
 
-    .courses-error{
+    .course-exercise {
+        margin-top: 25px;
+        padding: 20px;
+        border-left: 4px solid $color-primary;
+        background-color: $color-accent;
+
+        h4 {
+            margin-top: 0;
+        }
+    }
+
+    .courses-error {
         color: $color-danger;
     }
 
-    @media (max-width: 720px){
+    @media (max-width: 720px) {
         padding: 40px 20px 60px;
 
-        .courses-content{
-            > h1{
-                font-size: 36px;
-            }
+        .courses-content > h1 {
+            font-size: 36px;
         }
 
-        .category-summary{
+        .category-summary {
             padding: 20px;
-
-            h2{
-                font-size: 26px;
-            }
+            font-size: 26px;
         }
 
-        .category-courses{
+        .category-courses {
             padding: 20px;
         }
 
-        .course-summary{
+        .course-summary {
             padding: 18px 20px;
-
-            h3{
-                font-size: 21px;
-            }
+            font-size: 21px;
         }
 
-        .course-content{
+        .course-content {
             padding: 20px;
         }
     }
 
-    @media (max-width: 480px){
+    @media (max-width: 480px) {
         padding: 30px 16px 50px;
 
-        .courses-content{
-            > h1{
+        .courses-content {
+            > h1 {
                 font-size: 30px;
             }
 
-            > p{
+            > p {
                 margin-bottom: 30px;
                 font-size: 14px;
                 line-height: 25px;
             }
         }
 
-        .category-summary{
+        .category-summary {
             padding: 18px 15px;
-
-            h2{
-                font-size: 23px;
-            }
+            font-size: 23px;
         }
 
-        .category-courses{
+        .category-courses {
             gap: 15px;
             padding: 15px;
         }
 
-        .course-summary{
+        .course-summary {
             padding: 15px 12px;
-
-            h3{
-                font-size: 19px;
-            }
+            font-size: 19px;
         }
 
-        .course-content{
+        .course-content {
             padding: 15px 12px;
             font-size: 14px;
 
             p,
-            li{
+            li {
                 line-height: 25px;
             }
 
-            h4{
+            h4 {
                 font-size: 19px;
             }
         }

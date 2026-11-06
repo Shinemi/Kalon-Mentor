@@ -58,8 +58,6 @@ const Home = () => {
                             event.preventDefault()
                             handleImage(event.dataTransfer.files[0])
                         }}
-                        aria-labelledby="upload-title"
-                        aria-describedby="drawing-help"
                     >
                         <FileUp aria-hidden="true" />
                         <span id="upload-title" className="upload-title">Partagez votre dessin</span>
@@ -73,6 +71,7 @@ const Home = () => {
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
                         hidden
+                        aria-label="Choisir un dessin à analyser"
                         onChange={event => {
                             handleImage(event.target.files?.[0])
                             event.target.value = ''
