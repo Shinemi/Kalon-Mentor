@@ -5,6 +5,7 @@ jest.mock('../models/correctionModel', () => ({
     countCorrectionsByUser: jest.fn(),
     createSaveCorrection: jest.fn(),
     findCorrectionsByUser: jest.fn(),
+    findCorrectionById: jest.fn(),
     deleteCorrection: jest.fn()
 }))
 jest.mock('../models/resourceModel', () => ({ resourceExists: jest.fn() }))
@@ -127,14 +128,29 @@ test.each([
 })
 
 test.each([true, false])('supprime uniquement une correction appartenant au compte : %s', async exists => {
-    corrections.deleteCorrection.mockResolvedValue(exists ? { image_url: 'https://blob.test/dessin' } : null)
+    corrections.findCorrectionById.mockResolvedValue(
+        exists ? { image_url: 'https://blob.test/dessin' } : null
+    )
 
     const response = await auth(request(app)
         .delete('/api/v1/mentor/correctionDelete/7'))
 
     expect(response.status).toBe(exists ? 200 : 404)
-    expect(corrections.deleteCorrection).toHaveBeenCalledWith('7', 1)
+    expect(corrections.findCorrectionById).toHaveBeenCalledWith('7', 1)
 
-    if (exists) expect(blob.del).toHaveBeenCalledWith('https://blob.test/dessin', expect.any(Object))
-    else expect(blob.del).not.toHaveBeenCalled()
+    if (exists) {
+        expect(blob.del).toHaveBeenCalledWith(
+            'https://blob.test/dessin',
+            expect.any(Object)
+        )
+
+        expect(corrections.deleteCorrection).toHaveBeenCalledWith('7', 1)
+
+        expect(blob.del.mock.invocationCallOrder[0]).toBeLessThan(
+            corrections.deleteCorrection.mock.invocationCallOrder[0]
+        )
+    } else {
+        expect(blob.del).not.toHaveBeenCalled()
+        expect(corrections.deleteCorrection).not.toHaveBeenCalled()
+    }
 })

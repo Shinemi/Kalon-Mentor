@@ -87,3 +87,14 @@ exports.deleteCorrection = async (id, userId) => {
 
     return rows[0]
 }
+
+exports.findCorrectionById = async (id, userId) => {
+    const { rows } = await pool.query(
+        `SELECT id, image_url
+         FROM corrections
+         WHERE id = $1 AND user_id = $2`,
+        [id, userId]
+    )
+
+    return rows[0]
+}

@@ -168,7 +168,7 @@ export const getHistory = async (signal?: AbortSignal) => {
 
         return {
             id: correction.id,
-            imageUrl: `data:image/webp;base64,${correction.image}`,
+            imageUrl: correction.image ? `data:image/webp;base64,${correction.image}` : '',
             feedback,
             createdAt: correction.created_at
         }

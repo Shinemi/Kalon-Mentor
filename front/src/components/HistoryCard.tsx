@@ -17,7 +17,11 @@ const HistoryCard = ({ analysis, onView, onDelete, isDeleting, disabled }: Histo
 
     return (
         <article className="history-card">
-            <img src={analysis.imageUrl} alt={`Dessin analysé le ${date}`} loading="lazy" />
+            {analysis.imageUrl ? (
+                <img src={analysis.imageUrl} alt={`Dessin analysé le ${date}`} loading="lazy" />
+            ) : (
+                <p>Le dessin n’est plus disponible. Vous pouvez réessayer de supprimer cette analyse.</p>
+            )}
 
             <div className="history-card-content">
                 <h2>Analyse du <time dateTime={analysis.createdAt}>{date}</time></h2>

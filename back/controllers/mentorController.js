@@ -1,9 +1,6 @@
 'use strict'
 
 const sharp = require('sharp')
-// const fs = require('fs/promises')
-// const path = require('path')
-// const crypto = require('crypto')
 const correctionModel = require('../models/correctionModel')
 const resourceModel = require('../models/resourceModel')
 const { analyseDrawing } = require('../services/aiService')
@@ -101,38 +98,57 @@ async function saveCorrection(req, res) {
     const { image, feedback } = req.body
 
     try {
-        const savedCount = await correctionModel.countCorrectionsByUser(req.user.id)
+        const savedCount = await correctionModel.countCorrectionsByUser(
+            req.user.id
+        )
 
         if (savedCount >= MAX_SAVED_CORRECTIONS) {
             return res.status(403).json({
                 title: 'Votre galerie est pleine. Supprimez une analyse pour libérer une place.',
                 statut: 403,
                 invalidParams: [],
-                maxCorrections: MAX_SAVED_CORRECTIONS,
+                maxCorrections: MAX_SAVED_CORRECTIONS
             })
         }
 
-        //écriture locale
+        const resourceIds = await resolveResourceIds(feedback)
+
         const blob = await imageStorage.saveImage(
             Buffer.from(image, 'base64'),
             req.user.id
         )
 
-        // Jusqu'à 3 ressources liées en base (table corrections_resources) ;
-        const resourceIds = await resolveResourceIds(feedback)
+        let correction
 
-        const correction = await correctionModel.createSaveCorrection(
-            req.user.id,
-            blob.url,
-            JSON.stringify(feedback),
-            resourceIds
-        )
+        try {
+            correction = await correctionModel.createSaveCorrection(
+                req.user.id,
+                blob.url,
+                JSON.stringify(feedback),
+                resourceIds
+            )
+        } catch (error) {
+            try {
+                await del(blob.url, {
+                    token: process.env.BLOB_READ_WRITE_TOKEN
+                })
+            } catch (cleanupError) {
+                console.error(
+                    'Nettoyage Blob à reprendre :',
+                    blob.pathname,
+                    cleanupError
+                )
+            }
+
+            throw error
+        }
 
         res.status(201).json({ correction })
     } catch (error) {
         console.error(error)
+
         res.status(500).json({
-            title: 'Error while saving the correction',
+            title: 'La sauvegarde a échoué. Votre analyse reste affichée ; vous pouvez réessayer.',
             statut: 500,
             invalidParams: []
         })
@@ -150,7 +166,12 @@ async function getCorrections(req, res) {
                 token: process.env.BLOB_READ_WRITE_TOKEN
             })
 
-            if (!image || image.statusCode !== 200) {
+            if (!image || image.statusCode === 404) {
+                correction.image = ''
+                continue
+            }
+
+            if (image.statusCode !== 200) {
                 throw new Error('Impossible de récupérer un dessin sauvegardé.')
             }
 
@@ -178,26 +199,36 @@ async function getCorrections(req, res) {
 // DELETE /mentor/corrections/:id
 async function deleteCorrection(req, res) {
     try {
-        const deleted = await correctionModel.deleteCorrection(req.params.id, req.user.id)
+        const correction = await correctionModel.findCorrectionById(
+            req.params.id,
+            req.user.id
+        )
 
-        if (!deleted) {
+        if (!correction) {
             return res.status(404).json({
-                title: 'Correction not found',
+                title: 'Analyse introuvable.',
                 statut: 404,
-                invalidParams: [{ path: 'id', message: 'Correction not found' }]
+                invalidParams: [
+                    { path: 'id', message: 'Analyse introuvable.' }
+                ]
             })
         }
 
-        // On supprime aussi le fichier pour ne pas laisser d'images orphelines
-        await del(deleted.image_url, {
+        await del(correction.image_url, {
             token: process.env.BLOB_READ_WRITE_TOKEN
         })
 
-        res.json({ message: 'Correction deleted' })
+        await correctionModel.deleteCorrection(
+            req.params.id,
+            req.user.id
+        )
+
+        res.json({ message: 'Analyse supprimée.' })
     } catch (error) {
         console.error(error)
+
         res.status(500).json({
-            title: 'Error while deleting the correction',
+            title: 'La suppression n’a pas pu être terminée. Réessayez.',
             statut: 500,
             invalidParams: []
         })

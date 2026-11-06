@@ -6,7 +6,6 @@ const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
-const path = require('path')
 
 
 const app = express()
@@ -62,9 +61,6 @@ const resourceRoutes = require('./routes/resourceRoutes')
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/mentor', mentorRoutes)
 app.use('/api/v1/resources', resourceRoutes)
-
-// images de la galerie accessibles via http://localhost:3000/uploads/xxx.jpg
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.get('/', (req, res) => {
     res.send('bienvenue sur mon API RESTful !')

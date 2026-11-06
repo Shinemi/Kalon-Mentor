@@ -79,7 +79,7 @@ const DrawingAnalysis = ({
 
             <div className="analysis-overview">
                 <figure className="analysis-drawing">
-                    <img src={imageUrl} alt="Votre dessin analysé" />
+                    {imageUrl ? <img src={imageUrl} alt="Votre dessin analysé" /> : <p>Le dessin n’est plus disponible.</p>}
                     <figcaption>Votre point de départ, un trait après l’autre.</figcaption>
                 </figure>
 
