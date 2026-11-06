@@ -2,8 +2,8 @@
 
 const { pool } = require('../db/db')
 
-// On utilise une transaction (BEGIN/COMMIT) parce que deux tables sont écrites (corrections, puis corrections_resources) : 
-// si l'une des insertions échoue, on annule tout 
+// On utilise une transaction (BEGIN/COMMIT) parce que deux tables sont écrites (corrections, puis corrections_resources) :
+// si l'une des insertions échoue, on annule tout
 exports.createSaveCorrection = async (userId, imageUrl, feedbackText, resourceIds = []) => {
     const client = await pool.connect()
 

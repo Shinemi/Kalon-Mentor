@@ -17,7 +17,7 @@ header{
             display: block;
             width: 80px;
             height: auto;
-           
+
         }
 
         .account-link {
@@ -31,31 +31,31 @@ header{
                     text-shadow: 4px 4px 4px black;
                     transition: all ease-in-out 0.2s;
                 }
-             }
+            }
         }
-        
+
         nav{
             display: flex;
             position: relative;
-    
+
             .burger-menu{
                 display: none;
                 background: none;
                 border: none;
                 cursor: pointer;
-    
+
                 @media (max-width: 768px) {
                     display: block;
                 }
             }
-    
+
             .navbar-links{
                 display:flex;
                 gap: 40px;
                 align-items: center;
                 height: 100%;
-                
-               li {
+
+                li {
                     border-bottom: 1px solid transparent;
                     transition: all 0.1s ease-in-out;
 
@@ -73,7 +73,7 @@ header{
                         // }
                     }
                 }
-    
+
                 @media (max-width: 768px) {
                     display: none;
                     position: absolute;

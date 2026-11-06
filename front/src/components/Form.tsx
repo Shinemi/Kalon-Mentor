@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { User, Mail, Lock } from 'lucide-react'
-import { authenticate } from '../services/AuthService'
+import { authenticate, TERMS_VERSION } from '../services/AuthService'
 import '../styles/components/form.scss'
 
 type FormProps = {
@@ -14,6 +14,7 @@ const Form = ({ mode }: FormProps) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [acceptedTerms, setAcceptedTerms] = useState(false)
+    const [declaredAdult, setDeclaredAdult] = useState(false)
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
@@ -35,15 +36,21 @@ const Form = ({ mode }: FormProps) => {
             setError('Vous devez accepter les conditions générales d’utilisation.')
             return
         }
+        if (isRegister && !declaredAdult) {
+            setError('Vous devez certifier avoir 18 ans ou plus.')
+            return
+        }
 
         setIsLoading(true)
         try {
-           await authenticate(mode, {
+            await authenticate(mode, {
                 email: email.trim(),
                 password,
                 ...(isRegister ? {
                     username: username.trim(),
-                    acceptedTerms
+                    acceptedTerms,
+                    declaredAdult,
+                    termsVersion: TERMS_VERSION
                 } : {})
             })
             navigate(image ? '/mentorship' : '/', {
@@ -71,12 +78,12 @@ const Form = ({ mode }: FormProps) => {
                         <label htmlFor="username">Pseudo</label>
                         <div className="input-content">
                             <User aria-hidden="true" />
-                            <input 
-                                id="username" 
-                                name="username" 
-                                type="text" autoComplete="username" 
-                                placeholder="Votre pseudo" 
-                                required value={username} 
+                            <input
+                                id="username"
+                                name="username"
+                                type="text" autoComplete="username"
+                                placeholder="Votre pseudo"
+                                required value={username}
                                 onChange={event => setUsername(event.target.value)}
                             />
                         </div>
@@ -87,13 +94,13 @@ const Form = ({ mode }: FormProps) => {
                     <label htmlFor="email">Adresse e-mail</label>
                     <div className="input-content">
                         <Mail aria-hidden="true" />
-                        <input 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            autoComplete="email" 
-                            placeholder="artiste@studio.fr" 
-                            required value={email} 
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="artiste@studio.fr"
+                            required value={email}
                             onChange={event => setEmail(event.target.value)}
                         />
                     </div>
@@ -103,24 +110,29 @@ const Form = ({ mode }: FormProps) => {
                     <label htmlFor="password">Mot de passe</label>
                     <div className="input-content">
                         <Lock aria-hidden="true" />
-                        <input 
-                            id="password" 
-                            name="password" 
-                            type="password" 
-                            autoComplete={isRegister ? 'new-password' : 'current-password'} 
-                            placeholder="Votre mot de passe" 
-                            minLength={isRegister ? 8 : undefined} 
-                            aria-describedby={isRegister ? 'password-help' : undefined} 
-                            required value={password} onChange={event => setPassword(event.target.value)} 
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete={isRegister ? 'new-password' : 'current-password'}
+                            placeholder="Votre mot de passe"
+                            minLength={isRegister ? 8 : undefined}
+                            aria-describedby={isRegister ? 'password-help' : undefined}
+                            required value={password} onChange={event => setPassword(event.target.value)}
                         />
                     </div>
                     {isRegister && (
-                        <div className="form-terms">
-                            <input
-                                id="accept-terms" name="acceptTerms" type="checkbox" checked={acceptedTerms} required onChange={event => setAcceptedTerms(event.target.checked)}
-                            />
-                            <label htmlFor="accept-terms">J’accepte les <Link to="/legal#conditions-utilisation" target="_blank" rel="noopener noreferrer">conditions générales d’utilisation</Link>.</label>
-                        </div>
+                        <>
+                            <div className="form-terms">
+                                <input id="accept-terms" name="acceptedTerms" type="checkbox" checked={acceptedTerms} required onChange={event => setAcceptedTerms(event.target.checked)} />
+                                <label htmlFor="accept-terms">J’accepte les <Link to="/legal#conditions-utilisation" target="_blank" rel="noopener noreferrer">conditions générales d’utilisation</Link> (version {TERMS_VERSION}).</label>
+                            </div>
+
+                            <div className="form-terms">
+                                <input id="declare-adult" name="declaredAdult" type="checkbox" checked={declaredAdult} required onChange={event => setDeclaredAdult(event.target.checked)} />
+                                <label htmlFor="declare-adult">Je certifie avoir 18 ans ou plus.</label>
+                            </div>
+                        </>
                     )}
                     {isRegister && <p id="password-help">Au moins 8 caractères, un chiffre et un caractère spécial.</p>}
                 </div>
@@ -131,7 +143,7 @@ const Form = ({ mode }: FormProps) => {
                 </button>
             </fieldset>
 
-            {!isRegister && ( <p className="auth-link"><Link to="/forgot-password">Mot de passe oublié ?</Link></p> )}
+            {!isRegister && (<p className="auth-link"><Link to="/forgot-password">Mot de passe oublié ?</Link></p>)}
             <p className="auth-link">
                 {isRegister ? 'Vous avez déjà un compte ? ' : 'Pas encore de compte ? '}
                 <Link to={isRegister ? '/login' : '/register'} state={{ image }}>{isRegister ? 'Connectez-vous' : 'Inscrivez-vous'}</Link>

@@ -47,9 +47,9 @@ const Profile = () => {
     }
 
     const openEditor = (mode: 'information' | 'password') => {
-    setEditing(mode)
-    setFormError('')
-    setSuccessMessage('')
+        setEditing(mode)
+        setFormError('')
+        setSuccessMessage('')
     }
 
     const closeEditor = () => {
@@ -309,7 +309,7 @@ const Profile = () => {
                                         <BookOpen aria-hidden="true" />
                                         Explorer les cours
                                     </Link>
-                                    
+
                                     <Link to="/gallery" className="profile-action">
                                         <RotateCcwClock aria-hidden="true" />
                                         Consulter votre Historique
@@ -340,4 +340,3 @@ const Profile = () => {
 }
 
 export default Profile
-

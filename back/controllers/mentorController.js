@@ -17,10 +17,11 @@ const MAX_SAVED_CORRECTIONS = 10
 // POST /mentor/correction  (US-04 + US-05)
 async function analyseCorrection(req, res) {
     if (!req.file) {
-        return res.status(400).json({ 
-            title: 'No image provided', 
-            statut: 400, 
-            invalidParams: [{ path: 'image', message: 'No image provided' }] })
+        return res.status(400).json({
+            title: 'No image provided',
+            statut: 400,
+            invalidParams: [{ path: 'image', message: 'No image provided' }]
+        })
     }
 
     try {
@@ -54,7 +55,7 @@ async function analyseCorrection(req, res) {
         res.json({ feedback, image: imageForHistory.toString('base64') })
     } catch (error) {
         console.error(error)
-        
+
         if (error.code === 'AI_UNAVAILABLE') {
             return res.status(503).json({
                 title: 'Le mentor est temporairement indisponible.',
@@ -62,11 +63,12 @@ async function analyseCorrection(req, res) {
                 invalidParams: []
             })
         }
-        
-        res.status(500).json({ 
-            title: 'Error while analysing the drawing', 
-            statut: 500, 
-            invalidParams: [] })
+
+        res.status(500).json({
+            title: 'Error while analysing the drawing',
+            statut: 500,
+            invalidParams: []
+        })
     }
 }
 
@@ -119,7 +121,7 @@ async function saveCorrection(req, res) {
         // Jusqu'à 3 ressources liées en base (table corrections_resources) ;
         const resourceIds = await resolveResourceIds(feedback)
 
-       const correction = await correctionModel.createSaveCorrection(
+        const correction = await correctionModel.createSaveCorrection(
             req.user.id,
             blob.url,
             JSON.stringify(feedback),
@@ -129,10 +131,11 @@ async function saveCorrection(req, res) {
         res.status(201).json({ correction })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ 
-            title: 'Error while saving the correction', 
-            statut: 500, 
-            invalidParams: [] })
+        res.status(500).json({
+            title: 'Error while saving the correction',
+            statut: 500,
+            invalidParams: []
+        })
     }
 }
 
@@ -178,10 +181,11 @@ async function deleteCorrection(req, res) {
         const deleted = await correctionModel.deleteCorrection(req.params.id, req.user.id)
 
         if (!deleted) {
-            return res.status(404).json({ 
-                title: 'Correction not found', 
-                statut: 404, 
-                invalidParams: [{ path: 'id', message: 'Correction not found' }] })
+            return res.status(404).json({
+                title: 'Correction not found',
+                statut: 404,
+                invalidParams: [{ path: 'id', message: 'Correction not found' }]
+            })
         }
 
         // On supprime aussi le fichier pour ne pas laisser d'images orphelines
@@ -192,10 +196,11 @@ async function deleteCorrection(req, res) {
         res.json({ message: 'Correction deleted' })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ 
-            title: 'Error while deleting the correction', 
-            statut: 500, 
-            invalidParams: [] })
+        res.status(500).json({
+            title: 'Error while deleting the correction',
+            statut: 500,
+            invalidParams: []
+        })
     }
 }
 

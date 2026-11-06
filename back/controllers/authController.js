@@ -19,7 +19,7 @@ function generateToken(userId, tokenVersion = 0) {
 
 // POST /auth/register
 async function register(req, res) {
-    const { username, email, password } = req.body
+    const { username, email, password, termsVersion } = req.body
 
     try {
         const existingUser = await userModel.findUserByEmail(email)
@@ -41,7 +41,8 @@ async function register(req, res) {
         const user = await userModel.createUser(
             username,
             email,
-            hashedPassword
+            hashedPassword,
+            termsVersion
         )
 
         res.status(201).json({

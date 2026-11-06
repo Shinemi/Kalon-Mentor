@@ -2,12 +2,15 @@
 
 const { pool } = require('../db/db')
 
-exports.createUser = async (username, email, hashedPassword) => {
+exports.createUser = async (username, email, hashedPassword, termsVersion) => {
     const { rows } = await pool.query(
-        `INSERT INTO users (username, email, password)
-         VALUES ($1, $2, $3)
+        `INSERT INTO users (
+            username, email, password,
+            terms_accepted_at, terms_version, adult_declared_at
+         )
+         VALUES ($1, $2, $3, NOW(), $4, NOW())
          RETURNING id, username, email, created_at, token_version`,
-        [username, email.toLowerCase().trim(), hashedPassword]
+        [username, email.toLowerCase().trim(), hashedPassword, termsVersion]
     )
 
     return rows[0]
@@ -55,13 +58,13 @@ exports.updateUser = async (id, fields) => {
         values.push(fields.password)
         columns.push(`password = $${values.length}`)
     }
-    
+
     if (fields.email || fields.password) {
-    columns.push(
-        'password_reset_token_hash = NULL',
-        'password_reset_expires_at = NULL'
-    )
-}
+        columns.push(
+            'password_reset_token_hash = NULL',
+            'password_reset_expires_at = NULL'
+        )
+    }
 
     values.push(id)
 

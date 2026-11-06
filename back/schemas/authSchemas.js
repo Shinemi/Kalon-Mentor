@@ -1,4 +1,4 @@
-﻿'use strict'
+'use strict'
 
 const { z } = require('zod')
 
@@ -24,9 +24,17 @@ const registerSchema = z.object({
         .regex(/[^a-zA-Z0-9\s]/, { error: 'Le mot de passe doit contenir au moins un caractère spécial.' }),
 
     email: emailSchema,
-    
+
     acceptedTerms: z.literal(true, {
         error: 'Vous devez accepter les conditions générales d’utilisation.'
+    }),
+
+    declaredAdult: z.literal(true, {
+        error: 'Vous devez certifier avoir 18 ans ou plus.'
+    }),
+
+    termsVersion: z.literal('1.1', {
+        error: 'Les conditions ont changé. Actualisez la page avant de vous inscrire.'
     })
 }).strict() // Interdit les champs supplémentaires non définis.
 

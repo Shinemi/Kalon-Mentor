@@ -18,27 +18,27 @@
     justify-content: center;
     display: flex;
     flex-direction: column;
-   
-    
-    
+
+
+
     .handwritten{
         font-size: 60px;
         color: $color-text;
         padding-bottom: 50px;
-    
+
         span{
             color: $color-primary;
         }
     }
 
-    
+
 }
 
 @media (max-width: 720px) {
-        .notFound-main {
-            .handwritten {
-                font-size: 36px;
-                padding-bottom: 30px;
-            }
+    .notFound-main {
+        .handwritten {
+            font-size: 36px;
+            padding-bottom: 30px;
         }
     }
+}

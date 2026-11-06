@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { openCookieSettings } from '../utils/analytics'
+import { TERMS_VERSION } from '../services/AuthService'
 import '../styles/pages/legal.scss'
 
 const Legal = () => {
@@ -22,8 +23,7 @@ const Legal = () => {
             <div className="legal-content">
                 <h1>Informations légales et conditions d’utilisation</h1>
                 <p>Kalon Mentor est un projet étudiant personnel consacré à l’apprentissage du dessin. Le service est proposé gratuitement, sans abonnement ni paiement.</p>
-                <p>Dernière mise à jour : <time dateTime="2026-11-05">5 novembre 2026</time>. Version des CGU : 1.1.</p>
-
+                <p>Dernière mise à jour : <time dateTime="2026-11-05">5 novembre 2026</time>. Version des CGU : {TERMS_VERSION}.</p>
                 <nav aria-label="Sommaire des informations légales">
                     <ul>
                         <li><a href="#mentions-legales">Mentions légales</a></li>

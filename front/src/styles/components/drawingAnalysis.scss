@@ -2,7 +2,7 @@
 
 .mentorship-page,
 .history-page{
-    
+
     .drawing-analysis{
         > h2{
             display: block;
@@ -185,20 +185,20 @@
     }
 
     .analysis-category-grid{
-    .analysis-card{
-        border-top: 6px solid $color-secondary;
-    }
+        .analysis-card{
+            border-top: 6px solid $color-secondary;
+        }
 
-    .analysis-category-anatomie,
-    .analysis-category-lumiere{
-        border-top-color: $color-primary;
-    }
+        .analysis-category-anatomie,
+        .analysis-category-lumiere{
+            border-top-color: $color-primary;
+        }
 
-    .analysis-category-composition{
-        border-top-color: $color-accent;
-        background-color: $color-bg-main;
+        .analysis-category-composition{
+            border-top-color: $color-accent;
+            background-color: $color-bg-main;
+        }
     }
-}
 
     .analysis-course-link{
         display: block;

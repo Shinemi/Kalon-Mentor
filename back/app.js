@@ -22,7 +22,7 @@ app.use(
         //pour une api purement JSON, on désactive la CSP
         contentSecurityPolicy: false,
         //si votre API interagit avec d'autres domaines
-        crossOriginResourcePolicy:{policy:"cross-origin"}
+        crossOriginResourcePolicy: { policy: "cross-origin" }
     })
 )
 
@@ -40,8 +40,8 @@ app.use(cors(corsoptions))
 
 // Rate limit global
 const limiter = rateLimit({
-    windowMs: 15*60*1000, // fenetre de 15 minutes
-    limit:100, // max 100 requetes par IP sur ce créneau
+    windowMs: 15 * 60 * 1000, // fenetre de 15 minutes
+    limit: 100, // max 100 requetes par IP sur ce créneau
     message: {
         title: 'Trop de requêtes, réessayez plus tard.',
         statut: 429,

@@ -1,14 +1,14 @@
 'use strict'
 
-const {z} = require('zod')
+const { z } = require('zod')
 
 //middleware générique de validation zod
-function validateBody (schema){
+function validateBody(schema) {
     return (req, res, next) => {
-     
+
         const result = schema.safeParse(req.body)
-        
-        if (!result.success){
+
+        if (!result.success) {
             return res.status(422).json({
                 title: "Données invalides",
                 statut: 422,
@@ -20,8 +20,8 @@ function validateBody (schema){
         }
 
         // si on arrive ici, on a passé la valisation, on renvoie les données sur dadta et on passe a la suite
-       req.body = result.data;
-       next();
+        req.body = result.data;
+        next();
 
     }
 }

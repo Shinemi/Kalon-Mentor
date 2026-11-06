@@ -14,27 +14,26 @@ import CookieBanner from './components/CookieBanner'
 import PasswordRecovery from './pages/PassWordRecovery'
 
 function App() {
-  return (
-    <>
-      <Header />
-      <CookieBanner/>
-      <Routes>
-        <Route path='/' element={<Home/>}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='/profile' element={<Profile/>}/>
-        <Route path='/mentorship' element={<Mentorship/>}/>
-        <Route path='/courses' element={<Courses/>}/>
-        <Route path='/*' element={<NotFound/>}/>
-        <Route path='/legal' element={<Legal />} />
-        <Route path='/gallery' element={<Gallery/>}/>
-        <Route path="/forgot-password" element={<PasswordRecovery key="request" mode="request" />} />
-        <Route path="/reset-password" element={<PasswordRecovery key="reset" mode="reset" />} />
-      </Routes>
-      <Footer />
-    </>
-  )
+    return (
+        <>
+            <Header />
+            <CookieBanner />
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/profile' element={<Profile />} />
+                <Route path='/mentorship' element={<Mentorship />} />
+                <Route path='/courses' element={<Courses />} />
+                <Route path='/*' element={<NotFound />} />
+                <Route path='/legal' element={<Legal />} />
+                <Route path='/gallery' element={<Gallery />} />
+                <Route path="/forgot-password" element={<PasswordRecovery key="request" mode="request" />} />
+                <Route path="/reset-password" element={<PasswordRecovery key="reset" mode="reset" />} />
+            </Routes>
+            <Footer />
+        </>
+    )
 }
 
 export default App
-

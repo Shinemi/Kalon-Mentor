@@ -8,7 +8,7 @@ const Home = () => {
     const inputRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
     const location = useLocation()
-    
+
 
     const [error, setError] = useState('')
 
@@ -45,7 +45,7 @@ const Home = () => {
                     <p>Votre mentor de dessin vous accompagne à chaque étape. Partagez vos croquis, recevez des conseils constructifs et progressez, un trait après l’autre.</p>
                     <Link to={sessionStorage.getItem('kalon-token') ? '/mentorship' : '/register'} className="button-primary">
                         Commencer mon parcours <ArrowRight aria-hidden="true" />
-                    </Link>                
+                    </Link>
                 </div>
 
                 <div>
@@ -104,7 +104,7 @@ const Home = () => {
                 <h2 id="cta-title">Prêt à faire évoluer votre dessin ?</h2>
                 <Link to={sessionStorage.getItem('kalon-token') ? '/mentorship' : '/register'} className="button-primary">
                     <Pencil aria-hidden="true" /> Commencer mon parcours artistique
-                </Link>                
+                </Link>
                 <p className="handwritten">Vous avez le droit de vous tromper.</p>
             </section>
         </main>

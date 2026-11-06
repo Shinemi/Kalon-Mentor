@@ -10,10 +10,11 @@ async function getCourses(req, res) {
         res.json({ courses })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ 
-            title: 'Error while fetching courses', 
-            statut: 500, 
-            invalidParams: [] })
+        res.status(500).json({
+            title: 'Error while fetching courses',
+            statut: 500,
+            invalidParams: []
+        })
     }
 }
 
@@ -23,19 +24,21 @@ async function getCourseById(req, res) {
         const course = await resourceModel.findCourseById(req.params.id)
 
         if (!course) {
-            return res.status(404).json({ 
-                title: 'Course not found', 
-                statut: 404, 
-                invalidParams: [{ path: 'id', message: 'Course not found' }] })
+            return res.status(404).json({
+                title: 'Course not found',
+                statut: 404,
+                invalidParams: [{ path: 'id', message: 'Course not found' }]
+            })
         }
 
         res.json({ course })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ 
-            title: 'Error while fetching the course', 
-            statut: 500, 
-            invalidParams: [] })
+        res.status(500).json({
+            title: 'Error while fetching the course',
+            statut: 500,
+            invalidParams: []
+        })
     }
 }
 

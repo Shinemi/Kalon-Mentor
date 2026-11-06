@@ -1,4 +1,3 @@
-
 const GA_ID = (import.meta.env.VITE_GA_MEASUREMENT_ID ?? '').trim()
 const CONSENT_KEY = 'kalon_mentor_cookie_consent'
 const CONSENT_DURATION = 180 * 24 * 60 * 60 * 1000
