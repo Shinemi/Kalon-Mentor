@@ -59,7 +59,17 @@ const pages: Record<string, PageSeo> = {
         title: 'Réinitialiser mon mot de passe — Kalon Mentor',
         description: 'Choisissez un nouveau mot de passe pour votre compte Kalon Mentor.',
         indexable: false
-    }
+    },
+    '/klmt/users': {
+        title: 'Administration des utilisateurs — Kalon Mentor',
+        description: 'Espace d’administration des utilisateurs.',
+        indexable: false
+    },
+    '/klmt/ai': {
+        title: 'Administration IA — Kalon Mentor',
+        description: 'Espace d’administration du mentor IA.',
+        indexable: false
+    },
 }
 
 const setMeta = (attribute: 'name' | 'property', key: string, content: string) => {

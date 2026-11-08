@@ -57,10 +57,12 @@ app.use(express.json({ limit: '5mb' }))
 const authRoutes = require('./routes/authRoutes')
 const mentorRoutes = require('./routes/mentorRoutes')
 const resourceRoutes = require('./routes/resourceRoutes')
+const adminRoutes = require('./routes/adminRoutes')
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/mentor', mentorRoutes)
 app.use('/api/v1/resources', resourceRoutes)
+app.use('/api/v1/admin', adminRoutes)
 
 app.get('/', (req, res) => {
     res.send('bienvenue sur mon API RESTful !')

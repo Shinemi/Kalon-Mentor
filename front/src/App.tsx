@@ -11,8 +11,9 @@ import NotFound from './pages/NotFound'
 import Legal from './pages/Legal'
 import Gallery from './pages/Gallery'
 import CookieBanner from './components/CookieBanner'
-import PasswordRecovery from './pages/PassWordRecovery'
+import PasswordRecovery from './pages/PasswordRecovery'
 import Seo from './components/Seo'
+import Admin from './pages/Admin'
 
 function App() {
     return (
@@ -32,6 +33,8 @@ function App() {
                 <Route path='/gallery' element={<Gallery />} />
                 <Route path="/forgot-password" element={<PasswordRecovery key="request" mode="request" />} />
                 <Route path="/reset-password" element={<PasswordRecovery key="reset" mode="reset" />} />
+                <Route path="/klmt/users" element={<Admin view="users" />} />
+                <Route path="/klmt/ai" element={<Admin view="ai" />} />
             </Routes>
             <Footer />
         </>
