@@ -29,7 +29,7 @@ exports.findUserByEmail = async (email) => {
 
 exports.findUserById = async (id) => {
     const { rows } = await pool.query(
-        `SELECT id, username, email, avatar_url, created_at, token_version
+        `SELECT id, username, email, avatar_url, created_at, token_version, role
          FROM users
          WHERE id = $1`,
         [id]
@@ -151,4 +151,14 @@ exports.resetPassword = async (tokenHash, hashedPassword) => {
     )
 
     return rows[0]
+}
+
+exports.findUsers = async () => {
+    const { rows } = await pool.query(
+        `SELECT id, username, email, role, created_at
+         FROM users
+         ORDER BY created_at DESC, id DESC`
+    )
+
+    return rows
 }
