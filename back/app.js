@@ -18,8 +18,6 @@ const port = process.env.PORT || 3000
 app.use(
     helmet({
         //la CSP (content security policy)
-        //pour une api purement JSON, on désactive la CSP
-        contentSecurityPolicy: false,
         //si votre API interagit avec d'autres domaines
         crossOriginResourcePolicy: { policy: "cross-origin" }
     })
@@ -39,12 +37,14 @@ app.use(cors(corsoptions))
 
 // Rate limit global
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // fenetre de 15 minutes
-    limit: 100, // max 100 requetes par IP sur ce créneau
+    windowMs: 15 * 60 * 1000,
+    limit: 100,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
     message: {
         title: 'Trop de requêtes, réessayez plus tard.',
         statut: 429,
-        invalidParams: [],
+        invalidParams: []
     }
 })
 
