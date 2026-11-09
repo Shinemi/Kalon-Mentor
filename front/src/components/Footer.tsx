@@ -15,7 +15,6 @@ const Footer = () => (
                         <li><Link to="/legal#conditions-utilisation">Conditions d’utilisation</Link></li>
                         <li><Link to="/legal#cookies">Cookies et stockage local</Link></li>
                         <li><button type="button" className="cookie-settings-button" onClick={openCookieSettings}>Gérer mes cookies</button></li>
-                        <li><Link to="/artists">Communauté d’artistes</Link></li>
                     </ul>
                 </nav>
 
@@ -33,7 +32,7 @@ const Footer = () => (
             </div>
 
             <p className="copyright">
-                © 2026 Kalon Mentor — Tout droit réservé
+                © 2026 Kalon Mentor — Tout droits réservés
             </p>
         </div>
     </footer>
