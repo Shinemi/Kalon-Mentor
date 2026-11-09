@@ -35,6 +35,7 @@ function App() {
                 <Route path="/reset-password" element={<PasswordRecovery key="reset" mode="reset" />} />
                 <Route path="/klmt/users" element={<Admin view="users" />} />
                 <Route path="/klmt/ai" element={<Admin view="ai" />} />
+                <Route path="/klmt/courses" element={<Admin view="courses" />} />
             </Routes>
             <Footer />
         </>

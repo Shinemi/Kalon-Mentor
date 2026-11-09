@@ -6,6 +6,10 @@ const resourceModel = require('../models/resourceModel')
 const { analyseDrawing } = require('../services/aiService')
 const imageStorage = require('../services/imageStorage')
 const { get, del } = require('@vercel/blob')
+const { randomUUID } = require('node:crypto')
+const analysisModel = require('../models/analysisModel')
+const { feedbackSchema } = require('../schemas/mentorSchemas')
+
 
 const MAX_SAVED_CORRECTIONS = 10
 
@@ -22,6 +26,8 @@ async function analyseCorrection(req, res) {
     }
 
     try {
+        const requestId = randomUUID()
+
         // Image envoyée à Gemini.
         const imageForAi = await sharp(req.file.buffer)
             .rotate()
@@ -35,8 +41,7 @@ async function analyseCorrection(req, res) {
             .toBuffer()
 
         const resources = await resourceModel.findAllResources()
-        const feedback = await analyseDrawing(imageForAi, resources)
-
+        const feedback = feedbackSchema.parse( await analyseDrawing(imageForAi, resources) )
         // Version légère pour l’historique.
         const imageForHistory = await sharp(req.file.buffer)
             .rotate()
@@ -49,7 +54,10 @@ async function analyseCorrection(req, res) {
             .webp({ quality: 80 })
             .toBuffer()
 
+        await analysisModel.createAnalysisEvent(requestId, req.user.id)
+
         res.json({ feedback, image: imageForHistory.toString('base64') })
+        
     } catch (error) {
         console.error(error)
 

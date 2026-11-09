@@ -3,10 +3,11 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { checkAdminAccess } from '../services/AdminService'
 import AdminUsers from '../components/AdminUsers'
 import AdminAi from '../components/AdminAi'
+import AdminCourses from '../components/AdminCourses'
 import '../styles/pages/admin.scss'
 
 type AdminProps = {
-    view: 'users' | 'ai'
+    view: 'users' | 'ai' | 'courses'
 }
 
 const Admin = ({ view }: AdminProps) => {
@@ -67,18 +68,28 @@ const Admin = ({ view }: AdminProps) => {
                 <ul>
                     <li><NavLink to="/klmt/users">Utilisateurs</NavLink></li>
                     <li><NavLink to="/klmt/ai">Données IA</NavLink></li>
+                    <li><NavLink to="/klmt/courses">Cours</NavLink></li>
                 </ul>
             </nav>
 
-            {view === 'users' ? (
+            {view === 'users' && (
                 <section>
                     <h1>Gestion des utilisateurs</h1>
                     <AdminUsers />
                 </section>
-            ) : (
+            )}
+
+            {view === 'ai' && (
                 <section>
                     <h1>Données IA</h1>
                     <AdminAi />
+                </section>
+            )}
+
+            {view === 'courses' && (
+                <section>
+                    <h1>Gestion des cours</h1>
+                    <AdminCourses />
                 </section>
             )}
         </main>

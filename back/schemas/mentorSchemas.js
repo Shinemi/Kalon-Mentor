@@ -45,4 +45,4 @@ const saveCorrectionSchema = z.object({
     feedback: feedbackSchema
 }).strict()
 
-module.exports = { saveCorrectionSchema }
+module.exports = { saveCorrectionSchema, feedbackSchema }

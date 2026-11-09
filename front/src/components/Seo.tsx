@@ -70,6 +70,11 @@ const pages: Record<string, PageSeo> = {
         description: 'Espace d’administration du mentor IA.',
         indexable: false
     },
+    '/klmt/courses': {
+        title: 'Administration des cours — Kalon Mentor',
+        description: 'Gestion du catalogue pédagogique Kalon Mentor.',
+        indexable: false
+    },
 }
 
 const setMeta = (attribute: 'name' | 'property', key: string, content: string) => {

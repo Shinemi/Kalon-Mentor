@@ -103,3 +103,78 @@ export const getAdminAiStatus = async (signal: AbortSignal): Promise<AdminAiStat
 
     return data
 }
+
+export type UserAnalyses = {
+    total: number
+    dates: string[]
+}
+
+export const getUserAnalyses = async (
+    userId: string,
+    signal: AbortSignal
+): Promise<UserAnalyses | null> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return null
+
+    const response = await fetch(`${API_URL}/admin/users/${encodeURIComponent(userId)}/analyses`, {
+        headers: { Authorization: `Bearer ${token}` },
+        signal
+    }).catch(() => {
+        throw new Error('Impossible de joindre le serveur. Réessayez plus tard.')
+    })
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return null
+    }
+
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok) {
+        throw new Error(data?.title || 'Impossible de charger les analyses.')
+    }
+
+    if (typeof data?.total !== 'number' || !Array.isArray(data?.dates)) {
+        throw new Error('La réponse du serveur est invalide.')
+    }
+
+    return data
+}
+
+export type AdminCourse = {
+    id: string
+    title: string
+    category: string
+    order_index: number | null
+    content?: {
+        level?: string
+    }
+}
+
+export const getAdminCourses = async (signal: AbortSignal): Promise<AdminCourse[] | null> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return null
+
+    const response = await fetch(`${API_URL}/admin/courses`, {
+        headers: { Authorization: `Bearer ${token}` },
+        signal
+    }).catch(() => {
+        throw new Error('Impossible de joindre le serveur. Réessayez plus tard.')
+    })
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return null
+    }
+
+    if (response.status === 403) {
+        throw new Error('Accès réservé aux administrateurs.')
+    }
+
+    if (!response.ok) throw new Error('Impossible de charger les cours.')
+
+    const data = await response.json().catch(() => null)
+    if (!Array.isArray(data?.courses)) throw new Error('La réponse du serveur est invalide.')
+
+    return data.courses
+}

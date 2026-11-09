@@ -4,6 +4,26 @@
     padding: 40px 30px 60px;
     color: $color-text;
 
+    #user-analyses {
+        margin-top: 30px;
+        overflow-wrap: anywhere;
+
+        h2 {
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-top: 15px;
+            padding-left: 20px;
+            list-style: disc;
+        }
+
+        li {
+            line-height: 26px;
+        }
+    }
+
     > nav,
     > section {
         max-width: 1440px;
