@@ -53,6 +53,7 @@ const Legal = () => {
 
                         <dt>Adresse du site</dt>
                         <dd><a href="https://kalon-mentor.vercel.app">https://kalon-mentor.vercel.app</a></dd>
+                        <dd><a href="https://kalon-mentor.onrender.com">https://kalon-mentor.onrender.com</a></dd>
 
                         <dt>Hébergement du site et stockage des dessins sauvegardés</dt>
                         <dd>Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Les dessins sauvegardés utilisent un stockage privé Vercel Blob configuré à Paris, en France. <a href="https://vercel.com/legal/privacy-notice">Informations et coordonnées de Vercel</a>.</dd>

@@ -33,7 +33,7 @@ const Footer = () => (
             </div>
 
             <p className="copyright">
-                © 2026 Kalon Mentor — Fait main pour l’âme digitale
+                © 2026 Kalon Mentor — Tout droit réservé
             </p>
         </div>
     </footer>

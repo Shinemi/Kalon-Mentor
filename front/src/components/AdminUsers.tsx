@@ -40,7 +40,6 @@ const AdminUsers = () => {
     return (
         <div className="admin-table" role="region" aria-label="Liste des utilisateurs" tabIndex={0}>
             <table>
-                <caption>Les 50 comptes les plus récents</caption>
                 <thead>
                     <tr>
                         <th scope="col">Pseudo</th>
