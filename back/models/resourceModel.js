@@ -57,3 +57,20 @@ exports.resourceExists = async (id) => {
 
     return rows.length > 0
 }
+
+exports.createCourse = async (course) => {
+    const { rows } = await pool.query(
+        `INSERT INTO resources (title, category, type, order_index, content, author_name)
+         VALUES ($1, $2, 'course', $3, $4, $5)
+         RETURNING id, title, category, type, order_index, content, author_name, is_active`,
+        [
+            course.title,
+            course.category,
+            course.order_index,
+            JSON.stringify(course.content),
+            course.author_name ?? null
+        ]
+    )
+
+    return rows[0]
+}

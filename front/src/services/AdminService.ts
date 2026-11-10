@@ -178,3 +178,49 @@ export const getAdminCourses = async (signal: AbortSignal): Promise<AdminCourse[
 
     return data.courses
 }
+
+export type NewCourse = {
+    title: string
+    category: string
+    order_index: number
+    content: {
+        level: string
+        lesson: string
+        exercise: string
+        objectives: string[]
+        commonMistakes: string[]
+    }
+}
+
+export const createAdminCourse = async (course: NewCourse): Promise<AdminCourse | null> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return null
+
+    const response = await fetch(`${API_URL}/admin/courses`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(course)
+    }).catch(() => {
+        throw new Error('Impossible de joindre le serveur. Réessayez plus tard.')
+    })
+
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return null
+    }
+
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok) {
+        throw new Error(data?.invalidParams?.[0]?.message || data?.title || 'Impossible de créer le cours.')
+    }
+
+    if (typeof data?.course?.id !== 'string' || typeof data.course.title !== 'string') {
+        throw new Error('La réponse du serveur est invalide.')
+    }
+
+    return data.course
+}

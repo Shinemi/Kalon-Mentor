@@ -2,6 +2,7 @@
 
 const userModel = require('../models/userModel')
 const analysisModel = require('../models/analysisModel')
+const resourceModel = require('../models/resourceModel')
 const { z } = require('zod')
 
 exports.getUsers = async (req, res) => {
@@ -66,6 +67,29 @@ exports.getUserAnalyses = async (req, res) => {
 
         res.status(500).json({
             title: 'Impossible de charger les analyses de cet utilisateur.',
+            statut: 500,
+            invalidParams: []
+        })
+    }
+}
+
+exports.createCourse = async (req, res) => {
+    try {
+        const course = await resourceModel.createCourse(req.body)
+        res.status(201).json({ course })
+    } catch (error) {
+        if (error.code === '23505' && error.constraint === 'resources_category_order_unique') {
+            return res.status(409).json({
+                title: 'Ordre indisponible.',
+                statut: 409,
+                invalidParams: [{ path: 'order_index', message: 'Cet ordre est déjà utilisé dans cette catégorie.' }]
+            })
+        }
+
+        console.error('Création du cours impossible :', error.code || error.name)
+
+        res.status(500).json({
+            title: 'Impossible de créer le cours.',
             statut: 500,
             invalidParams: []
         })

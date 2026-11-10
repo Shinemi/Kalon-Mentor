@@ -3,6 +3,53 @@
 .admin-page {
     padding: 40px 30px 60px;
     color: $color-text;
+    button[aria-controls="course-create-form"] {
+    margin-bottom: 25px;
+    }
+
+    .admin-course-form {
+        margin-bottom: 35px;
+        padding: 25px;
+        border: 2px solid $color-text;
+        background-color: $color-bg-surface;
+        box-shadow: 6px 6px 0 $color-text;
+
+        h2 {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        fieldset {
+            display: grid;
+            gap: 10px;
+            min-width: 0;
+            border: none;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 2px solid $color-text;
+            background-color: $color-bg-main;
+            color: $color-text;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        p {
+            margin-top: 15px;
+        }
+
+        @media (max-width: 720px) {
+            padding: 16px;
+        }
+    }
 
     #user-analyses {
         margin-top: 30px;
