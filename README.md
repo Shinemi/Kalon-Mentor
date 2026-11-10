@@ -1,6 +1,6 @@
 # Kalon Mentor
 
-<img src="front/public/Logo%20Kalon%20Mentor%20au%20trait%20noir.webp" alt="Logo Kalon Mentor" width="120">
+<img src="front/public/Favicon.webp" alt="Logo Kalon Mentor" width="120">
 
 **Un atelier de dessin accompagné par un mentor IA.**
 
