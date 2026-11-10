@@ -21,7 +21,7 @@ const Footer = () => (
                 <div className="footer-contact">
                     <h2>Contact</h2>
 
-                    <a href="mailto:kalon-mentor@gmail.com">simon.lucas.83136@gmail.com</a>
+                    <a href="mailto:simon.lucas.83136@gmail.com">simon.lucas.83136@gmail.com</a>
 
                     <Link to="/legal#contact">Assistance</Link>
 
