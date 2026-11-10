@@ -2,6 +2,12 @@
 
 .legal-main{
     padding: 50px 20px 80px;
+    .legal-back-top {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 10;
+    }
 
     .legal-content{
         max-width: 900px;

@@ -18,10 +18,15 @@ const Legal = () => {
         }
     }, [hash])
 
+    const scrollToTop = () => {
+        document.getElementById('legal-top')?.focus({ preventScroll: true })
+        window.scrollTo({ top: 0 })
+    }
+
     return (
         <main className="legal-main">
             <div className="legal-content">
-                <h1>Informations légales et conditions d’utilisation</h1>
+                <h1 id="legal-top" tabIndex={-1}>Informations légales et conditions d’utilisation</h1>
                 <p>Kalon Mentor est un projet étudiant personnel consacré à l’apprentissage du dessin. Le service est proposé gratuitement, sans abonnement ni paiement.</p>
                 <p>Dernière mise à jour : <time dateTime="2026-11-05">5 novembre 2026</time>. Version des CGU : {TERMS_VERSION}.</p>
                 <nav aria-label="Sommaire des informations légales">
@@ -240,6 +245,7 @@ const Legal = () => {
                     <p>Précisez la page concernée et les informations utiles à la compréhension de votre demande, sans transmettre votre mot de passe, votre lien de réinitialisation ou votre jeton de connexion.</p>
                     <p>Kalon Mentor étant un projet étudiant personnel, les demandes sont traitées par son éditeur sans service d’assistance permanent.</p>
                 </section>
+                <button type="button" className="button-accent legal-back-top" onClick={scrollToTop}>Remonter en haut ↑</button>
             </div>
         </main>
     )
