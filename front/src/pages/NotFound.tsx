@@ -9,7 +9,7 @@ const NotFound = () => {
 
             <h1 className="handwritten">Erreur <span>404</span> - Not Found</h1>
 
-            <Link to="/home" className="button-primary">Retourner à l'accueil <ArrowRight aria-hidden="true" /></Link>
+            <Link to="/" className="button-primary">Retourner à l'accueil <ArrowRight aria-hidden="true" /></Link>
 
         </main>
     )
