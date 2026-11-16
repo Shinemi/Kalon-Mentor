@@ -218,6 +218,16 @@ Le jeton Blob est utilisé uniquement par le backend. La galerie récupère ses 
 
 ## API
 
+### Documentation Swagger
+
+Après démarrage du backend, ouvrir [Swagger UI](http://localhost:3000/api-docs/). La spécification OpenAPI est disponible en JSON sur [`/api-docs.json`](http://localhost:3000/api-docs.json).
+
+La documentation couvre les 19 opérations de l’API. Les schémas d’entrée sont générés depuis les validateurs Zod ; les réponses et les droits d’accès sont décrits dans [`back/docs/openapi.js`](back/docs/openapi.js).
+
+Pour tester une route protégée, exécuter `POST /auth/login`, copier le `token` renvoyé et le coller dans **Authorize**, sans le préfixe `Bearer`. Les routes `/admin` exigent un compte administrateur. Le JWT n’est pas conservé après rechargement de la documentation.
+
+Les essais **Try it out** exécutent de vraies requêtes : l’analyse appelle Gemini et les opérations de sauvegarde ou de suppression modifient les données. La documentation utilise automatiquement l’origine du backend sur lequel elle est ouverte, y compris après déploiement.
+
 Préfixe local : `http://localhost:3000/api/v1`.
 
 Pour les routes authentifiées, envoyer le header :

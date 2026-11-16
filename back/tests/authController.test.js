@@ -4,15 +4,19 @@ jest.mock('../models/userModel', () => ({
     findUserByEmail: jest.fn(),
     createUser: jest.fn(),
     findUserById: jest.fn(),
-    updateUser: jest.fn()
+    updateUser: jest.fn(),
+    deleteUser: jest.fn()
 }))
-jest.mock('../models/correctionModel', () => ({}))
+jest.mock('../models/correctionModel', () => ({ findCorrectionsByUser: jest.fn() }))
+jest.mock('@vercel/blob', () => ({ del: jest.fn() }))
 
 const request = require('supertest')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const app = require('../app')
 const users = require('../models/userModel')
+const corrections = require('../models/correctionModel')
+const blob = require('@vercel/blob')
 
 const user = {
     id: 1,
@@ -149,4 +153,45 @@ test('modifie uniquement le profil de la session', async () => {
     expect(response.status).toBe(200)
     expect(users.updateUser).toHaveBeenCalledWith(user.id, expect.objectContaining({ username: 'nouveau' }))
     expect(response.body.user.username).toBe('nouveau')
+})
+
+test('hache le nouveau mot de passe avant la mise à jour du profil', async () => {
+    users.updateUser.mockResolvedValue(user)
+    await request(app).put('/api/v1/auth/profileUpdate')
+        .set('Authorization', `Bearer ${token}`).send({ password: 'Nouveau123!' }).expect(200)
+    const [id, fields] = users.updateUser.mock.calls[0]
+    expect(id).toBe(user.id)
+    expect(fields.password).not.toBe('Nouveau123!')
+    expect(await bcrypt.compare('Nouveau123!', fields.password)).toBe(true)
+})
+
+test.each([{ saved: [] }, { saved: [{ image_url: 'https://blob.test/dessin' }] }])('supprime son compte après ses images : %j', async ({ saved }) => {
+    corrections.findCorrectionsByUser.mockResolvedValue(saved)
+    const response = await request(app).delete('/api/v1/auth/profile').set('Authorization', `Bearer ${token}`).expect(204)
+    expect(response.text).toBe('')
+    expect(corrections.findCorrectionsByUser).toHaveBeenCalledWith(user.id)
+    expect(users.deleteUser).toHaveBeenCalledWith(user.id)
+    if (saved.length) {
+        expect(blob.del).toHaveBeenCalledWith(['https://blob.test/dessin'], expect.any(Object))
+        expect(blob.del.mock.invocationCallOrder[0]).toBeLessThan(users.deleteUser.mock.invocationCallOrder[0])
+    } else expect(blob.del).not.toHaveBeenCalled()
+})
+
+test('conserve le compte si la suppression des images échoue', async () => {
+    corrections.findCorrectionsByUser.mockResolvedValue([{ image_url: 'https://blob.test/dessin' }])
+    blob.del.mockRejectedValue(new Error('secret Blob'))
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+        const response = await request(app).delete('/api/v1/auth/profile').set('Authorization', `Bearer ${token}`).expect(500)
+        expect(users.deleteUser).not.toHaveBeenCalled()
+        expect(JSON.stringify(response.body)).not.toContain('secret Blob')
+    } finally {
+        log.mockRestore()
+    }
+})
+
+test('refuse un JWT expiré avant de consulter le compte', async () => {
+    const expired = jwt.sign({ id: user.id, tokenVersion: 2 }, process.env.JWT_SECRET, { expiresIn: -1 })
+    await request(app).get('/api/v1/auth/profile').set('Authorization', `Bearer ${expired}`).expect(401)
+    expect(users.findUserById).not.toHaveBeenCalled()
 })
