@@ -19,11 +19,13 @@ const Navbar = () => {
                         className="burger-menu"
                         onClick={() => setIsOpen(!isOpen)}
                         aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+                        aria-expanded={isOpen}
+                        aria-controls="main-navigation"
                     >
                         {isOpen ? <X /> : <Menu />}
                     </button>
 
-                    <ul className={isOpen ? 'navbar-links open' : 'navbar-links'}>
+                    <ul id="main-navigation" className={isOpen ? 'navbar-links open' : 'navbar-links'}>
                         <li><NavLink to="/" end onClick={() => setIsOpen(false)}>Accueil</NavLink></li>
                         <li><NavLink to="/mentorship" onClick={() => setIsOpen(false)}>Mentorat</NavLink></li>
                         <li><NavLink to="/courses" onClick={() => setIsOpen(false)}>Cours</NavLink></li>

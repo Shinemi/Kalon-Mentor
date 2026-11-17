@@ -2,8 +2,8 @@
 
 const { z } = require('zod')
 const authSchemas = require('../schemas/authSchemas')
-const { saveCorrectionSchema, feedbackSchema } = require('../schemas/mentorSchemas')
-const { createCourseSchema } = require('../schemas/courseSchemas')
+const { saveCorrectionSchema, feedbackSchema, analysisFeedbackSchema } = require('../schemas/mentorSchemas')
+const { createCourseSchema, updateCourseSchema } = require('../schemas/courseSchemas')
 
 const ref = name => ({ $ref: `#/components/schemas/${name}` })
 const object = properties => ({ type: 'object', properties })
@@ -46,7 +46,9 @@ const schemas = {
     ResetPasswordInput: inputSchema(authSchemas.resetPasswordSchema),
     SaveCorrectionInput: inputSchema(saveCorrectionSchema),
     CreateCourseInput: inputSchema(createCourseSchema),
+    UpdateCourseInput: { ...inputSchema(updateCourseSchema), minProperties: 1 },
     Feedback: inputSchema(feedbackSchema),
+    AnalysisFeedback: inputSchema(analysisFeedbackSchema),
     ApiError: {
         ...object({
             title: { type: 'string' },
@@ -88,9 +90,9 @@ const schemas = {
         corrections: array(ref('GalleryCorrection')),
         savedCount: { type: 'integer' }, maxCorrections: { type: 'integer', example: 10 }
     }),
-    AnalysisResult: object({ feedback: ref('Feedback'), image: base64 }),
+    AnalysisResult: object({ feedback: ref('AnalysisFeedback'), image: base64, analysisId: uuid }),
     CorrectionResult: object({ correction: ref('Correction') }),
-    UsersResult: object({ users: array(ref('User')) }),
+    UsersResult: object({ users: array(ref('User')), page: { type: 'integer' }, pageSize: { type: 'integer' }, hasNext: { type: 'boolean' } }),
     UserAnalysesResult: object({ total: { type: 'integer' }, dates: array(date) }),
     AiStatus: object({
         quotaAvailable: { type: 'boolean', enum: [false] },
@@ -192,11 +194,15 @@ module.exports = {
             requestBody: { required: true, content: { 'multipart/form-data': {
                 schema: { type: 'object', required: ['image'], properties: { image: { type: 'string', format: 'binary' } } }
             } } },
-            errors: { 400: 'Image absente, trop volumineuse, mauvais champ ou type de fichier refusé.', 503: 'Mentor temporairement indisponible.' }
+            errors: { 400: 'Image absente, illisible, trop volumineuse, mauvais champ ou type de fichier refusé.',
+                409: 'Une analyse est déjà en cours pour ce compte.',
+                429: 'Quota atteint : 2 réussites par jour et 10 par mois civil en Europe/Paris, ou limite HTTP par IP.',
+                503: 'Mentor temporairement indisponible.', 504: 'Délai de 120 secondes dépassé sans consommation du quota.' }
         }) },
         '/mentor/correctionSave': { post: operation('saveCorrection', 'Mentor', 'Sauvegarder une analyse', {
             access: 'member', input: 'SaveCorrectionInput', output: 'CorrectionResult', status: 201,
             description: 'Envoyer image et feedback reçus de /mentor/correction. Maximum 10 sauvegardes ; jusqu’à 3 ressources recommandées sont associées.',
+            parameters: [{ name: 'Idempotency-Key', in: 'header', required: false, schema: uuid, description: 'Réutiliser analysisId pour rejouer une sauvegarde sans créer de doublon.' }],
             errors: { 403: 'Galerie pleine (maxCorrections : 10).' }
         }) },
         '/mentor/correctionGallery': { get: operation('getCorrections', 'Mentor', 'Consulter sa galerie', { access: 'member', output: 'GalleryResult' }) },
@@ -204,7 +210,23 @@ module.exports = {
             access: 'member', parameters: [idParameter], output: 'Message', errors: { 404: 'Analyse introuvable pour ce compte.' }
         }) },
         '/admin/access': { get: operation('adminAccess', 'Administration', 'Vérifier son accès administrateur', { access: 'admin', output: 'Message' }) },
-        '/admin/users': { get: operation('getUsers', 'Administration', 'Lister les utilisateurs', { access: 'admin', output: 'UsersResult' }) },
+        '/admin/users': { get: operation('getUsers', 'Administration', 'Lister les utilisateurs', {
+            access: 'admin', output: 'UsersResult',
+            parameters: [
+                { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000000, default: 1 } },
+                { name: 'pageSize', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 } }
+            ], errors: { 422: 'Pagination invalide.' }
+        }) },
+        '/admin/courses/{id}': {
+            patch: operation('updateCourse', 'Administration', 'Modifier les champs transmis d’un cours', {
+                access: 'admin', parameters: [idParameter], input: 'UpdateCourseInput', output: 'CourseResult',
+                errors: { 404: 'Cours introuvable.', 409: 'Ordre déjà utilisé dans la catégorie.' }
+            }),
+            delete: operation('retireCourse', 'Administration', 'Retirer un cours sans supprimer les références historiques', {
+                access: 'admin', parameters: [idParameter], status: 204,
+                errors: { 404: 'Cours introuvable.', 422: 'UUID invalide.' }
+            })
+        },
         '/admin/users/{id}/analyses': { get: operation('getUserAnalyses', 'Administration', 'Consulter le nombre et les dates des analyses réussies', {
             access: 'admin', parameters: [idParameter], output: 'UserAnalysesResult',
             errors: { 422: 'Identifiant utilisateur invalide.', 404: 'Utilisateur introuvable.' }

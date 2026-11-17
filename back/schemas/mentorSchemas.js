@@ -45,4 +45,19 @@ const saveCorrectionSchema = z.object({
     feedback: feedbackSchema
 }).strict()
 
-module.exports = { saveCorrectionSchema, feedbackSchema }
+const detailSchema = z.object({
+    score: z.number().min(0).max(100).nullable(),
+    commentaire: z.string().trim().min(1),
+    points_forts: z.array(z.string()),
+    problemes: z.array(z.string()),
+    competences_a_travailler: z.array(z.string())
+})
+
+const analysisFeedbackSchema = feedbackSchema.extend({
+    analyse: z.object({
+        anatomie: detailSchema, perspective: detailSchema, composition: detailSchema,
+        couleurs: detailSchema, lumiere: detailSchema
+    }).strict()
+})
+
+module.exports = { saveCorrectionSchema, feedbackSchema, analysisFeedbackSchema }

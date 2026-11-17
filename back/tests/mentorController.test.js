@@ -1,6 +1,6 @@
 'use strict'
 
-jest.mock('../models/userModel', () => ({ findUserById: jest.fn() }))
+jest.mock('../models/userModel', () => ({ findUserById: jest.fn(), recordActivity: jest.fn() }))
 jest.mock('../models/correctionModel', () => ({
     countCorrectionsByUser: jest.fn(),
     createSaveCorrection: jest.fn(),
@@ -9,7 +9,7 @@ jest.mock('../models/correctionModel', () => ({
     deleteCorrection: jest.fn()
 }))
 jest.mock('../models/resourceModel', () => ({ resourceExists: jest.fn(), findAllResources: jest.fn() }))
-jest.mock('../models/analysisModel', () => ({ createAnalysisEvent: jest.fn() }))
+jest.mock('../models/analysisModel', () => ({ reserveAnalysis: jest.fn(), finishAnalysis: jest.fn(), releaseAnalysis: jest.fn() }))
 jest.mock('../services/imageStorage', () => ({ saveImage: jest.fn() }))
 jest.mock('../services/aiService', () => ({ analyseDrawing: jest.fn() }))
 jest.mock('@vercel/blob', () => ({
@@ -45,6 +45,9 @@ beforeEach(() => {
     token = jwt.sign({ id: 1 }, process.env.JWT_SECRET)
     users.findUserById.mockResolvedValue({ id: 1 })
     corrections.countCorrectionsByUser.mockResolvedValue(0)
+    analyses.reserveAnalysis.mockResolvedValue({ allowed: true })
+    analyses.finishAnalysis.mockResolvedValue(true)
+    analyses.releaseAnalysis.mockResolvedValue()
     jest.spyOn(console, 'error').mockImplementation(() => {})
 })
 
@@ -171,15 +174,21 @@ async function analyse() {
 test('analyse une image et compte la réussite sans sauvegarder le dessin', async () => {
     const catalogue = [{ id: 'cours', title: 'Les ombres' }]
     resources.findAllResources.mockResolvedValue(catalogue)
-    ai.analyseDrawing.mockResolvedValue(payload.feedback)
+    const feedback = {
+        ...payload.feedback,
+        analyse: Object.fromEntries(['anatomie', 'perspective', 'composition', 'couleurs', 'lumiere'].map(key => [key, {
+            score: null, commentaire: 'Non évaluable sur ce dessin.', points_forts: [], problemes: [], competences_a_travailler: []
+        }]))
+    }
+    ai.analyseDrawing.mockResolvedValue(feedback)
     const response = await analyse()
     expect(response.status).toBe(200)
-    expect(response.body.feedback).toEqual(payload.feedback)
+    expect(response.body.feedback).toEqual(feedback)
     const sentImage = ai.analyseDrawing.mock.calls[0][0]
     expect((await sharp(sentImage).metadata()).format).toBe('webp')
     expect(ai.analyseDrawing.mock.calls[0][1]).toEqual(catalogue)
     expect((await sharp(Buffer.from(response.body.image, 'base64')).metadata()).format).toBe('webp')
-    expect(analyses.createAnalysisEvent).toHaveBeenCalledWith(expect.stringMatching(/^[a-f0-9-]{36}$/), 1)
+    expect(analyses.finishAnalysis).toHaveBeenCalledWith(expect.stringMatching(/^[a-f0-9-]{36}$/), 1, expect.any(AbortSignal))
     expect(storage.saveImage).not.toHaveBeenCalled()
     expect(corrections.createSaveCorrection).not.toHaveBeenCalled()
 })
@@ -190,7 +199,7 @@ test.each(['indisponible', 'erreur', 'feedback invalide'])('ne compte pas une an
     else ai.analyseDrawing.mockRejectedValue(Object.assign(new Error('secret IA'), kind === 'indisponible' ? { code: 'AI_UNAVAILABLE' } : {}))
     const response = await analyse()
     expect(response.status).toBe(kind === 'indisponible' ? 503 : 500)
-    expect(analyses.createAnalysisEvent).not.toHaveBeenCalled()
+    expect(analyses.finishAnalysis).not.toHaveBeenCalled()
     expect(storage.saveImage).not.toHaveBeenCalled()
     expect(JSON.stringify(response.body)).not.toContain('secret IA')
 })
@@ -198,9 +207,9 @@ test.each(['indisponible', 'erreur', 'feedback invalide'])('ne compte pas une an
 test('ne lance pas l’IA pour un contenu qui n’est pas une image décodable', async () => {
     const response = await auth(request(app).post('/api/v1/mentor/correction'))
         .attach('image', Buffer.from('faux PNG'), 'dessin.png')
-    expect(response.status).toBe(500)
+    expect(response.status).toBe(400)
     expect(ai.analyseDrawing).not.toHaveBeenCalled()
-    expect(analyses.createAnalysisEvent).not.toHaveBeenCalled()
+    expect(analyses.finishAnalysis).not.toHaveBeenCalled()
 })
 
 test('rejette une image au-delà des 10 Mo avant de lancer l’IA', async () => {
@@ -221,7 +230,8 @@ test('associe au maximum trois ressources existantes, dans l’ordre de priorit�
         ressources_recommandees: [4, 2, 0, 3, 1].map(i => ({ ressource_id: ids[i], priorite: i + 1 }))
     }
     await auth(request(app).post('/api/v1/mentor/correctionSave')).send({ ...payload, feedback }).expect(201)
-    expect(corrections.createSaveCorrection).toHaveBeenCalledWith(1, 'https://blob.test/dessin', JSON.stringify(feedback), ids.slice(1, 4))
+    expect(corrections.createSaveCorrection).toHaveBeenCalledWith(1, 'https://blob.test/dessin',
+        JSON.stringify({ ...feedback, ressources_recommandees: feedback.ressources_recommandees.filter(item => ids.slice(1, 4).includes(item.ressource_id)) }), ids.slice(1, 4))
     expect(resources.resourceExists).not.toHaveBeenCalledWith(ids[4])
 })
 
@@ -269,4 +279,68 @@ test('conserve la correction en base si la suppression du Blob échoue', async (
     const response = await auth(request(app).delete('/api/v1/mentor/correctionDelete/7')).expect(500)
     expect(corrections.deleteCorrection).not.toHaveBeenCalled()
     expect(JSON.stringify(response.body)).not.toContain('secret Blob')
+})
+
+test.each([['busy', 409], ['daily', 429], ['monthly', 429]])('refuse avant tout appel IA une réservation %s', async (reason, status) => {
+    analyses.reserveAnalysis.mockResolvedValue({ allowed: false, reason })
+    const response = await analyse()
+    expect(response.status).toBe(status)
+    expect(response.body.reason).toBe(reason)
+    expect(ai.analyseDrawing).not.toHaveBeenCalled()
+    expect(analyses.finishAnalysis).not.toHaveBeenCalled()
+})
+
+test('interrompt une analyse après 120 secondes et libère la réservation sans réussite', async () => {
+    const realTimeout = global.setTimeout
+    let expire
+    jest.spyOn(global, 'setTimeout').mockImplementation((callback, delay, ...args) => {
+        if (delay === 120000) expire = () => callback(...args)
+        return realTimeout(callback, delay, ...args)
+    })
+    let started
+    const ready = new Promise(resolve => { started = resolve })
+    ai.analyseDrawing.mockImplementation(() => {
+        started()
+        return new Promise(() => {})
+    })
+    resources.findAllResources.mockResolvedValue([])
+    const pending = analyse()
+    await ready
+    expire()
+    const response = await pending
+    expect(response.status).toBe(504)
+    expect(ai.analyseDrawing.mock.calls[0][2].aborted).toBe(true)
+    expect(analyses.finishAnalysis).not.toHaveBeenCalled()
+    expect(analyses.releaseAnalysis).toHaveBeenCalledTimes(1)
+})
+
+test('compense le Blob si une sauvegarde concurrente a pris la dernière place', async () => {
+    storage.saveImage.mockResolvedValue({ url: 'https://blob.test/en-trop' })
+    corrections.createSaveCorrection.mockRejectedValue(Object.assign(new Error('Galerie pleine'), { code: 'GALLERY_FULL' }))
+    const response = await auth(request(app).post('/api/v1/mentor/correctionSave')).send(payload).expect(403)
+    expect(response.body.maxCorrections).toBe(10)
+    expect(blob.del).toHaveBeenCalledWith('https://blob.test/en-trop', expect.any(Object))
+})
+
+test('dédoublonne les recommandations avant sauvegarde', async () => {
+    const id = '00000000-0000-4000-8000-000000000001'
+    resources.resourceExists.mockResolvedValue(true)
+    storage.saveImage.mockResolvedValue({ url: 'https://blob.test/dessin' })
+    corrections.createSaveCorrection.mockResolvedValue({ id: 1 })
+    await auth(request(app).post('/api/v1/mentor/correctionSave')).send({
+        ...payload, feedback: { ...payload.feedback, ressources_recommandees: [{ ressource_id: id }, { ressource_id: id }] }
+    }).expect(201)
+    expect(corrections.createSaveCorrection.mock.calls[0][3]).toEqual([id])
+    expect(JSON.parse(corrections.createSaveCorrection.mock.calls[0][2]).ressources_recommandees).toHaveLength(1)
+})
+
+test('rejoue une sauvegarde confirmée sans nouvel upload, même si la galerie est pleine', async () => {
+    const key = '11111111-1111-4111-8111-111111111111'
+    corrections.findCorrectionById.mockResolvedValue({ id: key, image_url: 'https://blob.test/existant' })
+    corrections.countCorrectionsByUser.mockResolvedValue(10)
+    const response = await auth(request(app).post('/api/v1/mentor/correctionSave'))
+        .set('Idempotency-Key', key).send(payload).expect(201)
+    expect(response.body.correction.id).toBe(key)
+    expect(storage.saveImage).not.toHaveBeenCalled()
+    expect(corrections.createSaveCorrection).not.toHaveBeenCalled()
 })

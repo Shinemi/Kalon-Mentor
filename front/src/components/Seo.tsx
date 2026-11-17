@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { trackPageView } from '../utils/analytics'
 import { useLocation } from 'react-router-dom'
 
 const SITE_URL = 'https://kalon-mentor.vercel.app'
@@ -102,6 +103,7 @@ const Seo = () => {
         }
 
         document.title = page.title
+        trackPageView()
 
         setMeta('name', 'description', page.description)
         setMeta('name', 'robots', page.indexable ? 'index,follow' : 'noindex,follow')

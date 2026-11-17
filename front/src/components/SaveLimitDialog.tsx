@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 
 type SaveLimitDialogProps = {
     limit: number
@@ -18,6 +19,7 @@ const SaveLimitDialog = ({ limit, onClose }: SaveLimitDialogProps) => {
             <h2 id="save-limit-title">Votre galerie est pleine</h2>
             <p id="save-limit-description">Vous avez atteint la limite de {limit} analyses sauvegardées. Supprimez une ancienne analyse pour libérer une place.</p>
             <p>Votre retour actuel reste affiché et n’a pas été ajouté à la galerie.</p>
+            <Link to="/gallery" target="_blank" rel="noopener noreferrer" className="button-accent">Gérer ma galerie</Link>
             <form method="dialog"><button type="submit" className="button-primary" autoFocus>J’ai compris</button></form>
         </dialog>
     )

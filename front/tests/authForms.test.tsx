@@ -6,6 +6,7 @@ import PasswordRecovery from '../src/pages/PassWordRecovery'
 import { authenticate, recoverPassword } from '../src/services/AuthService'
 
 vi.mock('../src/services/AuthService', () => ({
+    TERMS_VERSION: '1.1',
     authenticate: vi.fn(),
     recoverPassword: vi.fn()
 }))
@@ -60,14 +61,17 @@ it('inscrit avec le pseudo normalisé et les conditions acceptées', async () =>
     fill('Pseudo', ' artiste ');
     fill('Adresse e-mail', 'artiste@example.com');
     fill('Mot de passe', 'dessin123!')
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(screen.getByRole('checkbox', { name: /J’accepte/ }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /18 ans/ }))
     fireEvent.submit(view.container.querySelector('form')!)
 
     await waitFor(() => expect(authenticate).toHaveBeenCalledWith('register', {
         username: 'artiste',
         email: 'artiste@example.com',
         password: 'dessin123!',
-        acceptedTerms: true
+        acceptedTerms: true,
+        declaredAdult: true,
+        termsVersion: '1.1'
     }))
 })
 

@@ -97,6 +97,11 @@ const Profile = () => {
             }
 
             setUser(updatedUser)
+            if (editing === 'password') {
+                sessionStorage.removeItem('kalon-token')
+                navigate('/login', { replace: true, state: { message: 'Votre mot de passe a été modifié. Reconnectez-vous.' } })
+                return
+            }
             setSuccessMessage(
                 editing === 'information'
                     ? 'Vos informations ont été modifiées.'
@@ -225,6 +230,7 @@ const Profile = () => {
                                         </h3>
 
                                         <fieldset disabled={saving || isDeleting}>
+                                            <legend>{editing === 'information' ? 'Modifier mes informations' : 'Modifier mon mot de passe'}</legend>
                                             {editing === 'information' ? (
                                                 <>
                                                     <label htmlFor="profile-username">Pseudo</label>

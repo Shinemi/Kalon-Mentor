@@ -125,3 +125,30 @@ it('émet la demande d’ouverture des préférences', async () => {
 
     expect(listener).toHaveBeenCalledOnce()
 })
+
+it.each(['sign_up', 'analyse_start', 'analyse_success', 'analyse_error', 'course_open', 'analysis_save'] as const)('émet %s seulement après consentement et sans donnée privée', async name => {
+    const { trackBusinessEvent, saveCookieConsent } = await import('../src/utils/analytics')
+    trackBusinessEvent(name)
+    expect(window.dataLayer).toBeUndefined()
+    saveCookieConsent(true)
+    document.head.querySelector('script')!.dispatchEvent(new Event('load'))
+    const unsafe = { category: 'perspective', email: 'secret@example.test', image: 'dessin-privé', error: 'secret@example.test' }
+    trackBusinessEvent(name, unsafe)
+    const event = (window.dataLayer as unknown[][]).filter(entry => entry[0] === 'event' && entry[1] === name)
+    expect(event).toHaveLength(1)
+    expect(event[0][2]).toMatchObject({ category: 'perspective' })
+    expect(JSON.stringify(event)).not.toContain('secret')
+    expect(JSON.stringify(event)).not.toContain('dessin-privé')
+})
+
+it('retire query et fragment des pages mesurées et exclut les routes privées inconnues', async () => {
+    window.history.replaceState(null, '', '/courses?email=secret#token=secret')
+    const { saveCookieConsent, trackPageView } = await import('../src/utils/analytics')
+    saveCookieConsent(true)
+    document.head.querySelector('script')!.dispatchEvent(new Event('load'))
+    trackPageView()
+    const events = (window.dataLayer as unknown[][]).filter(entry => entry[0] === 'event' && entry[1] === 'page_view')
+    expect(events).toHaveLength(1)
+    expect(JSON.stringify(events)).not.toContain('secret')
+    expect(events[0][2]).toMatchObject({ page_location: `${window.location.origin}/courses` })
+})

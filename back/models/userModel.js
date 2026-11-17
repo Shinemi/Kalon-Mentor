@@ -57,6 +57,7 @@ exports.updateUser = async (id, fields) => {
     if (fields.password) {
         values.push(fields.password)
         columns.push(`password = $${values.length}`)
+        columns.push('token_version = token_version + 1')
     }
 
     if (fields.email || fields.password) {
@@ -153,12 +154,21 @@ exports.resetPassword = async (tokenHash, hashedPassword) => {
     return rows[0]
 }
 
-exports.findUsers = async () => {
+exports.findUsers = async (limit = 21, offset = 0) => {
     const { rows } = await pool.query(
         `SELECT id, username, email, role, created_at
          FROM users
-         ORDER BY created_at DESC, id DESC`
+         ORDER BY created_at DESC, id DESC LIMIT $1 OFFSET $2`,
+        [limit, offset]
     )
 
     return rows
+}
+
+exports.recordActivity = async userId => {
+    await pool.query(
+        `UPDATE users SET last_active_at = NOW(), inactive_notice_sent_at = NULL
+         WHERE id = $1 AND (last_active_at IS NULL OR last_active_at < NOW() - INTERVAL '1 hour'
+                           OR inactive_notice_sent_at IS NOT NULL)`, [userId]
+    )
 }

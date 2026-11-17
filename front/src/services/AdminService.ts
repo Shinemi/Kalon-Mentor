@@ -35,11 +35,13 @@ export type AdminUser = {
     created_at: string
 }
 
-export const getAdminUsers = async (signal: AbortSignal): Promise<AdminUser[] | null> => {
+export type AdminUserPage = { users: AdminUser[]; page: number; pageSize: number; hasNext: boolean }
+
+export const getAdminUsers = async (signal: AbortSignal, page = 1): Promise<AdminUserPage | null> => {
     const token = sessionStorage.getItem('kalon-token')
     if (!token) return null
 
-    const response = await fetch(`${API_URL}/admin/users`, {
+    const response = await fetch(`${API_URL}/admin/users?page=${page}&pageSize=20`, {
         headers: { Authorization: `Bearer ${token}` },
         signal
     }).catch(() => {
@@ -60,7 +62,7 @@ export const getAdminUsers = async (signal: AbortSignal): Promise<AdminUser[] | 
     const data = await response.json().catch(() => null)
     if (!Array.isArray(data?.users)) throw new Error('La réponse du serveur est invalide.')
 
-    return data.users
+    return data
 }
 
 export type AdminAiStatus = {
@@ -146,8 +148,13 @@ export type AdminCourse = {
     title: string
     category: string
     order_index: number | null
+    is_active?: boolean
     content?: {
         level?: string
+        lesson?: string
+        exercise?: string
+        objectives?: string[]
+        commonMistakes?: string[]
     }
 }
 
@@ -223,4 +230,39 @@ export const createAdminCourse = async (course: NewCourse): Promise<AdminCourse 
     }
 
     return data.course
+}
+
+export const updateAdminCourse = async (id: string, course: NewCourse): Promise<AdminCourse | null> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return null
+    const response = await fetch(`${API_URL}/admin/courses/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(course)
+    })
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return null
+    }
+    const data = await response.json().catch(() => null)
+    if (!response.ok) throw new Error(data?.invalidParams?.[0]?.message || data?.title || 'Impossible de modifier le cours.')
+    if (typeof data?.course?.id !== 'string') throw new Error('La réponse du serveur est invalide.')
+    return data.course
+}
+
+export const retireAdminCourse = async (id: string): Promise<boolean> => {
+    const token = sessionStorage.getItem('kalon-token')
+    if (!token) return false
+    const response = await fetch(`${API_URL}/admin/courses/${encodeURIComponent(id)}`, {
+        method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+    })
+    if (response.status === 401) {
+        sessionStorage.removeItem('kalon-token')
+        return false
+    }
+    if (!response.ok) {
+        const data = await response.json().catch(() => null)
+        throw new Error(data?.title || 'Impossible de retirer le cours.')
+    }
+    return true
 }

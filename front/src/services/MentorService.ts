@@ -1,6 +1,9 @@
+import { trackBusinessEvent } from '../utils/analytics'
+
 export type AnalysisResult = {
     feedback: Record<string, unknown>
     image: string
+    analysisId?: string
 }
 
 const API_URL = (
@@ -22,11 +25,19 @@ export const analyseImage = async (
         response = await fetch(`${API_URL}/mentor/correction`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` },
-            body
+            body,
+            signal: AbortSignal.timeout(125000)
         })
     } catch {
+        trackBusinessEvent('analyse_error', { error: 'request_failed' })
         throw new Error('Impossible de joindre le serveur. Veuillez réessayer.')
     }
+
+    if (response.headers.get('X-Analysis-Accepted') === 'true') trackBusinessEvent('analyse_start')
+    if (!response.ok) trackBusinessEvent('analyse_error', {
+        error: response.status === 503 ? 'unavailable' : response.status === 504 ? 'timeout' : 'request_failed'
+    })
+    const data = await response.json().catch(() => null)
 
     if (response.status === 401) {
         sessionStorage.removeItem('kalon-token')
@@ -34,7 +45,7 @@ export const analyseImage = async (
     }
 
     if (response.status === 429) {
-        throw new Error('Trop de demandes. Réessayez dans quelques instants.')
+        throw new Error(data?.title || 'Trop de demandes. Réessayez dans quelques instants.')
     }
 
     if (response.status === 503) {
@@ -42,10 +53,8 @@ export const analyseImage = async (
     }
 
     if (response.status >= 500) {
-        throw new Error('L’analyse a échoué. Veuillez réessayer dans un instant.')
+        throw new Error(response.status === 504 ? data?.title || 'Le délai maximal de l’analyse est dépassé.' : 'L’analyse a échoué. Veuillez réessayer dans un instant.')
     }
-
-    const data = await response.json().catch(() => null)
 
     if (!response.ok) {
         const validationMessage = data?.invalidParams?.find(
@@ -67,12 +76,15 @@ export const analyseImage = async (
         typeof data.image !== 'string' ||
         !data.image
     ) {
+        trackBusinessEvent('analyse_error', { error: 'invalid_response' })
         throw new Error('La réponse du serveur est invalide.')
     }
 
+    trackBusinessEvent('analyse_success')
     return {
         feedback: data.feedback,
-        image: data.image
+        image: data.image,
+        ...(typeof data.analysisId === 'string' ? { analysisId: data.analysisId } : {})
     }
 }
 
@@ -90,9 +102,10 @@ export const saveAnalysis = async (
         method: 'POST',
         headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            ...(result.analysisId ? { 'Idempotency-Key': result.analysisId } : {})
         },
-        body: JSON.stringify(result)
+        body: JSON.stringify({ image: result.image, feedback: result.feedback })
     })
 
     const data = await response.json()
@@ -117,6 +130,7 @@ export const saveAnalysis = async (
         )
     }
 
+    trackBusinessEvent('analysis_save')
     return null
 }
 

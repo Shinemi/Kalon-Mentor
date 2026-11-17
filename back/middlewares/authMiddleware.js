@@ -37,6 +37,7 @@ async function authMiddleware(req, res, next) {
         }
 
         req.user = user
+        await userModel.recordActivity(user.id)
         next()
     } catch (error) {
         return res.status(401).json({

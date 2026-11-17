@@ -190,7 +190,7 @@ RESSOURCES DISPONIBLES (liste fermée, format JSON) :
 ${JSON.stringify(resources)}`
 }
 
-async function analyseDrawing(imageBuffer, resources) {
+async function analyseDrawing(imageBuffer, resources, signal) {
     const apiKey = process.env.GEMINI_API_KEY
 
     if (!apiKey) {
@@ -199,6 +199,7 @@ async function analyseDrawing(imageBuffer, resources) {
 
     const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
         method: 'POST',
+        signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             contents: [

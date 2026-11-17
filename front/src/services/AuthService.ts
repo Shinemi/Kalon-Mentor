@@ -1,3 +1,5 @@
+import { trackBusinessEvent } from '../utils/analytics'
+
 export const TERMS_VERSION = '1.1'
 
 type Credentials = {
@@ -75,7 +77,7 @@ export const authenticate = async (mode: 'login' | 'register', credentials: Cred
     const data = await response.json().catch(() => null)
     if (!response.ok) {
         if (response.status === 401) throw new Error('Adresse e-mail ou mot de passe incorrect.')
-        if (response.status === 409) throw new Error('Un compte existe déjà avec cette adresse e-mail.')
+        if (response.status === 409) throw new Error(data?.title || 'Un compte existe déjà avec cette adresse e-mail.')
         if (response.status === 429) throw new Error('Trop de tentatives. Réessayez plus tard.')
         const title = data?.title || data?.message
         const validationMessage = data?.invalidParams?.find(
@@ -87,11 +89,12 @@ export const authenticate = async (mode: 'login' | 'register', credentials: Cred
         throw new Error('La réponse du serveur est invalide.')
     }
     sessionStorage.setItem('kalon-token', data.token)
+    if (mode === 'register') trackBusinessEvent('sign_up')
 }
 
 
 export type UserProfile = {
-    id: number
+    id: string
     username: string
     email: string
 }

@@ -1,20 +1,37 @@
 'use strict'
 
 const { pool } = require('../db/db')
+const { randomUUID } = require('node:crypto')
 
 // On utilise une transaction (BEGIN/COMMIT) parce que deux tables sont écrites (corrections, puis corrections_resources) :
 // si l'une des insertions échoue, on annule tout
-exports.createSaveCorrection = async (userId, imageUrl, feedbackText, resourceIds = []) => {
+exports.createSaveCorrection = async (userId, imageUrl, feedbackText, resourceIds = [], correctionId = randomUUID()) => {
     const client = await pool.connect()
 
     try {
         await client.query('BEGIN')
 
+        // Sérialise les sauvegardes d'un même compte avant le contrôle du plafond.
+        await client.query('SELECT id FROM users WHERE id = $1 FOR UPDATE', [userId])
+        const existing = await client.query(
+            'SELECT id, image_url, feedback_text, created_at FROM corrections WHERE id = $1 AND user_id = $2', [correctionId, userId]
+        )
+        if (existing.rows.length) {
+            await client.query('COMMIT')
+            return existing.rows[0]
+        }
+        const count = await client.query('SELECT COUNT(*)::int AS count FROM corrections WHERE user_id = $1', [userId])
+        if (count.rows[0].count >= 10) {
+            const error = new Error('Galerie pleine')
+            error.code = 'GALLERY_FULL'
+            throw error
+        }
+
         const { rows } = await client.query(
-            `INSERT INTO corrections (user_id, image_url, feedback_text)
-             VALUES ($1, $2, $3)
+            `INSERT INTO corrections (user_id, image_url, feedback_text, id)
+             VALUES ($1, $2, $3, $4)
              RETURNING id, image_url, feedback_text, created_at`,
-            [userId, imageUrl, feedbackText]
+            [userId, imageUrl, feedbackText, correctionId]
         )
         const correction = rows[0]
 

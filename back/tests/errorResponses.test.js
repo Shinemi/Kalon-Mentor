@@ -1,6 +1,7 @@
 'use strict'
 
 jest.mock('../models/userModel', () => ({
+    recordActivity: jest.fn(),
     findUserByEmail: jest.fn(),
     findUserById: jest.fn(),
 }))

@@ -1,8 +1,8 @@
 'use strict'
 
-jest.mock('../models/userModel', () => ({ findUserById: jest.fn(), findUsers: jest.fn() }))
+jest.mock('../models/userModel', () => ({ findUserById: jest.fn(), findUsers: jest.fn(), recordActivity: jest.fn() }))
 jest.mock('../models/analysisModel', () => ({ findAnalysisEventsByUser: jest.fn() }))
-jest.mock('../models/resourceModel', () => ({ findCourses: jest.fn(), createCourse: jest.fn() }))
+jest.mock('../models/resourceModel', () => ({ findCourses: jest.fn(), createCourse: jest.fn(), updateCourse: jest.fn(), retireCourse: jest.fn() }))
 
 const request = require('supertest')
 const jwt = require('jsonwebtoken')
@@ -19,7 +19,8 @@ const course = {
 }
 const endpoints = [
     ['get', '/access'], ['get', '/users'], ['get', `/users/${targetId}/analyses`],
-    ['get', '/ai/status'], ['get', '/courses'], ['post', '/courses']
+    ['get', '/ai/status'], ['get', '/courses'], ['post', '/courses'],
+    ['patch', `/courses/${targetId}`], ['delete', `/courses/${targetId}`]
 ]
 let token
 
@@ -60,7 +61,7 @@ test('autorise un administrateur et retourne la liste sans cache partagé', asyn
     const list = [{ id: targetId, username: 'artiste', role: 'member' }]
     users.findUsers.mockResolvedValue(list)
     const response = await auth(request(app).get('/api/v1/admin/users')).expect(200)
-    expect(response.body).toEqual({ users: list })
+    expect(response.body).toEqual({ users: list, page: 1, pageSize: 20, hasNext: false })
     expect(response.headers['cache-control']).toBe('private, no-store')
 })
 
@@ -96,7 +97,7 @@ test('transmet le filtre de catégorie à la liste admin', async () => {
     resources.findCourses.mockResolvedValue([])
     const response = await auth(request(app).get('/api/v1/admin/courses?category=perspective')).expect(200)
     expect(response.body).toEqual({ courses: [] })
-    expect(resources.findCourses).toHaveBeenCalledWith('perspective')
+    expect(resources.findCourses).toHaveBeenCalledWith('perspective', true)
 })
 
 test('crée un cours après normalisation et applique les listes par défaut', async () => {
@@ -140,4 +141,40 @@ test.each(['users', 'analyses', 'courses'])('masque une panne du modèle admin :
     const response = await auth(req).expect(500)
     expect(response.body).toMatchObject({ statut: 500, invalidParams: [] })
     expect(JSON.stringify(response.body)).not.toContain('secret de connexion')
+})
+
+test('transmet uniquement les champs d’une modification partielle', async () => {
+    resources.updateCourse.mockResolvedValue({ ...course, id: targetId, title: 'Nouveau titre' })
+    await auth(request(app).patch(`/api/v1/admin/courses/${targetId}`)).send({ title: ' Nouveau titre ' }).expect(200)
+    expect(resources.updateCourse).toHaveBeenCalledWith(targetId, { title: 'Nouveau titre' })
+})
+
+test.each([{}, { role: 'admin' }, { content: {} }, { content: { lesson: '' } }])('refuse une modification invalide : %j', async input => {
+    await auth(request(app).patch(`/api/v1/admin/courses/${targetId}`)).send(input).expect(422)
+    expect(resources.updateCourse).not.toHaveBeenCalled()
+})
+
+test('retire logiquement le cours et répond sans contenu', async () => {
+    resources.retireCourse.mockResolvedValue({ id: targetId })
+    const response = await auth(request(app).delete(`/api/v1/admin/courses/${targetId}`)).expect(204)
+    expect(response.text).toBe('')
+    expect(resources.retireCourse).toHaveBeenCalledWith(targetId)
+})
+
+test.each(['patch', 'delete'])('retourne 404 pour un cours absent : %s', async method => {
+    const req = auth(request(app)[method](`/api/v1/admin/courses/${targetId}`))
+    if (method === 'patch') req.send({ title: 'Titre' })
+    await req.expect(404)
+})
+
+test('limite la page et ne publie pas les données privées du modèle', async () => {
+    users.findUsers.mockResolvedValue(Array.from({ length: 3 }, (_, i) => ({ id: String(i) })))
+    const response = await auth(request(app).get('/api/v1/admin/users?page=2&pageSize=2')).expect(200)
+    expect(response.body).toMatchObject({ users: [{ id: '0' }, { id: '1' }], hasNext: true, page: 2, pageSize: 2 })
+    expect(users.findUsers).toHaveBeenCalledWith(3, 2)
+})
+
+test.each(['page=0', 'page=1.5', 'pageSize=101', 'pageSize=invalide'])('refuse une pagination invalide : %s', async query => {
+    await auth(request(app).get(`/api/v1/admin/users?${query}`)).expect(422)
+    expect(users.findUsers).not.toHaveBeenCalled()
 })

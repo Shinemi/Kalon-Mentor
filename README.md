@@ -89,11 +89,13 @@ cd Kalon-Mentor
 
 Créer `back/.env` et `front/.env` avec les valeurs décrites dans la section [Configuration](#configuration).
 
-Les fichiers `.env.exemple` du dépôt sont actuellement partiels : compléter la configuration avec les variables ci-dessous.
+Les fichiers `.env.exemple` servent de modèles ; remplacer leurs valeurs fictives par la configuration de votre environnement.
 
 ### 3. Préparer la base de données
 
-Le dépôt ne contient pas encore de script SQL d’initialisation ni de jeu de données de cours. Il faut disposer d’une base préparée, compatible avec les tables et contraintes décrites dans la section [Base de données](#base-de-données).
+Le script [`back/db/schema.sql`](back/db/schema.sql) crée les six tables, leurs contraintes, index et RLS sur une base PostgreSQL vide. Avec un rôle propriétaire, exécuter `psql "$DATABASE_URI" -v ON_ERROR_STOP=1 -f back/db/schema.sql` depuis la racine (syntaxe Bash ; sous PowerShell utiliser `$env:DATABASE_URI`). Ne pas exécuter ce script sur une base existante.
+
+Le catalogue réel de 48 cours n’est pas recopié dans le script. Le récupérer depuis une sauvegarde autorisée de `resources` ; le script ne fabrique aucun contenu pédagogique de remplacement.
 
 Installer les dépendances ne crée pas les tables et ne peuple pas le catalogue.
 
@@ -222,7 +224,7 @@ Le jeton Blob est utilisé uniquement par le backend. La galerie récupère ses 
 
 Après démarrage du backend, ouvrir [Swagger UI](http://localhost:3000/api-docs/). La spécification OpenAPI est disponible en JSON sur [`/api-docs.json`](http://localhost:3000/api-docs.json).
 
-La documentation couvre les 19 opérations de l’API. Les schémas d’entrée sont générés depuis les validateurs Zod ; les réponses et les droits d’accès sont décrits dans [`back/docs/openapi.js`](back/docs/openapi.js).
+La documentation couvre les 21 opérations de l’API. Les schémas d’entrée sont générés depuis les validateurs Zod ; les réponses et les droits d’accès sont décrits dans [`back/docs/openapi.js`](back/docs/openapi.js).
 
 Pour tester une route protégée, exécuter `POST /auth/login`, copier le `token` renvoyé et le coller dans **Authorize**, sans le préfixe `Bearer`. Les routes `/admin` exigent un compte administrateur. Le JWT n’est pas conservé après rechargement de la documentation.
 
@@ -257,6 +259,8 @@ Authorization: Bearer VOTRE_JWT
 | GET | `/admin/ai/status` | Admin | Disponibilité des informations de quota Gemini |
 | GET | `/admin/courses` | Admin | Liste des cours |
 | POST | `/admin/courses` | Admin | Création d’un cours |
+| PATCH | `/admin/courses/:id` | Admin | Modification partielle d’un cours |
+| DELETE | `/admin/courses/:id` | Admin | Retrait logique d’un cours |
 
 Les schémas et règles d’entrée sont définis dans [`back/schemas`](back/schemas). L’inscription exige notamment l’acceptation des CGU, la déclaration de majorité et la version courante des conditions.
 
@@ -313,12 +317,14 @@ Le routage des pages React lors d’un accès direct ou d’un rafraîchissement
 
 ## Limites actuelles et prochaines évolutions
 
-- Le schéma SQL initial et les données de cours ne sont pas encore fournis sous forme de scripts versionnés.
-- Les quotas métier d’analyses par jour et par mois et la réservation d’une analyse par compte ne sont pas encore implémentés. Les limitations HTTP par IP sont déjà présentes.
-- La galerie prévoit un maximum de dix sauvegardes par compte. Son contrôle doit encore être renforcé pour les sauvegardes concurrentes.
+- Le schéma SQL est versionné ; le jeu de données réel des 48 cours reste à exporter depuis une sauvegarde autorisée.
+- Le backend contrôle 2 réussites par jour et 10 par mois civil en Europe/Paris, avec une réservation partagée et un délai de 120 secondes. Les tests utilisent PostgreSQL isolé ; la recette multi-instance reste à exécuter sur un environnement dédié.
+- La galerie limite les sauvegardes à dix dans une transaction avec verrou de compte ; un refus concurrent déclenche le nettoyage du nouveau Blob.
 - Une analyse non sauvegardée est perdue au rafraîchissement de la page.
 - L’onglet IA renvoie actuellement une information de quota indisponible ; il n’est pas encore relié à une source de quotas Gemini.
-- La modification et le retrait des cours, ainsi que la suppression d’un utilisateur depuis l’administration, restent à développer.
+- La modification et le retrait logique des cours sont disponibles. La suppression d’utilisateurs depuis l’administration est hors du périmètre des six user stories du dossier.
+
+Voir le [suivi de conformité au dossier](docs/suivi-dossier.md), les [procédures d’exploitation](docs/exploitation.md) et l’[inventaire des licences](docs/THIRD_PARTY_NOTICES.md). Les six événements métier sont instrumentés après consentement ; leur réception dans GA4 et les réglages de collecte automatique restent à vérifier dans la propriété réelle.
 
 ## Auteur
 

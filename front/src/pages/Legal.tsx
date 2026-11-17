@@ -89,6 +89,7 @@ const Legal = () => {
                     <h3>4. Envoi et analyse des dessins</h3>
                     <p>L’utilisateur peut transmettre une image JPG, PNG ou WebP de 10 Mo maximum. L’image est redimensionnée et convertie en WebP avant son traitement. Le mentor génère un retour pédagogique et peut recommander des cours du site.</p>
                     <p>La sauvegarde d’une analyse est facultative et nécessite une action de l’utilisateur. L’historique peut contenir jusqu’à 10 analyses par compte. Pour libérer une place, une analyse peut être supprimée depuis l’historique. Cette limite ne constitue pas un quota mensuel d’analyses.</p>
+                    <p>Le service gratuit permet 10 analyses réussies par mois, avec un maximum de 2 par jour. Ces périodes suivent le calendrier Europe/Paris. Une seule analyse peut être en cours par compte, pour 120 secondes maximum. Un échec ou un dépassement du délai ne consomme pas le quota utilisateur ; la nouvelle tentative reste manuelle.</p>
 
                     <h3>5. Contenus et comportements autorisés</h3>
                     <p>L’utilisateur transmet uniquement des dessins qu’il a le droit de soumettre au service et à son fournisseur d’analyse. Il ne doit pas envoyer de documents d’identité, de données sensibles, d’informations confidentielles ou de contenus portant atteinte aux droits d’autrui.</p>
@@ -180,7 +181,7 @@ const Legal = () => {
                     <h2 id="conservation" tabIndex={-1}>Conservation et suppression</h2>
 
                     <ul>
-                        <li>Compte : les informations sont conservées pendant l’existence du compte, puis supprimées lors de sa fermeture. Aucune suppression automatique fondée sur l’inactivité n’est actuellement appliquée.</li>
+                        <li>Compte : les informations sont conservées pendant l’existence du compte, puis supprimées lors de sa fermeture. La dernière activité est enregistrée pour une revue manuelle après 24 mois d’inactivité. Un avertissement précède de 30 jours toute suppression manuelle, afin de permettre la reprise ou une demande de maintien. Aucune purge automatique n’est appliquée.</li>
                         <li>Dessins non sauvegardés : ils sont traités pour répondre à la demande et ne sont pas ajoutés à l’historique. Leur affichage temporaire dans le navigateur et les traitements du fournisseur d’IA restent distincts.</li>
                         <li>Analyses sauvegardées : elles sont conservées jusqu’à leur suppression dans l’historique ou à la suppression du compte.</li>
                         <li>Authentification : le jeton est enregistré dans le stockage de session du navigateur et retiré à la déconnexion. Sa validité côté serveur est limitée à 7 jours, sous réserve des invalidations liées à la sécurité du compte.</li>

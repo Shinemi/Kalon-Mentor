@@ -26,6 +26,7 @@ app.use(
 // CORS : autorise les requêtes venant du frontend
 // Autorise le front local et le front déployé.
 const corsoptions = {
+    exposedHeaders: ['X-Analysis-Accepted'],
     origin: [
         'http://localhost:3000',
         'http://localhost:5173',
@@ -110,7 +111,7 @@ app.use((err, req, res, next) => {
     if (err.type === 'entity.too.large') {
         return res.status(413).json({ title: 'Corps de requête trop volumineux.', statut: 413, invalidParams: [] })
     }
-    console.error(err)
+    console.error('Erreur serveur :', err.code || err.name)
     res.status(500).json({ title: 'Unexpected server error', statut: 500, invalidParams: [] })
 })
 

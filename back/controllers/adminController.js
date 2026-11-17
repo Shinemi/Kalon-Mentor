@@ -9,8 +9,14 @@ exports.getUsers = async (req, res) => {
     res.set('Cache-Control', 'private, no-store')
 
     try {
-        const users = await userModel.findUsers()
-        res.json({ users })
+        const page = Number(req.query.page ?? 1)
+        const pageSize = Number(req.query.pageSize ?? 20)
+        if (!Number.isSafeInteger(page) || page < 1 || page > 1000000 ||
+            !Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
+            return res.status(422).json({ title: 'Pagination invalide.', statut: 422, invalidParams: [] })
+        }
+        const users = await userModel.findUsers(pageSize + 1, (page - 1) * pageSize)
+        res.json({ users: users.slice(0, pageSize), page, pageSize, hasNext: users.length > pageSize })
     } catch (error) {
         console.error('Chargement des utilisateurs impossible :', error.code || error.name)
 
@@ -19,6 +25,43 @@ exports.getUsers = async (req, res) => {
             statut: 500,
             invalidParams: []
         })
+    }
+}
+
+exports.getCourses = async (req, res) => {
+    try {
+        res.set('Cache-Control', 'private, no-store')
+        res.json({ courses: await resourceModel.findCourses(req.query.category, true) })
+    } catch (error) {
+        console.error('Chargement des cours impossible :', error.code || error.name)
+        res.status(500).json({ title: 'Impossible de charger les cours.', statut: 500, invalidParams: [] })
+    }
+}
+
+exports.updateCourse = async (req, res) => {
+    try {
+        const course = await resourceModel.updateCourse(req.params.id, req.body)
+        if (!course) return res.status(404).json({ title: 'Cours introuvable.', statut: 404, invalidParams: [] })
+        res.json({ course })
+    } catch (error) {
+        const conflict = error.code === '23505' && error.constraint === 'resources_category_order_unique'
+        console.error('Modification du cours impossible :', error.code || error.name)
+        res.status(conflict ? 409 : 500).json({
+            title: conflict ? 'Ordre indisponible.' : 'Impossible de modifier le cours.',
+            statut: conflict ? 409 : 500,
+            invalidParams: conflict ? [{ path: 'order_index', message: 'Cet ordre est déjà utilisé dans cette catégorie.' }] : []
+        })
+    }
+}
+
+exports.retireCourse = async (req, res) => {
+    try {
+        const course = await resourceModel.retireCourse(req.params.id)
+        if (!course) return res.status(404).json({ title: 'Cours introuvable.', statut: 404, invalidParams: [] })
+        res.status(204).end()
+    } catch (error) {
+        console.error('Retrait du cours impossible :', error.code || error.name)
+        res.status(500).json({ title: 'Impossible de retirer le cours.', statut: 500, invalidParams: [] })
     }
 }
 

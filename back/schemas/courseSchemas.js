@@ -33,4 +33,16 @@ const createCourseSchema = z.object({
     }, { error: 'Le contenu du cours est requis.' }).strict()
 }, { error: 'Les données du cours doivent être un objet.' }).strict()
 
-module.exports = { createCourseSchema }
+const updateCourseSchema = createCourseSchema.partial().extend({
+    content: createCourseSchema.shape.content.partial().extend({
+        objectives: z.array(textSchema).optional(),
+        commonMistakes: z.array(textSchema).optional()
+    }).optional()
+}).refine(data => Object.keys(data).length > 0 &&
+    (data.content === undefined || Object.keys(data.content).length > 0), {
+    error: 'Veuillez fournir au moins un champ à modifier.'
+})
+
+const courseIdSchema = z.uuid()
+
+module.exports = { createCourseSchema, updateCourseSchema, courseIdSchema }

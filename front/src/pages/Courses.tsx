@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import '../styles/pages/courses.scss'
+import { trackBusinessEvent } from '../utils/analytics'
 
 type Course = {
     id: string
     title: string
     category: string
+    is_active?: boolean
     content?: {
         level?: string
         lesson?: string
@@ -21,6 +23,7 @@ const API_URL = (
 
 const CourseList = ({ courses, hash }: { courses: Course[]; hash: string }) => {
     const targetCourse = courses.find(course => `#course-${course.id}` === hash)
+    const announced = useRef(false)
 
     const [openCategories, setOpenCategories] = useState<string[]>(
         targetCourse ? [targetCourse.category] : []
@@ -34,6 +37,11 @@ const CourseList = ({ courses, hash }: { courses: Course[]; hash: string }) => {
 
     useEffect(() => {
         if (!targetCourse) return
+
+        if (!announced.current) {
+            trackBusinessEvent('course_open', { course_id: targetCourse.id, category: targetCourse.category })
+            announced.current = true
+        }
 
         const title = document.getElementById(`course-${targetCourse.id}`)
 
@@ -51,6 +59,8 @@ const CourseList = ({ courses, hash }: { courses: Course[]; hash: string }) => {
     }
 
     const toggleCourse = (id: string) => {
+        const course = courses.find(item => item.id === id)
+        if (!openCourses.includes(id) && course) trackBusinessEvent('course_open', { course_id: id, category: course.category })
         setOpenCourses(current => current.includes(id)
             ? current.filter(value => value !== id)
             : [...current, id]
@@ -83,6 +93,7 @@ const CourseList = ({ courses, hash }: { courses: Course[]; hash: string }) => {
                                         <div id={`${courseId}-content`} className="course-content" hidden={!courseOpen}>
                                             {courseOpen && (
                                                 <>
+                                                    {course.is_active === false && <p role="status">Ce cours a été retiré du catalogue. Il reste accessible depuis votre analyse sauvegardée.</p>}
                                                     {course.content?.level && (
                                                         <p className="course-level"><strong>Niveau :</strong> {course.content.level}</p>
                                                     )}
@@ -153,9 +164,23 @@ const Courses = () => {
                 }
 
                 const data = await response.json()
+                const list: Course[] = Array.isArray(data.courses) ? data.courses : []
+                const id = location.hash.match(/^#course-([a-f0-9-]{36})$/i)?.[1]
+                const token = sessionStorage.getItem('kalon-token')
+                if (id && !list.some(course => course.id === id) && token) {
+                    const detail = await fetch(`${API_URL}/resources/courses/${id}`, {
+                        headers: { Authorization: `Bearer ${token}` }, signal: controller.signal
+                    })
+                    if (detail.ok) {
+                        const result = await detail.json()
+                        if (result.course) list.push(result.course)
+                    } else {
+                        throw new Error('Ce cours est introuvable ou n’est pas associé à vos analyses sauvegardées.')
+                    }
+                }
 
                 if (!controller.signal.aborted) {
-                    setCourses(Array.isArray(data.courses) ? data.courses : [])
+                    setCourses(list)
                 }
             } catch {
                 if (!controller.signal.aborted) {
@@ -167,7 +192,7 @@ const Courses = () => {
         loadCourses()
 
         return () => controller.abort()
-    }, [])
+    }, [location.hash])
 
     return (
         <main className="courses-page">

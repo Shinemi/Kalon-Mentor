@@ -9,7 +9,7 @@ async function getCourses(req, res) {
 
         res.json({ courses })
     } catch (error) {
-        console.error(error)
+        console.error('Chargement des cours impossible :', error.code || error.name)
         res.status(500).json({
             title: 'Error while fetching courses',
             statut: 500,
@@ -23,7 +23,9 @@ async function getCourseById(req, res) {
     try {
         const course = await resourceModel.findCourseById(req.params.id)
 
-        if (!course) {
+        const retired = course?.is_active === false
+        if (!course || (retired && (!req.user ||
+            !await resourceModel.canAccessRetiredCourse(req.params.id, req.user.id)))) {
             return res.status(404).json({
                 title: 'Course not found',
                 statut: 404,
@@ -31,9 +33,10 @@ async function getCourseById(req, res) {
             })
         }
 
+        if (retired) res.set('Cache-Control', 'private, no-store')
         res.json({ course })
     } catch (error) {
-        console.error(error)
+        console.error('Chargement du cours impossible :', error.code || error.name)
         res.status(500).json({
             title: 'Error while fetching the course',
             statut: 500,

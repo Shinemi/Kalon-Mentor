@@ -50,7 +50,10 @@ async function register(req, res) {
             token: generateToken(user.id, user.token_version)
         })
     } catch (error) {
-        console.error(error)
+        console.error('Création du compte impossible :', error.code || error.name)
+        if (error.code === '23505') {
+            return res.status(409).json({ title: 'Ce pseudo ou cette adresse e-mail est déjà utilisé.', statut: 409, invalidParams: [] })
+        }
 
         res.status(500).json({
             title: 'Erreur lors de la création du compte.',
@@ -97,7 +100,7 @@ async function login(req, res) {
             token: generateToken(user.id, user.token_version)
         })
     } catch (error) {
-        console.error(error)
+        console.error('Connexion impossible :', error.code || error.name)
 
         res.status(500).json({
             title: 'Erreur lors de la connexion.',
@@ -127,7 +130,10 @@ async function updateProfile(req, res) {
 
         res.json({ user })
     } catch (error) {
-        console.error(error)
+        console.error('Modification du profil impossible :', error.code || error.name)
+        if (error.code === '23505') {
+            return res.status(409).json({ title: 'Ce pseudo ou cette adresse e-mail est déjà utilisé.', statut: 409, invalidParams: [] })
+        }
 
         res.status(500).json({
             title: 'Erreur lors de la modification du profil.',
@@ -152,7 +158,7 @@ async function deleteAccount(req, res) {
 
         res.status(204).end()
     } catch (error) {
-        console.error(error)
+        console.error('Suppression du compte impossible :', error.code || error.name)
 
         res.status(500).json({
             title: 'La suppression du compte n’a pas pu être terminée. Réessayez ou contactez l’assistance.',

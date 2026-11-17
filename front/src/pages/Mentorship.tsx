@@ -136,6 +136,7 @@ const Mentorship = () => {
                 <div className="mentorship-heading">
                     <h1>Votre atelier de mentorat</h1>
                     <p>Partagez votre dessin pour découvrir ses points forts et les pistes à explorer.</p>
+                    <p>2 analyses réussies par jour et 10 par mois, en heure de Paris. Un échec ne consomme pas votre quota. Une analyse à la fois, pour 120 secondes maximum.</p>
                 </div>
 
                 {!result ? (

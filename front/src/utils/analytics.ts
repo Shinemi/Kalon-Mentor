@@ -94,7 +94,11 @@ export const startAnalytics = () => {
 
     window.gtag('config', GA_ID, {
         allow_google_signals: false,
-        allow_ad_personalization_signals: false
+        allow_ad_personalization_signals: false,
+        send_page_view: false,
+        page_location: `${window.location.origin}/`,
+        page_referrer: '',
+        page_title: 'Kalon Mentor'
     })
 
     const script = document.createElement('script')
@@ -105,6 +109,7 @@ export const startAnalytics = () => {
     script.onload = () => {
         analyticsStarted = true
         analyticsLoading = false
+        trackPageView()
     }
 
     script.onerror = () => {
@@ -190,4 +195,30 @@ export const trackEvent = (name: string, params: AnalyticsParameters = {}): void
     ) return
 
     window.gtag('event', name, params)
+}
+
+export type BusinessEvent = 'sign_up' | 'analyse_start' | 'analyse_success' | 'analyse_error' | 'course_open' | 'analysis_save'
+
+export const trackBusinessEvent = (name: BusinessEvent, params: { category?: string; course_id?: string; error?: string } = {}): void => {
+    if (window.location.pathname === '/reset-password') return
+    const safe: AnalyticsParameters = {
+        page_location: `${window.location.origin}/`, page_referrer: '', page_title: 'Kalon Mentor'
+    }
+    if (['proportions', 'anatomie', 'perspective', 'composition', 'couleurs', 'lumiere'].includes(params.category ?? '')) safe.category = params.category
+    if (/^[a-f0-9-]{36}$/i.test(params.course_id ?? '')) safe.course_id = params.course_id
+    if (['unavailable', 'timeout', 'invalid_response', 'request_failed'].includes(params.error ?? '')) safe.error = params.error
+    // La file gtag peut recevoir l'événement pendant le chargement, après consentement.
+    if (getCookieConsent() === true && (analyticsStarted || analyticsLoading)) window.gtag?.('event', name, safe)
+}
+
+let previousPage = ''
+
+export const trackPageView = (): void => {
+    const path = window.location.pathname
+    const pages = ['/', '/courses', '/legal', '/login', '/register', '/mentorship', '/gallery', '/profile', '/forgot-password']
+    if (!pages.includes(path) || previousPage === path || getCookieConsent() !== true || !analyticsStarted) return
+    previousPage = path
+    trackEvent('page_view', {
+        page_location: `${window.location.origin}${path}`, page_referrer: '', page_title: 'Kalon Mentor'
+    })
 }
