@@ -21,9 +21,7 @@ const Footer = () => (
                 <div className="footer-contact">
                     <h2>Contact</h2>
 
-                    <a href="mailto:simon.lucas.83136@gmail.com">kalon.mentor@gmail.com</a>
-
-                    <Link to="/legal#contact">Assistance</Link>
+                    <Link to="/legal#contact">Contact et assistance</Link>
 
                     <a href="https://github.com/Shinemi/Kalon-Mentor" target="_blank" rel="noopener noreferrer">GitHub du projet ↗</a>
                 </div>
@@ -32,7 +30,7 @@ const Footer = () => (
             </div>
 
             <p className="copyright">
-                © 2026 Kalon Mentor — Tout droits réservés
+                © 2026 Kalon Mentor — Tous droits réservés
             </p>
         </div>
     </footer>

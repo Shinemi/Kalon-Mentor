@@ -123,7 +123,8 @@ test('récupère le profil authentifié', async () => {
         .set('Authorization', `Bearer ${token}`)
 
     expect(response.status).toBe(200)
-    expect(response.body.user).toEqual(user)
+    expect(response.body.user).toEqual({ id: user.id, username: user.username, email: user.email })
+    expect(response.headers['cache-control']).toBe('private, no-store')
 })
 
 test.each(['absent', 'invalide', 'révoqué', 'supprimé'])('refuse une session %s', async kind => {
@@ -195,4 +196,28 @@ test('refuse un JWT expiré avant de consulter le compte', async () => {
     const expired = jwt.sign({ id: user.id, tokenVersion: 2 }, process.env.JWT_SECRET, { expiresIn: -1 })
     await request(app).get('/api/v1/auth/profile').set('Authorization', `Bearer ${expired}`).expect(401)
     expect(users.findUserById).not.toHaveBeenCalled()
+})
+
+test.each(['register', 'profile', 'profileUpdate'])('limite les données de compte retournées : %s', async route => {
+    const internal = {
+        ...user, password: 'hash-interne-fictif', password_reset_token_hash: 'empreinte-fictive',
+        inactive_notice_sent_at: 'date-interne', role: 'admin'
+    }
+    users.createUser.mockResolvedValue(internal)
+    users.findUserById.mockResolvedValue(internal)
+    users.updateUser.mockResolvedValue(internal)
+    let response
+    if (route === 'register') {
+        response = await request(app).post('/api/v1/auth/register').send({
+            ...credentials, username: user.username, acceptedTerms: true, declaredAdult: true, termsVersion: '1.1'
+        })
+    } else {
+        const req = request(app)[route === 'profile' ? 'get' : 'put'](`/api/v1/auth/${route}`)
+            .set('Authorization', `Bearer ${token}`)
+        if (route === 'profileUpdate') req.send({ username: user.username })
+        response = await req
+    }
+    expect(response.status).toBe(route === 'register' ? 201 : 200)
+    expect(response.body.user).toEqual({ id: user.id, username: user.username, email: user.email })
+    expect(response.headers['cache-control']).toContain('no-store')
 })

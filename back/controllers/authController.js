@@ -17,6 +17,10 @@ function generateToken(userId, tokenVersion = 0) {
     )
 }
 
+function publicUser(user) {
+    return { id: user.id, username: user.username, email: user.email }
+}
+
 // POST /auth/register
 async function register(req, res) {
     const { username, email, password, termsVersion } = req.body
@@ -46,7 +50,7 @@ async function register(req, res) {
         )
 
         res.status(201).json({
-            user,
+            user: publicUser(user),
             token: generateToken(user.id, user.token_version)
         })
     } catch (error) {
@@ -112,7 +116,8 @@ async function login(req, res) {
 
 // GET /auth/profile
 async function getProfile(req, res) {
-    res.json({ user: req.user })
+    res.set('Cache-Control', 'private, no-store')
+    res.json({ user: publicUser(req.user) })
 }
 
 // PUT /auth/profileUpdate
@@ -128,7 +133,8 @@ async function updateProfile(req, res) {
 
         const user = await userModel.updateUser(req.user.id, fields)
 
-        res.json({ user })
+        res.set('Cache-Control', 'private, no-store')
+        res.json({ user: publicUser(user) })
     } catch (error) {
         console.error('Modification du profil impossible :', error.code || error.name)
         if (error.code === '23505') {

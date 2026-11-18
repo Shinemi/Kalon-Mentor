@@ -28,7 +28,7 @@ const Legal = () => {
             <div className="legal-content">
                 <h1 id="legal-top" tabIndex={-1}>Informations légales et conditions d’utilisation</h1>
                 <p>Kalon Mentor est un projet étudiant personnel consacré à l’apprentissage du dessin. Le service est proposé gratuitement, sans abonnement ni paiement.</p>
-                <p>Dernière mise à jour : <time dateTime="2026-11-05">5 novembre 2026</time>. Version des CGU : {TERMS_VERSION}.</p>
+                <p>Dernière mise à jour : <time dateTime="2026-11-18">18 novembre 2026</time>. Version des CGU : {TERMS_VERSION}.</p>
                 <nav aria-label="Sommaire des informations légales">
                     <ul>
                         <li><a href="#mentions-legales">Mentions légales</a></li>
@@ -57,8 +57,7 @@ const Legal = () => {
                         <dd><a href="mailto:kalon-mentor@gmail.com">kalon-mentor@gmail.com</a></dd>
 
                         <dt>Adresse du site</dt>
-                        <dd><a href="https://kalon-mentor.vercel.app">Front : https://kalon-mentor.vercel.app</a></dd>
-                        <dd><a href="https://kalon-mentor.onrender.com">Back : https://kalon-mentor.onrender.com</a></dd>
+                        <dd><a href="https://kalon-mentor.vercel.app">kalon-mentor.vercel.app</a></dd>
 
                         <dt>Hébergement du site et stockage des dessins sauvegardés</dt>
                         <dd>Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Les dessins sauvegardés utilisent un stockage privé Vercel Blob configuré à Paris, en France. <a href="https://vercel.com/legal/privacy-notice">Informations et coordonnées de Vercel</a>.</dd>

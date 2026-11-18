@@ -343,4 +343,18 @@ test('rejoue une sauvegarde confirmée sans nouvel upload, même si la galerie e
     expect(response.body.correction.id).toBe(key)
     expect(storage.saveImage).not.toHaveBeenCalled()
     expect(corrections.createSaveCorrection).not.toHaveBeenCalled()
+    expect(response.body.correction).not.toHaveProperty('image_url')
+})
+
+test('ne retourne pas les adresses de stockage ni les champs internes dans la galerie', async () => {
+    corrections.findCorrectionsByUser.mockResolvedValue([{
+        id: 'correction', image_url: 'https://blob.test/chemin-interne', user_id: 'compte-interne',
+        unexpected_secret: 'valeur-fictive', feedback_text: '{"resume":"Mon analyse"}', created_at: '2026-11-18T00:00:00Z'
+    }])
+    blob.get.mockResolvedValue({ statusCode: 404 })
+    const response = await auth(request(app).get('/api/v1/mentor/correctionGallery')).expect(200)
+    expect(response.body.corrections[0]).toEqual({
+        id: 'correction', image: '', feedback_text: '{"resume":"Mon analyse"}', created_at: '2026-11-18T00:00:00Z'
+    })
+    expect(JSON.stringify(response.body)).not.toContain('chemin-interne')
 })

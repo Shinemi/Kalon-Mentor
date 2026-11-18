@@ -169,12 +169,20 @@ export const getHistory = async (signal?: AbortSignal) => {
         throw new Error('Impossible de charger votre historique.')
     }
 
-    const data: GalleryResponse = await response.json()
+    const data: GalleryResponse = await response.json().catch(() => null)
+    if (!data || !Array.isArray(data.corrections)) {
+        throw new Error('La réponse de l’historique est invalide. Veuillez réessayer.')
+    }
 
     const corrections: SavedAnalysis[] = data.corrections.map(correction => {
-        const feedback = typeof correction.feedback_text === 'string'
-            ? JSON.parse(correction.feedback_text)
-            : correction.feedback_text
+        let feedback: unknown
+        try {
+            feedback = typeof correction.feedback_text === 'string'
+                ? JSON.parse(correction.feedback_text)
+                : correction.feedback_text
+        } catch {
+            throw new Error('Une analyse sauvegardée contient un retour invalide.')
+        }
 
         if (!feedback || typeof feedback !== 'object' || Array.isArray(feedback)) {
             throw new Error('Une analyse sauvegardée contient un retour invalide.')
@@ -183,7 +191,7 @@ export const getHistory = async (signal?: AbortSignal) => {
         return {
             id: correction.id,
             imageUrl: correction.image ? `data:image/webp;base64,${correction.image}` : '',
-            feedback,
+            feedback: feedback as Record<string, unknown>,
             createdAt: correction.created_at
         }
     })

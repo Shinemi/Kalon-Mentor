@@ -14,6 +14,16 @@ const { analysisFeedbackSchema } = require('../schemas/mentorSchemas')
 
 const MAX_SAVED_CORRECTIONS = 10
 
+function publicCorrection(correction) {
+    return {
+        id: correction.id,
+        feedback_text: correction.feedback_text,
+        created_at: correction.created_at,
+        ...(correction.image !== undefined ? { image: correction.image } : {}),
+        ...(correction.resources !== undefined ? { resources: correction.resources } : {})
+    }
+}
+
 // const UPLOADS_DIR = path.join(__dirname, '..', 'uploads')
 
 // POST /mentor/correction  (US-04 + US-05)
@@ -163,6 +173,7 @@ async function resolveResourceIds(feedback) {
 // POST /mentor/corrections  (US-09)
 // L'utilisateur a vu son feedback et choisit de le garder.
 async function saveCorrection(req, res) {
+    res.set('Cache-Control', 'private, no-store')
     const { image } = req.body
     const feedback = { ...req.body.feedback }
     const key = req.get('Idempotency-Key')
@@ -173,7 +184,7 @@ async function saveCorrection(req, res) {
     try {
         if (key) {
             const existing = await correctionModel.findCorrectionById(key, req.user.id)
-            if (existing) return res.status(201).json({ correction: existing })
+            if (existing) return res.status(201).json({ correction: publicCorrection(existing) })
         }
         const savedCount = await correctionModel.countCorrectionsByUser(
             req.user.id
@@ -235,7 +246,8 @@ async function saveCorrection(req, res) {
             })
         }
 
-        res.status(201).json({ correction })
+        res.set('Cache-Control', 'private, no-store')
+        res.status(201).json({ correction: publicCorrection(correction) })
     } catch (error) {
         console.error('Sauvegarde impossible :', error.code || error.name)
         if (error.code === 'GALLERY_FULL') {
@@ -277,7 +289,7 @@ async function getCorrections(req, res) {
         res.set('Cache-Control', 'private, no-store')
 
         res.json({
-            corrections,
+            corrections: corrections.map(publicCorrection),
             savedCount: corrections.length,
             maxCorrections: MAX_SAVED_CORRECTIONS,
         })

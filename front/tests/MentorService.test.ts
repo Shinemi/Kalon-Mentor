@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest'
-import { analyseImage, saveAnalysis } from '../src/services/MentorService'
+import { analyseImage, saveAnalysis, getHistory } from '../src/services/MentorService'
 import { trackBusinessEvent } from '../src/utils/analytics'
 
 vi.mock('../src/utils/analytics', () => ({ trackBusinessEvent: vi.fn() }))
@@ -46,4 +46,16 @@ it('mesure la sauvegarde uniquement après confirmation, jamais pour une galerie
     expect(trackBusinessEvent).not.toHaveBeenCalled()
     expect(await saveAnalysis(result)).toBeNull()
     expect(trackBusinessEvent).toHaveBeenCalledExactlyOnceWith('analysis_save')
+})
+
+it('masque le contenu d’un retour JSON illisible dans le message de galerie', async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+        corrections: [{ id: 'id', feedback_text: 'contenu-prive-corrompu', image: '', created_at: 'date' }], maxCorrections: 10
+    })))
+    await expect(getHistory()).rejects.toThrow('Une analyse sauvegardée contient un retour invalide.')
+})
+
+it('masque une réponse serveur illisible dans le message de galerie', async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response('contenu-technique-interne'))
+    await expect(getHistory()).rejects.toThrow('La réponse de l’historique est invalide.')
 })

@@ -2,19 +2,11 @@
 
 const { z } = require('zod')
 const authSchemas = require('../schemas/authSchemas')
-const { saveCorrectionSchema, feedbackSchema, analysisFeedbackSchema } = require('../schemas/mentorSchemas')
+const { saveCorrectionSchema } = require('../schemas/mentorSchemas')
 const { createCourseSchema, updateCourseSchema } = require('../schemas/courseSchemas')
 
 const ref = name => ({ $ref: `#/components/schemas/${name}` })
-const object = properties => ({ type: 'object', properties })
-const array = items => ({ type: 'array', items })
 const uuid = { type: 'string', format: 'uuid' }
-const date = { type: 'string', format: 'date-time' }
-const base64 = { type: 'string', format: 'byte', description: 'Image en base64, sans préfixe data:.' }
-const json = schema => ({ 'application/json': { schema } })
-const response = (description, schema) => ({ description, content: json(schema) })
-const body = name => ({ required: true, content: json(ref(name)) })
-const error = description => response(description, ref('ApiError'))
 const idParameter = { name: 'id', in: 'path', required: true, schema: uuid }
 const categoryParameter = {
     name: 'category', in: 'query', required: false,
@@ -46,59 +38,7 @@ const schemas = {
     ResetPasswordInput: inputSchema(authSchemas.resetPasswordSchema),
     SaveCorrectionInput: inputSchema(saveCorrectionSchema),
     CreateCourseInput: inputSchema(createCourseSchema),
-    UpdateCourseInput: { ...inputSchema(updateCourseSchema), minProperties: 1 },
-    Feedback: inputSchema(feedbackSchema),
-    AnalysisFeedback: inputSchema(analysisFeedbackSchema),
-    ApiError: {
-        ...object({
-            title: { type: 'string' },
-            statut: { type: 'integer', example: 422 },
-            invalidParams: array(object({ path: { type: 'string' }, message: { type: 'string' } })),
-            maxCorrections: { type: 'integer', example: 10 }
-        }),
-        required: ['title', 'statut', 'invalidParams']
-    },
-    User: object({
-        id: uuid, username: { type: 'string' }, email: { type: 'string', format: 'email' },
-        role: { type: 'string', enum: ['member', 'admin'] },
-        avatar_url: { type: 'string', nullable: true }, created_at: date,
-        token_version: { type: 'integer' }
-    }),
-    Message: object({ message: { type: 'string' } }),
-    AuthResult: object({ user: ref('User'), token: { type: 'string', description: 'JWT valable 7 jours.' } }),
-    ProfileResult: object({ user: ref('User') }),
-    Course: object({
-        id: uuid,
-        ...inputSchema(createCourseSchema).properties,
-        author_name: { type: 'string', nullable: true },
-        type: { type: 'string', enum: ['course'] }, is_active: { type: 'boolean' }
-    }),
-    CourseResult: object({ course: ref('Course') }),
-    CoursesResult: object({ courses: array(ref('Course')) }),
-    Correction: object({
-        id: uuid, image_url: { type: 'string' },
-        feedback_text: { type: 'string', description: 'Feedback sérialisé en JSON.' },
-        created_at: date
-    }),
-    GalleryCorrection: {
-        allOf: [ref('Correction'), object({
-            image: base64,
-            resources: array(object({ resourceId: uuid, priority: { type: 'integer' } }))
-        })]
-    },
-    GalleryResult: object({
-        corrections: array(ref('GalleryCorrection')),
-        savedCount: { type: 'integer' }, maxCorrections: { type: 'integer', example: 10 }
-    }),
-    AnalysisResult: object({ feedback: ref('AnalysisFeedback'), image: base64, analysisId: uuid }),
-    CorrectionResult: object({ correction: ref('Correction') }),
-    UsersResult: object({ users: array(ref('User')), page: { type: 'integer' }, pageSize: { type: 'integer' }, hasNext: { type: 'boolean' } }),
-    UserAnalysesResult: object({ total: { type: 'integer' }, dates: array(date) }),
-    AiStatus: object({
-        quotaAvailable: { type: 'boolean', enum: [false] },
-        quota: { type: 'number', nullable: true, example: null, description: 'Toujours null : aucune source de quota connectée.' },
-        message: { type: 'string', example: 'Information indisponible' }
-    })
+    UpdateCourseInput: { ...inputSchema(updateCourseSchema), minProperties: 1 }
 }
 
 // Les transformations trim/toLowerCase ne décrivent pas le format de sortie de la pipe Zod.
@@ -111,36 +51,43 @@ schemas.RegisterInput.example = {
     acceptedTerms: true, declaredAdult: true, termsVersion: '1.1'
 }
 schemas.LoginInput.example = { email: 'artiste@example.com', password: 'Dessin123!' }
-schemas.SaveCorrectionInput.properties.image = { ...schemas.SaveCorrectionInput.properties.image, ...base64 }
+schemas.SaveCorrectionInput.properties.image.description = 'Image en base64, sans préfixe data:.'
 
 function operation(operationId, tag, summary, options = {}) {
-    const { input, output, status = 200, access = 'public', errors = {}, ...details } = options
-    return {
-        operationId, tags: [tag], summary,
+    const { input, status = 200, access = 'public', errors = {}, ...details } = options
+    const route = {
+        operationId,
+        tags: [tag],
+        summary,
         security: access === 'public' ? [] : [{ bearerAuth: [] }],
-        ...(access === 'admin' ? { description: 'Réservé aux comptes ayant le rôle admin.' } : {}),
-        ...(input ? { requestBody: body(input) } : {}),
         ...details,
         responses: {
-            [status]: output ? response('Succès.', ref(output)) : { description: 'Succès, sans contenu.' },
-            ...(input ? {
-                400: error('JSON invalide.'), 413: error('Corps JSON supérieur à 5 Mo.'),
-                422: error('Données refusées par la validation.')
-            } : {}),
-            ...(access !== 'public' ? { 401: error('JWT absent, invalide ou expiré.') } : {}),
-            ...(access === 'admin' ? { 403: error('Rôle administrateur requis.') } : {}),
-            429: error('Limite HTTP atteinte : 100 requêtes par IP et par période de 15 minutes au maximum.'),
-            500: error('Erreur interne du serveur.'),
-            ...Object.fromEntries(Object.entries(errors).map(([code, description]) => [code, error(description)]))
+            [status]: { description: status === 204 ? 'Succès, sans contenu.' : 'Succès.' },
+            429: { description: 'Limite de requêtes atteinte.' },
+            500: { description: 'Erreur interne du serveur.' }
         }
     }
+
+    if (input) {
+        route.requestBody = { required: true, content: { 'application/json': { schema: ref(input) } } }
+        route.responses[400] = { description: 'JSON invalide.' }
+        route.responses[413] = { description: 'Corps JSON supérieur à 5 Mo.' }
+        route.responses[422] = { description: 'Données invalides.' }
+    }
+    if (access !== 'public') route.responses[401] = { description: 'JWT absent, invalide ou expiré.' }
+    if (access === 'admin') route.responses[403] = { description: 'Rôle administrateur requis.' }
+
+    for (const [statusCode, description] of Object.entries(errors)) {
+        route.responses[statusCode] = { description }
+    }
+    return route
 }
 
 module.exports = {
     openapi: '3.0.3',
     info: {
         title: 'API Kalon Mentor', version: require('../package.json').version,
-        description: 'API de dessin et de mentorat. Connectez-vous avec POST /auth/login, puis collez le token dans Authorize. Les essais exécutent de vraies requêtes sur cet environnement. Les analyses sollicitent Gemini ; les sauvegardes et suppressions modifient vos données.'
+        description: 'Connectez-vous avec /auth/login puis collez le JWT dans Authorize. Les essais appellent réellement l’API et modifient les données.'
     },
     // Même origine que la documentation : fonctionne en local et sur le backend déployé.
     servers: [{ url: '/api/v1', description: 'Serveur courant' }],
@@ -156,40 +103,40 @@ module.exports = {
     },
     paths: {
         '/auth/register': { post: operation('register', 'Authentification', 'Créer un compte', {
-            input: 'RegisterInput', output: 'AuthResult', status: 201,
+            input: 'RegisterInput', status: 201,
             description: 'CGU acceptées et majorité déclarée obligatoires. Maximum 5 tentatives par IP en 15 minutes.',
             errors: { 409: 'Adresse e-mail déjà utilisée.' }
         }) },
         '/auth/login': { post: operation('login', 'Authentification', 'Se connecter', {
-            input: 'LoginInput', output: 'AuthResult',
+            input: 'LoginInput',
             description: 'Maximum 10 tentatives échouées par IP en 15 minutes.',
             errors: { 401: 'Adresse e-mail ou mot de passe incorrect.' }
         }) },
         '/auth/profile': {
-            get: operation('getProfile', 'Authentification', 'Consulter son profil', { access: 'member', output: 'ProfileResult' }),
+            get: operation('getProfile', 'Authentification', 'Consulter son profil', { access: 'member' }),
             delete: operation('deleteAccount', 'Authentification', 'Supprimer son compte et ses sauvegardes', { access: 'member', status: 204 })
         },
         '/auth/profileUpdate': { put: operation('updateProfile', 'Authentification', 'Modifier son profil', {
-            access: 'member', input: 'UpdateProfileInput', output: 'ProfileResult',
+            access: 'member', input: 'UpdateProfileInput',
             description: 'Au moins un champ requis. Un changement de mot de passe invalide les sessions existantes.'
         }) },
         '/auth/forgotPassword': { post: operation('forgotPassword', 'Authentification', 'Demander un lien de réinitialisation', {
-            input: 'ForgotPasswordInput', output: 'Message', status: 202,
+            input: 'ForgotPasswordInput', status: 202,
             description: 'Réponse générique, même si le compte est inconnu. Maximum 5 demandes par IP en 15 minutes.'
         }) },
         '/auth/resetPassword': { post: operation('resetPassword', 'Authentification', 'Réinitialiser son mot de passe', {
-            input: 'ResetPasswordInput', output: 'Message',
+            input: 'ResetPasswordInput',
             description: 'Lien à usage unique valable 30 minutes. Maximum 5 demandes par IP en 15 minutes.',
             errors: { 400: 'JSON invalide ou lien invalide, expiré ou déjà utilisé.' }
         }) },
         '/resources/courses': { get: operation('getCourses', 'Ressources', 'Lister les cours', {
-            parameters: [categoryParameter], output: 'CoursesResult'
+            parameters: [categoryParameter],
         }) },
         '/resources/courses/{id}': { get: operation('getCourseById', 'Ressources', 'Consulter un cours', {
-            parameters: [idParameter], output: 'CourseResult', errors: { 404: 'Cours introuvable.' }
+            parameters: [idParameter], errors: { 404: 'Cours introuvable.' }
         }) },
         '/mentor/correction': { post: operation('analyseCorrection', 'Mentor', 'Analyser un dessin', {
-            access: 'member', output: 'AnalysisResult',
+            access: 'member',
             description: 'Un fichier image de 10 Mo maximum. Renvoie le feedback et une image WebP en base64 ; ne sauvegarde pas le dessin dans la galerie.',
             requestBody: { required: true, content: { 'multipart/form-data': {
                 schema: { type: 'object', required: ['image'], properties: { image: { type: 'string', format: 'binary' } } }
@@ -200,18 +147,18 @@ module.exports = {
                 503: 'Mentor temporairement indisponible.', 504: 'Délai de 120 secondes dépassé sans consommation du quota.' }
         }) },
         '/mentor/correctionSave': { post: operation('saveCorrection', 'Mentor', 'Sauvegarder une analyse', {
-            access: 'member', input: 'SaveCorrectionInput', output: 'CorrectionResult', status: 201,
+            access: 'member', input: 'SaveCorrectionInput', status: 201,
             description: 'Envoyer image et feedback reçus de /mentor/correction. Maximum 10 sauvegardes ; jusqu’à 3 ressources recommandées sont associées.',
             parameters: [{ name: 'Idempotency-Key', in: 'header', required: false, schema: uuid, description: 'Réutiliser analysisId pour rejouer une sauvegarde sans créer de doublon.' }],
             errors: { 403: 'Galerie pleine (maxCorrections : 10).' }
         }) },
-        '/mentor/correctionGallery': { get: operation('getCorrections', 'Mentor', 'Consulter sa galerie', { access: 'member', output: 'GalleryResult' }) },
+        '/mentor/correctionGallery': { get: operation('getCorrections', 'Mentor', 'Consulter sa galerie', { access: 'member' }) },
         '/mentor/correctionDelete/{id}': { delete: operation('deleteCorrection', 'Mentor', 'Supprimer une analyse sauvegardée', {
-            access: 'member', parameters: [idParameter], output: 'Message', errors: { 404: 'Analyse introuvable pour ce compte.' }
+            access: 'member', parameters: [idParameter], errors: { 404: 'Analyse introuvable pour ce compte.' }
         }) },
-        '/admin/access': { get: operation('adminAccess', 'Administration', 'Vérifier son accès administrateur', { access: 'admin', output: 'Message' }) },
+        '/admin/access': { get: operation('adminAccess', 'Administration', 'Vérifier son accès administrateur', { access: 'admin' }) },
         '/admin/users': { get: operation('getUsers', 'Administration', 'Lister les utilisateurs', {
-            access: 'admin', output: 'UsersResult',
+            access: 'admin',
             parameters: [
                 { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000000, default: 1 } },
                 { name: 'pageSize', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 } }
@@ -219,7 +166,7 @@ module.exports = {
         }) },
         '/admin/courses/{id}': {
             patch: operation('updateCourse', 'Administration', 'Modifier les champs transmis d’un cours', {
-                access: 'admin', parameters: [idParameter], input: 'UpdateCourseInput', output: 'CourseResult',
+                access: 'admin', parameters: [idParameter], input: 'UpdateCourseInput',
                 errors: { 404: 'Cours introuvable.', 409: 'Ordre déjà utilisé dans la catégorie.' }
             }),
             delete: operation('retireCourse', 'Administration', 'Retirer un cours sans supprimer les références historiques', {
@@ -228,19 +175,19 @@ module.exports = {
             })
         },
         '/admin/users/{id}/analyses': { get: operation('getUserAnalyses', 'Administration', 'Consulter le nombre et les dates des analyses réussies', {
-            access: 'admin', parameters: [idParameter], output: 'UserAnalysesResult',
+            access: 'admin', parameters: [idParameter],
             errors: { 422: 'Identifiant utilisateur invalide.', 404: 'Utilisateur introuvable.' }
         }) },
         '/admin/ai/status': { get: operation('getAiStatus', 'Administration', 'Consulter les informations de quota IA', {
-            access: 'admin', output: 'AiStatus',
+            access: 'admin',
             description: 'Rôle admin requis. Les quotas ne sont pas encore connectés : quotaAvailable vaut false et quota vaut null.'
         }) },
         '/admin/courses': {
             get: operation('getAdminCourses', 'Administration', 'Lister les cours depuis l’administration', {
-                access: 'admin', parameters: [categoryParameter], output: 'CoursesResult'
+                access: 'admin', parameters: [categoryParameter],
             }),
             post: operation('createCourse', 'Administration', 'Créer un cours', {
-                access: 'admin', input: 'CreateCourseInput', output: 'CourseResult', status: 201,
+                access: 'admin', input: 'CreateCourseInput', status: 201,
                 errors: { 409: 'Ordre déjà utilisé dans cette catégorie.' }
             })
         }

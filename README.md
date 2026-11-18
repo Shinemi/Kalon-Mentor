@@ -199,7 +199,7 @@ Points nécessaires à la compatibilité du schéma :
 
 Le contenu pédagogique d’un cours est conservé dans `resources.content` : `level`, `lesson`, `exercise`, `objectives` et `commonMistakes`.
 
-La table `analysis_locks` est prévue dans le schéma de conception, mais n’est pas utilisée par le code actuel.
+La table `analysis_locks` réserve une analyse en cours par compte et permet de remplacer les réservations expirées.
 
 ### Compte administrateur
 
@@ -324,7 +324,7 @@ Le routage des pages React lors d’un accès direct ou d’un rafraîchissement
 - L’onglet IA renvoie actuellement une information de quota indisponible ; il n’est pas encore relié à une source de quotas Gemini.
 - La modification et le retrait logique des cours sont disponibles. La suppression d’utilisateurs depuis l’administration est hors du périmètre des six user stories du dossier.
 
-Voir le [suivi de conformité au dossier](docs/suivi-dossier.md), les [procédures d’exploitation](docs/exploitation.md) et l’[inventaire des licences](docs/THIRD_PARTY_NOTICES.md). Les six événements métier sont instrumentés après consentement ; leur réception dans GA4 et les réglages de collecte automatique restent à vérifier dans la propriété réelle.
+Les six événements métier sont instrumentés après consentement ; leur réception dans GA4 et les réglages de collecte automatique restent à vérifier dans la propriété réelle.
 
 ## Auteur
 
