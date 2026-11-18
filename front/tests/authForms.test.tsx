@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, expect, it, vi } from 'vitest'
 import Form from '../src/components/Form'
-import PasswordRecovery from '../src/pages/PassWordRecovery'
+import PasswordRecovery from '../src/pages/PasswordRecovery'
 import { authenticate, recoverPassword } from '../src/services/AuthService'
 
 vi.mock('../src/services/AuthService', () => ({

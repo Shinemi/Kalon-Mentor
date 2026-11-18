@@ -56,21 +56,18 @@ header{
                 height: 100%;
 
                 li {
-                    border-bottom: 1px solid transparent;
-                    transition: all 0.1s ease-in-out;
-
-                    &:hover,
-                    &:has(a.active){
-                        border-bottom-color: $color-text;
-                        padding-bottom: 8px;
-                    }
-
                     a {
                         display: flex;
+                        padding: 8px 0;
+                        border-bottom: 1px solid transparent;
+                        transition: padding 0.1s ease-in-out, border-color 0.1s ease-in-out;
 
-                        // &.active {
-                        //     color: $color-text-muted;
-                        // }
+                        &:hover,
+                        &:focus-visible,
+                        &.active {
+                            border-bottom-color: $color-text;
+                            padding-bottom: 16px;
+                        }
                     }
                 }
 
@@ -94,22 +91,25 @@ header{
                     }
 
                     li {
-                        &:hover,
-                        &:has(a.active) {
-                            border-bottom-color: $color-secondary;
-                        }
-
                         a {
                             color: $color-bg-main;
 
                             &:hover,
+                            &:focus-visible,
                             &.active {
                                 color: $color-secondary;
+                                border-bottom-color: $color-secondary;
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    header .header-content nav .navbar-links li a {
+        transition: none;
     }
 }
